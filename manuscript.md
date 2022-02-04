@@ -1,5 +1,5 @@
 ---
-title: Manuscript Title
+title: The Re-scalabel Indicator Review
 keywords:
 - markdown
 - publishing
@@ -7,7 +7,7 @@ keywords:
 lang: en-US
 date-meta: '2022-02-04'
 author-meta:
-- John Doe
+- Anders L. KOlstad
 - Jane Roe
 header-includes: |-
   <!--
@@ -15,10 +15,10 @@ header-includes: |-
   Suggest improvements at https://github.com/manubot/manubot/blob/main/manubot/process/header-includes-template.html
   -->
   <meta name="dc.format" content="text/html" />
-  <meta name="dc.title" content="Manuscript Title" />
-  <meta name="citation_title" content="Manuscript Title" />
-  <meta property="og:title" content="Manuscript Title" />
-  <meta property="twitter:title" content="Manuscript Title" />
+  <meta name="dc.title" content="The Re-scalabel Indicator Review" />
+  <meta name="citation_title" content="The Re-scalabel Indicator Review" />
+  <meta property="og:title" content="The Re-scalabel Indicator Review" />
+  <meta property="twitter:title" content="The Re-scalabel Indicator Review" />
   <meta name="dc.date" content="2022-02-04" />
   <meta name="citation_publication_date" content="2022-02-04" />
   <meta name="dc.language" content="en-US" />
@@ -27,10 +27,10 @@ header-includes: |-
   <meta name="dc.publisher" content="Manubot" />
   <meta name="citation_journal_title" content="Manubot" />
   <meta name="citation_technical_report_institution" content="Manubot" />
-  <meta name="citation_author" content="John Doe" />
-  <meta name="citation_author_institution" content="Department of Something, University of Whatever" />
-  <meta name="citation_author_orcid" content="XXXX-XXXX-XXXX-XXXX" />
-  <meta name="twitter:creator" content="@johndoe" />
+  <meta name="citation_author" content="Anders L. KOlstad" />
+  <meta name="citation_author_institution" content="Norwegian Institute for Nature Reseach" />
+  <meta name="citation_author_orcid" content="0000-0002-9623-9491" />
+  <meta name="twitter:creator" content="@None" />
   <meta name="citation_author" content="Jane Roe" />
   <meta name="citation_author_institution" content="Department of Something, University of Whatever" />
   <meta name="citation_author_institution" content="Department of Whatever, University of Something" />
@@ -41,9 +41,9 @@ header-includes: |-
   <meta name="citation_fulltext_html_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/" />
   <meta name="citation_pdf_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
   <link rel="alternate" type="application/pdf" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
-  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/9a22fab4497f80f501ea361d028f26888ad9d5a0/" />
-  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/9a22fab4497f80f501ea361d028f26888ad9d5a0/" />
-  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/9a22fab4497f80f501ea361d028f26888ad9d5a0/manuscript.pdf" />
+  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/323a1b28b406c65619074827bd2a2945cc856859/" />
+  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/323a1b28b406c65619074827bd2a2945cc856859/" />
+  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/323a1b28b406c65619074827bd2a2945cc856859/manuscript.pdf" />
   <meta property="og:type" content="article" />
   <meta property="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="192x192" href="https://manubot.org/favicon-192x192.png" />
@@ -65,9 +65,9 @@ manubot-clear-requests-cache: false
 
 <small><em>
 This manuscript
-([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/9a22fab4497f80f501ea361d028f26888ad9d5a0/))
+([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/323a1b28b406c65619074827bd2a2945cc856859/))
 was automatically generated
-from [anders-kolstad/theRescalableIndicatorReview@9a22fab](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/9a22fab4497f80f501ea361d028f26888ad9d5a0)
+from [anders-kolstad/theRescalableIndicatorReview@323a1b2](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/323a1b28b406c65619074827bd2a2945cc856859)
 on February 4, 2022.
 </em></small>
 
@@ -75,16 +75,14 @@ on February 4, 2022.
 
 
 
-+ **John Doe**<br>
++ **Anders L. KOlstad**<br>
     ![ORCID icon](images/orcid.svg){.inline_icon width=16 height=16}
-    [XXXX-XXXX-XXXX-XXXX](https://orcid.org/XXXX-XXXX-XXXX-XXXX)
+    [0000-0002-9623-9491](https://orcid.org/0000-0002-9623-9491)
     · ![GitHub icon](images/github.svg){.inline_icon width=16 height=16}
-    [johndoe](https://github.com/johndoe)
-    · ![Twitter icon](images/twitter.svg){.inline_icon width=16 height=16}
-    [johndoe](https://twitter.com/johndoe)<br>
+    [anders-kolstad](https://github.com/anders-kolstad)<br>
   <small>
-     Department of Something, University of Whatever
-     · Funded by Grant XXXXXXXX
+     Norwegian Institute for Nature Reseach
+     · Funded by None
   </small>
 
 + **Jane Roe**<br>
