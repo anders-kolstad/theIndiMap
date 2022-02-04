@@ -1,7 +1,7 @@
 # Output directory containing the formatted manuscript
 
 The [`gh-pages`](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/gh-pages) branch hosts the contents of this directory at <https://anders-kolstad.github.io/theRescalableIndicatorReview/>.
-The permalink for this webpage version is <https://anders-kolstad.github.io/theRescalableIndicatorReview/v/323a1b28b406c65619074827bd2a2945cc856859/>.
+The permalink for this webpage version is <https://anders-kolstad.github.io/theRescalableIndicatorReview/v/49cf290d3c0ee4afc9b2b45228eb921003046434/>.
 To redirect to the permalink for the latest manuscript version at anytime, use the link <https://anders-kolstad.github.io/theRescalableIndicatorReview/v/freeze/>.
 
 ## Files
@@ -35,4 +35,4 @@ Verifying timestamps with the `ots verify` command requires running a local bitc
 ## Source
 
 The manuscripts in this directory were built from
-[`323a1b28b406c65619074827bd2a2945cc856859`](https://github.com/anders-kolstad/theRescalableIndicatorReview/commit/323a1b28b406c65619074827bd2a2945cc856859).
+[`49cf290d3c0ee4afc9b2b45228eb921003046434`](https://github.com/anders-kolstad/theRescalableIndicatorReview/commit/49cf290d3c0ee4afc9b2b45228eb921003046434).
