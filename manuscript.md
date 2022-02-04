@@ -41,9 +41,9 @@ header-includes: |-
   <meta name="citation_fulltext_html_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/" />
   <meta name="citation_pdf_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
   <link rel="alternate" type="application/pdf" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
-  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/767c7a63bb5c69e2f4eb79bcc959a9d09c32be2b/" />
-  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/767c7a63bb5c69e2f4eb79bcc959a9d09c32be2b/" />
-  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/767c7a63bb5c69e2f4eb79bcc959a9d09c32be2b/manuscript.pdf" />
+  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/" />
+  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/" />
+  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/manuscript.pdf" />
   <meta property="og:type" content="article" />
   <meta property="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="192x192" href="https://manubot.org/favicon-192x192.png" />
@@ -65,9 +65,9 @@ manubot-clear-requests-cache: false
 
 <small><em>
 This manuscript
-([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/767c7a63bb5c69e2f4eb79bcc959a9d09c32be2b/))
+([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/))
 was automatically generated
-from [anders-kolstad/theRescalableIndicatorReview@767c7a6](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/767c7a63bb5c69e2f4eb79bcc959a9d09c32be2b)
+from [anders-kolstad/theRescalableIndicatorReview@8ad0bd9](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e)
 on February 4, 2022.
 </em></small>
 
@@ -99,7 +99,7 @@ on February 4, 2022.
 ## Abstract {.page_break_before}
 
 
-
+This is a test
 
 ## References {.page_break_before}
 
