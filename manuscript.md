@@ -1,5 +1,5 @@
 ---
-title: The Re-scalabel Indicator Review
+title: The Re-scalable Indicator Review
 keywords:
 - markdown
 - publishing
@@ -7,7 +7,7 @@ keywords:
 lang: en-US
 date-meta: '2022-02-04'
 author-meta:
-- Anders L. KOlstad
+- Anders L. Kolstad
 - Jane Roe
 header-includes: |-
   <!--
@@ -15,10 +15,10 @@ header-includes: |-
   Suggest improvements at https://github.com/manubot/manubot/blob/main/manubot/process/header-includes-template.html
   -->
   <meta name="dc.format" content="text/html" />
-  <meta name="dc.title" content="The Re-scalabel Indicator Review" />
-  <meta name="citation_title" content="The Re-scalabel Indicator Review" />
-  <meta property="og:title" content="The Re-scalabel Indicator Review" />
-  <meta property="twitter:title" content="The Re-scalabel Indicator Review" />
+  <meta name="dc.title" content="The Re-scalable Indicator Review" />
+  <meta name="citation_title" content="The Re-scalable Indicator Review" />
+  <meta property="og:title" content="The Re-scalable Indicator Review" />
+  <meta property="twitter:title" content="The Re-scalable Indicator Review" />
   <meta name="dc.date" content="2022-02-04" />
   <meta name="citation_publication_date" content="2022-02-04" />
   <meta name="dc.language" content="en-US" />
@@ -27,7 +27,7 @@ header-includes: |-
   <meta name="dc.publisher" content="Manubot" />
   <meta name="citation_journal_title" content="Manubot" />
   <meta name="citation_technical_report_institution" content="Manubot" />
-  <meta name="citation_author" content="Anders L. KOlstad" />
+  <meta name="citation_author" content="Anders L. Kolstad" />
   <meta name="citation_author_institution" content="Norwegian Institute for Nature Reseach" />
   <meta name="citation_author_orcid" content="0000-0002-9623-9491" />
   <meta name="twitter:creator" content="@None" />
@@ -41,9 +41,9 @@ header-includes: |-
   <meta name="citation_fulltext_html_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/" />
   <meta name="citation_pdf_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
   <link rel="alternate" type="application/pdf" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
-  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/" />
-  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/" />
-  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/manuscript.pdf" />
+  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/66136efb5801ffaee1cea0cd8207b1bf3537ba06/" />
+  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/66136efb5801ffaee1cea0cd8207b1bf3537ba06/" />
+  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/66136efb5801ffaee1cea0cd8207b1bf3537ba06/manuscript.pdf" />
   <meta property="og:type" content="article" />
   <meta property="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="192x192" href="https://manubot.org/favicon-192x192.png" />
@@ -65,9 +65,9 @@ manubot-clear-requests-cache: false
 
 <small><em>
 This manuscript
-([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e/))
+([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/66136efb5801ffaee1cea0cd8207b1bf3537ba06/))
 was automatically generated
-from [anders-kolstad/theRescalableIndicatorReview@8ad0bd9](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/8ad0bd9483d02862ff8b6a6e581b2d157b81e50e)
+from [anders-kolstad/theRescalableIndicatorReview@66136ef](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/66136efb5801ffaee1cea0cd8207b1bf3537ba06)
 on February 4, 2022.
 </em></small>
 
@@ -75,7 +75,7 @@ on February 4, 2022.
 
 
 
-+ **Anders L. KOlstad**<br>
++ **Anders L. Kolstad**<br>
     ![ORCID icon](images/orcid.svg){.inline_icon width=16 height=16}
     [0000-0002-9623-9491](https://orcid.org/0000-0002-9623-9491)
     · ![GitHub icon](images/github.svg){.inline_icon width=16 height=16}
