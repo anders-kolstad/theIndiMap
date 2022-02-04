@@ -1,21 +1,21 @@
 ---
-title: "Manuscript Title"
+title: "The Re-scalabel Indicator Review"
 keywords:
   - markdown
   - publishing
   - manubot
 lang: en-US
 authors:
-  - github: johndoe
-    name: John Doe
-    initials: JD
-    orcid: XXXX-XXXX-XXXX-XXXX
-    twitter: johndoe
-    email: john.doe@something.com
+  - github: anders-kolstad
+    name: Anders L. KOlstad
+    initials: ALK
+    orcid: 0000-0002-9623-9491
+    twitter: 
+    email: anders.kolstad@nina.no
     affiliations:
-      - Department of Something, University of Whatever
+      - Norwegian Institute for Nature Reseach
     funders:
-      - Grant XXXXXXXX
+      - 
   - github: janeroe
     name: Jane Roe
     initials: JR
