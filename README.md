@@ -35,6 +35,9 @@ The directories are as follows:
 + [`webpage`](webpage) is a directory meant to be rendered as a static webpage for viewing the HTML manuscript.
 + [`build`](build) contains commands and tools for building the manuscript.
 + [`ci`](ci) contains files necessary for deployment via continuous integration.
++ [`R`](R) contains R scripts.
++ [`data`](data) contains indicator and publication profiles. These files are generated from the corresponding shiny app forms.
++ [`data/shiny/shiny-sites`](data/shiny/shiny-sites) contains the shiny app.
 
 ### Local execution
 
