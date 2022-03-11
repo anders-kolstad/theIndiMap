@@ -37,7 +37,8 @@ The directories are as follows:
 + [`ci`](ci) contains files necessary for deployment via continuous integration.
 + [`R`](R) contains R scripts.
 + [`data`](data) contains indicator and publication profiles. These files are generated from the corresponding shiny app forms.
-+ [`data/shiny/shiny-sites`](data/shiny/shiny-sites) contains the shiny app.
++ [`shiny`](shiny) contains the development version of the shiny app. To publish the app on the internal NINA server you need to update the folder under `mounts/shiny/shiny-sites/theIndiScaleReviw`
+
 
 ### Local execution
 
