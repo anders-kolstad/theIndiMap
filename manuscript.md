@@ -5,7 +5,7 @@ keywords:
 - publishing
 - manubot
 lang: en-US
-date-meta: '2022-03-11'
+date-meta: '2022-03-24'
 author-meta:
 - Anders L. Kolstad
 - Jane Roe
@@ -19,8 +19,8 @@ header-includes: |-
   <meta name="citation_title" content="The Re-scalable Indicator Review" />
   <meta property="og:title" content="The Re-scalable Indicator Review" />
   <meta property="twitter:title" content="The Re-scalable Indicator Review" />
-  <meta name="dc.date" content="2022-03-11" />
-  <meta name="citation_publication_date" content="2022-03-11" />
+  <meta name="dc.date" content="2022-03-24" />
+  <meta name="citation_publication_date" content="2022-03-24" />
   <meta name="dc.language" content="en-US" />
   <meta name="citation_language" content="en-US" />
   <meta name="dc.relation.ispartof" content="Manubot" />
@@ -41,9 +41,9 @@ header-includes: |-
   <meta name="citation_fulltext_html_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/" />
   <meta name="citation_pdf_url" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
   <link rel="alternate" type="application/pdf" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf" />
-  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/659054c73c058f37fb6f837fc323d8ec61b9e6e0/" />
-  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/659054c73c058f37fb6f837fc323d8ec61b9e6e0/" />
-  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/659054c73c058f37fb6f837fc323d8ec61b9e6e0/manuscript.pdf" />
+  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/87a71d1738f7d9fd7a4c165d1721b43d8af872bf/" />
+  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/87a71d1738f7d9fd7a4c165d1721b43d8af872bf/" />
+  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theRescalableIndicatorReview/v/87a71d1738f7d9fd7a4c165d1721b43d8af872bf/manuscript.pdf" />
   <meta property="og:type" content="article" />
   <meta property="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="192x192" href="https://manubot.org/favicon-192x192.png" />
@@ -65,10 +65,10 @@ manubot-clear-requests-cache: false
 
 <small><em>
 This manuscript
-([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/659054c73c058f37fb6f837fc323d8ec61b9e6e0/))
+([permalink](https://anders-kolstad.github.io/theRescalableIndicatorReview/v/87a71d1738f7d9fd7a4c165d1721b43d8af872bf/))
 was automatically generated
-from [anders-kolstad/theRescalableIndicatorReview@659054c](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/659054c73c058f37fb6f837fc323d8ec61b9e6e0)
-on March 11, 2022.
+from [anders-kolstad/theRescalableIndicatorReview@87a71d1](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/87a71d1738f7d9fd7a4c165d1721b43d8af872bf)
+on March 24, 2022.
 </em></small>
 
 ## Authors
