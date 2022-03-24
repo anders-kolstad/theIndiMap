@@ -1,0 +1,67 @@
+---
+title: "Scoping study summary"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Present
+
+- Frode Singsaas
+- Matt Grainger
+- Anders Kolstad
+
+# Research question
+
+Ideas:
+Se [this visio file](data/scoping study.vsdx)
+
+##  Finding potential key word
+Matt searched web of science using `ecosystem condition assessment indicator` and downloaded the first 1000 hits as a RIS file which he then imported into `litseachr` (shiny app).
+The app gives a list of word that typically occur together within the title, abstract and author defined key words.
+
+The output from this excercice is a list og key workds that you could use in order to obtain 25, 50, or 80% of the papers.
+
+The most condenced list (25%) is stored [here]()
+
+Based on this we updated the visio file. The biggest single terms were restricted when possible using the NEAR statement. Peripheral terms are excluded from the [initial search string](data/initial search terms.docs), but kept for later sensitivity analyses (crossed though word in the visio diagram). 
+
+The word *pressure* is sometimes used instead of *state*. But, synonyms of pressure, like *drivers*, *disturbance*, *stress(ors)*, *perturbations*, are not. So we'll not include these terms.
+
+## Initial search
+The initial search string yielded 49 577 hits (WoS; 24.03.2022)
+
+Matt will do topic modelling to perhaps exclude certain fields. 
+
+We excluded all but the following article types:
+Articles or Reviews
+Early access
+Proceedings Papers
+Book chapters
+
+This gave:
+49 348 hits
+
+We excluded the following refs based on WoS categories:
+Public Environmental Occupational Health
+Green Sustainable Science Technology
+Engineering Cicvl
+Computer Science Information Systems
+Endocrineology Metabolism
+Mineralogy
+Psychology clinical
+Education Educational Research
+Health care Science Services
+Nutrition Dietetics
+Astronomy Astrophysics
+...
+
+
+
+
+
+
+
+
