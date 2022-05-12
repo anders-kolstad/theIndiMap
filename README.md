@@ -1,8 +1,8 @@
 # Output directory containing the formatted manuscript
 
-The [`gh-pages`](https://github.com/anders-kolstad/theRescalableIndicatorReview/tree/gh-pages) branch hosts the contents of this directory at <https://anders-kolstad.github.io/theRescalableIndicatorReview/>.
-The permalink for this webpage version is <https://anders-kolstad.github.io/theRescalableIndicatorReview/v/77679bf379e7ad92a20107aef731048e79f538c8/>.
-To redirect to the permalink for the latest manuscript version at anytime, use the link <https://anders-kolstad.github.io/theRescalableIndicatorReview/v/freeze/>.
+The [`gh-pages`](https://github.com/anders-kolstad/theIndiMap/tree/gh-pages) branch hosts the contents of this directory at <https://anders-kolstad.github.io/theIndiMap/>.
+The permalink for this webpage version is <https://anders-kolstad.github.io/theIndiMap/v/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/>.
+To redirect to the permalink for the latest manuscript version at anytime, use the link <https://anders-kolstad.github.io/theIndiMap/v/freeze/>.
 
 ## Files
 
@@ -35,4 +35,4 @@ Verifying timestamps with the `ots verify` command requires running a local bitc
 ## Source
 
 The manuscripts in this directory were built from
-[`77679bf379e7ad92a20107aef731048e79f538c8`](https://github.com/anders-kolstad/theRescalableIndicatorReview/commit/77679bf379e7ad92a20107aef731048e79f538c8).
+[`b07e56a1070d7b6459c5ed72be4a8dea494c9dcb`](https://github.com/anders-kolstad/theIndiMap/commit/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb).
