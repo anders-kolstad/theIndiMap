@@ -1,10 +1,11 @@
-# The Re-Scalable Indicator Review
+# The IndiMap
+A systematic map of (re-scaled or normalized) indicators for ecological condition
 
 <!-- usage note: edit the H1 title above to personalize the manuscript -->
 
-[![HTML Manuscript](https://img.shields.io/badge/manuscript-HTML-blue.svg)](https://anders-kolstad.github.io/theRescalableIndicatorReview/)
-[![PDF Manuscript](https://img.shields.io/badge/manuscript-PDF-blue.svg)](https://anders-kolstad.github.io/theRescalableIndicatorReview/manuscript.pdf)
-[![GitHub Actions Status](https://github.com/anders-kolstad/theRescalableIndicatorReview/workflows/Manubot/badge.svg)](https://github.com/anders-kolstad/theRescalableIndicatorReview/actions)
+[![HTML Manuscript](https://img.shields.io/badge/manuscript-HTML-blue.svg)](https://anders-kolstad.github.io/theIndiMap/)
+[![PDF Manuscript](https://img.shields.io/badge/manuscript-PDF-blue.svg)](https://anders-kolstad.github.io/theIndiMap/manuscript.pdf)
+[![GitHub Actions Status](https://github.com/anders-kolstad/theRescalableIndicatorReview/workflows/Manubot/badge.svg)](https://github.com/anders-kolstad/theIndiMap/actions)
 
 ## Manuscript description
 
