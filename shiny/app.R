@@ -17,25 +17,24 @@ ui <-
   navbarPage("The IndiMap",
              
              
-# **UPLOAD FILE ---------------------
+# **TAB Upload file ---------------------
     tabPanel("Upload file",
       sidebarLayout(
         sidebarPanel(
             
-      # Input: 'folder' ----
-      # this could've been a good solution,
-      # but web browsers don't allow selecting entire
-      # folders. This code is linked with shinyChoseDir()
-      # This code could still work with a dockerised app, or RInno app.
-      ## shinyDirButton('folder', 'Select a folder', 'Please select a folder', FALSE),
-            
-            
+      # Input: 'localPub' ----      
+      # Here's an option for manually locating the local folder 
+      # containing unpublished (unpushed) publication profiles.
+      # The files, or paths, in the folder are listed, read, and compiled.
       
       
-      ## Output: 'folderName' ----
-          #textOutput('folderName'),
-            
-            
+      fileInput("localPub", "Choose CSV File",
+                multiple = T,
+                accept = c("text/csv",
+                           "text/comma-separated-values,text/plain",
+                           ".csv")),
+      
+      
       # Input: 'pubDrop'  ----
       # Drop down list of publication profiles
       # Profiles (for indicators and publications alike)
@@ -51,17 +50,7 @@ ui <-
       
       
       
-      # Input: 'localPub' ----      
-      # Here's an option for manually locating the local folder 
-      # containing unpublished (unpushed) publication profiles.
-      # The files, or paths, in the folder are listed, read, and compiled.
       
-      
-          fileInput("localPub", "Choose CSV File",
-                    multiple = T,
-                    accept = c("text/csv",
-                               "text/comma-separated-values,text/plain",
-                               ".csv")),
             
         # Horizontal line
           tags$hr(),
@@ -99,7 +88,7 @@ ui <-
       
 ),  # end sidebar panel
 
-# **PRINT FILE ---------------------
+# Main Panel PRINT FILE ---------------------
 
           mainPanel(
             # Output: Data file ----
@@ -108,17 +97,18 @@ ui <-
           )
           ),
                     
+# **TAB Register Publication ----
       tabPanel("Register publication",
         actionButton('populate', 'Populate form with values from the uploaded file'),       
         DTOutput('test'),
         downloadButton("downloadData", "Download")
                ),
         
-                     
+# **TAB Register indicator ----
       tabPanel("Register indicator"),
              
              
-             
+# **TAB More ----
     navbarMenu("More",
       tabPanel("Instructions"),
       tabPanel("Contact")
@@ -153,8 +143,7 @@ server <- function(input, output, session) ({
     tryCatch(
       {
         df <- read.csv(
-                       pubPath(),
-                       #input$pubDrop$datapath,
+                       titleToPath(),
                        header = input$header,
                        sep = input$sep,
                        quote = input$quote)
@@ -178,10 +167,10 @@ server <- function(input, output, session) ({
   
   # REACT: uploadedPub ----
   # Make the uploaded publication profile file available through an reactive element 
+  
   uploadedPub <- reactive({
     read.csv(
-             #input$pub$datapath,
-             pubPath(),
+             titleToPath(),
              header = input$header,
              sep = input$sep,
              quote = input$quote)
@@ -208,18 +197,6 @@ server <- function(input, output, session) ({
       write.csv(uploadedPub(), file, row.names = FALSE)
     }
   )
-    
-  
-  
-  # Chose folder ------------
-  # Web browsers do not allow one to list files inside folder!
-  # But in case we opt for local hosting, eg using RInno,
-  # this is a way to let the user navigate to the directory for the publication profiles
-  # If the GitHub.repo was cloned, it will be under data/publicationProfiles 
-  
-  #shinyDirChoose(input, 'folder', 
-  #              roots=c('C' = 'C:/', 'home' = '/home'), # the directory needs to be on C or /home. 
-  #               allowDirCreate = F) 
   
   
   
@@ -234,29 +211,20 @@ server <- function(input, output, session) ({
   
   publicationList <- reactive({
     req(input$localPub)
-    
-   # Get file paths
-    #myLocalFiles = list.files(
-    # #path = "../data/publicationProfiles",
-    # path= input$folder, 
-    # pattern="*.csv", 
-    # full.names=TRUE
-    # )
-    
-    # Read the csv's and rbind them
+    # Read the csv's, add path and ID, and finally rbind them
     combined <- plyr::ldply(input$localPub[,"datapath"], function(x) {
       temp <- read.csv(x,
                        header = input$header,
                        sep = input$sep,
                        quote = input$quote
                        )
+      temp[nrow(temp)+1,] <- c("filename", x)
       temp$ID <- temp$value[temp$parameter=="pID"]
-      temp$filename <- 
       temp
       })
     
     
-    # transpose
+    # transpose from long to wide format
     data.table::dcast(
       data.table::setDT(combined),
       formula = ID~parameter)
@@ -265,23 +233,19 @@ server <- function(input, output, session) ({
   
   
   
-  # Print folder name ----
-  output$folderName <- renderText({input$folder})
   
-  
-  # REACT: pubPath ----
-  # Link INPUT: 'pubDrop' (publication titles) with corresponding file names
-  pubPath <- reactive({
-    allFiles <- input$localPub
-    allFiles$datapath[allFiles$name == input$pubDrop]
+  # REACT: title to path ----
+  # Take the chosen publication title from pubDrop
+  # and link it to the corresponding file path
+  titleToPath <- reactive({
+    p <- publicationList()
+    p <- p$filename[p$pTitle == input$pubDrop]
+    p
   })
   
   
+  
   # updatePicker pubDrop ----
-  
-  ## ERROR HERE
-  # https://stackoverflow.com/questions/5186570/when-importing-csv-into-r-how-to-generate-column-with-name-of-the-csv
-  
   # reactive list of publications titles
   observeEvent(input$localPub, {
      updatePickerInput(session = session, inputId = "pubDrop",
@@ -297,16 +261,58 @@ server <- function(input, output, session) ({
 
 shinyApp(ui = ui, server = server)
 
+
+
+
+
+
+# '-------------
+# ' ------------
+# ' ------------
+
+
 # NOTES ----
+
+# *UUID ####
 #uuid::UUIDgenerate()
 
 
-#RInno
+
+# *Input: 'folder' ----
+# this could've been a good solution,
+# but web browsers don't allow selecting entire
+# folders. This code is linked with shinyChoseDir()
+# This code could still work with a dockerised app, or RInno app.
+## shinyDirButton('folder', 'Select a folder', 'Please select a folder', FALSE),
+
+
+
+
+## *Output: 'folderName' ----
+#textOutput('folderName'),
+
+
+# *Print folder name ----
+# this is not used (see Input: folder)
+#output$folderName <- renderText({input$folder})
+
+# *Chose folder ------------
+# Web browsers do not allow one to list files inside folder!
+# But in case we opt for local hosting, eg using RInno,
+# this is a way to let the user navigate to the directory for the publication profiles
+# If the GitHub.repo was cloned, it will be under data/publicationProfiles 
+
+#shinyDirChoose(input, 'folder', 
+#              roots=c('C' = 'C:/', 'home' = '/home'), # the directory needs to be on C or /home. 
+#               allowDirCreate = F) 
+
+
+# *RInno  -------
 #https://mran.revolutionanalytics.com/snapshot/2017-03-22/web/packages/RInno/vignettes/Deployment.html
 #https://ficonsulting.github.io/RInno/
 
 
-### WD 
+### *WD  ------------
 # Not sure what this is, but will forget about it for now
 ##global <- reactiveValues(datapath = getwd())
 ##dir <- reactive(input$folder)  # not sure this is actually needed
