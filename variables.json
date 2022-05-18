@@ -7,12 +7,12 @@
       "manubot"
     ],
     "lang": "en-US",
-    "date-meta": "2022-05-12",
+    "date-meta": "2022-05-18",
     "author-meta": [
       "Anders L. Kolstad",
       "Jane Roe"
     ],
-    "header-includes": "<!--\nManubot generated metadata rendered from header-includes-template.html.\nSuggest improvements at https://github.com/manubot/manubot/blob/main/manubot/process/header-includes-template.html\n-->\n<meta name=\"dc.format\" content=\"text/html\" />\n<meta name=\"dc.title\" content=\"The Re-scalable Indicator Review\" />\n<meta name=\"citation_title\" content=\"The Re-scalable Indicator Review\" />\n<meta property=\"og:title\" content=\"The Re-scalable Indicator Review\" />\n<meta property=\"twitter:title\" content=\"The Re-scalable Indicator Review\" />\n<meta name=\"dc.date\" content=\"2022-05-12\" />\n<meta name=\"citation_publication_date\" content=\"2022-05-12\" />\n<meta name=\"dc.language\" content=\"en-US\" />\n<meta name=\"citation_language\" content=\"en-US\" />\n<meta name=\"dc.relation.ispartof\" content=\"Manubot\" />\n<meta name=\"dc.publisher\" content=\"Manubot\" />\n<meta name=\"citation_journal_title\" content=\"Manubot\" />\n<meta name=\"citation_technical_report_institution\" content=\"Manubot\" />\n<meta name=\"citation_author\" content=\"Anders L. Kolstad\" />\n<meta name=\"citation_author_institution\" content=\"Norwegian Institute for Nature Reseach\" />\n<meta name=\"citation_author_orcid\" content=\"0000-0002-9623-9491\" />\n<meta name=\"twitter:creator\" content=\"@None\" />\n<meta name=\"citation_author\" content=\"Jane Roe\" />\n<meta name=\"citation_author_institution\" content=\"Department of Something, University of Whatever\" />\n<meta name=\"citation_author_institution\" content=\"Department of Whatever, University of Something\" />\n<meta name=\"citation_author_orcid\" content=\"XXXX-XXXX-XXXX-XXXX\" />\n<link rel=\"canonical\" href=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta property=\"og:url\" content=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta property=\"twitter:url\" content=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta name=\"citation_fulltext_html_url\" content=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta name=\"citation_pdf_url\" content=\"https://anders-kolstad.github.io/theIndiMap/manuscript.pdf\" />\n<link rel=\"alternate\" type=\"application/pdf\" href=\"https://anders-kolstad.github.io/theIndiMap/manuscript.pdf\" />\n<link rel=\"alternate\" type=\"text/html\" href=\"https://anders-kolstad.github.io/theIndiMap/v/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/\" />\n<meta name=\"manubot_html_url_versioned\" content=\"https://anders-kolstad.github.io/theIndiMap/v/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/\" />\n<meta name=\"manubot_pdf_url_versioned\" content=\"https://anders-kolstad.github.io/theIndiMap/v/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/manuscript.pdf\" />\n<meta property=\"og:type\" content=\"article\" />\n<meta property=\"twitter:card\" content=\"summary_large_image\" />\n<link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"https://manubot.org/favicon-192x192.png\" />\n<link rel=\"mask-icon\" href=\"https://manubot.org/safari-pinned-tab.svg\" color=\"#ad1457\" />\n<meta name=\"theme-color\" content=\"#ad1457\" />\n<!-- end Manubot generated metadata -->",
+    "header-includes": "<!--\nManubot generated metadata rendered from header-includes-template.html.\nSuggest improvements at https://github.com/manubot/manubot/blob/main/manubot/process/header-includes-template.html\n-->\n<meta name=\"dc.format\" content=\"text/html\" />\n<meta name=\"dc.title\" content=\"The Re-scalable Indicator Review\" />\n<meta name=\"citation_title\" content=\"The Re-scalable Indicator Review\" />\n<meta property=\"og:title\" content=\"The Re-scalable Indicator Review\" />\n<meta property=\"twitter:title\" content=\"The Re-scalable Indicator Review\" />\n<meta name=\"dc.date\" content=\"2022-05-18\" />\n<meta name=\"citation_publication_date\" content=\"2022-05-18\" />\n<meta name=\"dc.language\" content=\"en-US\" />\n<meta name=\"citation_language\" content=\"en-US\" />\n<meta name=\"dc.relation.ispartof\" content=\"Manubot\" />\n<meta name=\"dc.publisher\" content=\"Manubot\" />\n<meta name=\"citation_journal_title\" content=\"Manubot\" />\n<meta name=\"citation_technical_report_institution\" content=\"Manubot\" />\n<meta name=\"citation_author\" content=\"Anders L. Kolstad\" />\n<meta name=\"citation_author_institution\" content=\"Norwegian Institute for Nature Reseach\" />\n<meta name=\"citation_author_orcid\" content=\"0000-0002-9623-9491\" />\n<meta name=\"twitter:creator\" content=\"@None\" />\n<meta name=\"citation_author\" content=\"Jane Roe\" />\n<meta name=\"citation_author_institution\" content=\"Department of Something, University of Whatever\" />\n<meta name=\"citation_author_institution\" content=\"Department of Whatever, University of Something\" />\n<meta name=\"citation_author_orcid\" content=\"XXXX-XXXX-XXXX-XXXX\" />\n<link rel=\"canonical\" href=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta property=\"og:url\" content=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta property=\"twitter:url\" content=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta name=\"citation_fulltext_html_url\" content=\"https://anders-kolstad.github.io/theIndiMap/\" />\n<meta name=\"citation_pdf_url\" content=\"https://anders-kolstad.github.io/theIndiMap/manuscript.pdf\" />\n<link rel=\"alternate\" type=\"application/pdf\" href=\"https://anders-kolstad.github.io/theIndiMap/manuscript.pdf\" />\n<link rel=\"alternate\" type=\"text/html\" href=\"https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/\" />\n<meta name=\"manubot_html_url_versioned\" content=\"https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/\" />\n<meta name=\"manubot_pdf_url_versioned\" content=\"https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/manuscript.pdf\" />\n<meta property=\"og:type\" content=\"article\" />\n<meta property=\"twitter:card\" content=\"summary_large_image\" />\n<link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"https://manubot.org/favicon-192x192.png\" />\n<link rel=\"mask-icon\" href=\"https://manubot.org/safari-pinned-tab.svg\" color=\"#ad1457\" />\n<meta name=\"theme-color\" content=\"#ad1457\" />\n<!-- end Manubot generated metadata -->",
     "bibliography": [
       "content/manual-references.json"
     ],
@@ -22,7 +22,7 @@
     "manubot-clear-requests-cache": false
   },
   "manubot": {
-    "date": "May 12, 2022",
+    "date": "May 18, 2022",
     "randomize_author_order": false,
     "authors": [
       {
@@ -77,15 +77,15 @@
       "repo_slug": "anders-kolstad/theIndiMap",
       "repo_owner": "anders-kolstad",
       "repo_name": "theIndiMap",
-      "commit": "b07e56a1070d7b6459c5ed72be4a8dea494c9dcb",
-      "triggering_commit": "b07e56a1070d7b6459c5ed72be4a8dea494c9dcb",
-      "build_url": "https://github.com/anders-kolstad/theIndiMap/commit/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/checks",
-      "job_url": "https://github.com/anders-kolstad/theIndiMap/actions/runs/2312769045"
+      "commit": "a0914ec756366e257fd2dc6c899eb8debfce951d",
+      "triggering_commit": "a0914ec756366e257fd2dc6c899eb8debfce951d",
+      "build_url": "https://github.com/anders-kolstad/theIndiMap/commit/a0914ec756366e257fd2dc6c899eb8debfce951d/checks",
+      "job_url": "https://github.com/anders-kolstad/theIndiMap/actions/runs/2345440308"
     },
     "html_url": "https://anders-kolstad.github.io/theIndiMap/",
     "pdf_url": "https://anders-kolstad.github.io/theIndiMap/manuscript.pdf",
-    "html_url_versioned": "https://anders-kolstad.github.io/theIndiMap/v/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/",
-    "pdf_url_versioned": "https://anders-kolstad.github.io/theIndiMap/v/b07e56a1070d7b6459c5ed72be4a8dea494c9dcb/manuscript.pdf",
+    "html_url_versioned": "https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/",
+    "pdf_url_versioned": "https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/manuscript.pdf",
     "manubot_version": "0.5.2",
     "rootstock_commit": "9a22fab4497f80f501ea361d028f26888ad9d5a0",
     "manuscript_stats": {
