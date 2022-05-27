@@ -28,7 +28,7 @@ ui <-
       # The files, or paths, in the folder are listed, read, and compiled.
       
       
-      fileInput("localPub", "Choose CSV File",
+      fileInput("localPub", "Choose CSV files",
                 multiple = T,
                 accept = c("text/csv",
                            "text/comma-separated-values,text/plain",
@@ -91,23 +91,53 @@ ui <-
 # Main Panel PRINT FILE ---------------------
 
           mainPanel(
+            
+            # Info
+      h3("INFORMATION"),
+      h5("Here you can choose to upload a cvs file so that you can modify them.\n
+         In order to find the correct file, first use the 'Choose CVS files' 
+         function to select all the crypically names files (typically using Ctrl+A inside
+         the main folder containing the publication og indikator profiles).
+         Then choose the correct file from the dropdown list. A preview of the import 
+         allows you to adjust import settings like headers and seperators."),
+      
             # Output: Data file ----
             tableOutput("uploaded")
           ),
           )
           ),
-                    
+             
+
+# '-------------       
 # **TAB Register Publication ----
       tabPanel("Register publication",
         actionButton('populate', 'Populate form with values from the uploaded file'),       
-        DTOutput('test'),
+        
+        # create some space
+        br(), br(),
+        
+      # INPUT pZoteroID ----
+        textInput("pzoteroid", 
+                  "Enter the full URL for the Zotero entry", 
+                  value = ""),
+      
+      
+      
+        
+        #DTOutput('test'),
         downloadButton("downloadData", "Download")
                ),
+
+
+
         
+# '-------------
 # **TAB Register indicator ----
       tabPanel("Register indicator"),
              
-             
+
+
+# '-------------             
 # **TAB More ----
     navbarMenu("More",
       tabPanel("Instructions"),
@@ -121,12 +151,80 @@ ui <-
 # ' ------------
 
 
-# **SERVER -------------
+# SERVER -------------
 
 
 
 server <- function(input, output, session) ({
   
+#*********************************************************************************
+
+# ***TAB UPLOAD FILE -------------------------------
+  # REACT: publicationList ----------------
+  
+  # Compile local publication profiles 
+  # Create a reactive data set
+  # If we had a locally deployd app and used shinyChooseDir()
+  # then just use the myLocalFiles part as the first arg in ldply
+  
+  publicationList <- reactive({
+    req(input$localPub)
+    # Read the csv's, add path and ID, and finally rbind them
+    combined <- plyr::ldply(input$localPub[,"datapath"], function(x) {
+      temp <- read.csv(x,
+                       header = input$header,
+                       sep = input$sep,
+                       quote = input$quote
+      )
+      temp[nrow(temp)+1,] <- c("filename", x)
+      temp$ID <- temp$value[temp$parameter=="pID"]
+      temp
+    })
+    
+    
+    # transpose from long to wide format
+    data.table::dcast(
+      data.table::setDT(combined),
+      formula = ID~parameter)
+    
+  })
+  
+  #*********************************************************************************  
+  
+  # REACT: title to path ----
+  # Take the chosen publication title from pubDrop
+  # and link it to the corresponding file path
+  titleToPath <- reactive({
+    p <- publicationList()
+    p <- p$filename[p$pTitle == input$pubDrop]
+    p
+  })
+  
+  
+  #*********************************************************************************  
+  
+  # updatePicker pubDrop ----
+  # reactive list of publications titles
+  observeEvent(input$localPub, {
+    updatePickerInput(session = session, inputId = "pubDrop",
+                      choices = unique(publicationList()$pTitle))
+  })
+  
+  
+#*********************************************************************************
+  
+  # REACT: uploadedPub ----
+  # Make the uploaded publication profile file available through an reactive element 
+  
+  uploadedPub <- reactive({
+    read.csv(
+      titleToPath(),
+      header = input$header,
+      sep = input$sep,
+      quote = input$quote)
+  })
+  
+#*********************************************************************************
   
   # Output: uploaded ----
   # Preview the chosen Publication Profile to make sure it's imported correctly
@@ -165,19 +263,34 @@ server <- function(input, output, session) ({
   
   
   
-  # REACT: uploadedPub ----
-  # Make the uploaded publication profile file available through an reactive element 
   
-  uploadedPub <- reactive({
-    read.csv(
-             titleToPath(),
-             header = input$header,
-             sep = input$sep,
-             quote = input$quote)
+  
+  
+  
+  
+  
+  # ' ------------
+## ** TAB Register Publication ----
+  
+ 
+  
+  
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'pzoteroid',
+                    value = uploadedPub()$value[uploadedPub()$parameter == "pZoteroID"])
+    
   })
+  
+  
+  
+  
+  
+  # ' ------------
+## ** TAB ALL ----
+  
+#*********************************************************************************
 
-  
-  
   # TEST Print data table in the next tab over ----
   output$test <- renderDT({
     uploadedPub()
@@ -185,6 +298,7 @@ server <- function(input, output, session) ({
   })  
     
   
+#*********************************************************************************
   
   # DOWNLOAD  ----
   # download the new or edited profile as csv
@@ -201,57 +315,7 @@ server <- function(input, output, session) ({
   
   
   
-  
-  # REACT: publicationList ----------------
-  
-  # Compile local publication profiles 
-  # Create a reactive data set
-  # If we had a locally deployd app and used shinyChooseDir()
-  # then just use the myLocalFiles part as the first arg in ldply
-  
-  publicationList <- reactive({
-    req(input$localPub)
-    # Read the csv's, add path and ID, and finally rbind them
-    combined <- plyr::ldply(input$localPub[,"datapath"], function(x) {
-      temp <- read.csv(x,
-                       header = input$header,
-                       sep = input$sep,
-                       quote = input$quote
-                       )
-      temp[nrow(temp)+1,] <- c("filename", x)
-      temp$ID <- temp$value[temp$parameter=="pID"]
-      temp
-      })
-    
-    
-    # transpose from long to wide format
-    data.table::dcast(
-      data.table::setDT(combined),
-      formula = ID~parameter)
-    
-  })
-  
-  
-  
-  
-  # REACT: title to path ----
-  # Take the chosen publication title from pubDrop
-  # and link it to the corresponding file path
-  titleToPath <- reactive({
-    p <- publicationList()
-    p <- p$filename[p$pTitle == input$pubDrop]
-    p
-  })
-  
-  
-  
-  # updatePicker pubDrop ----
-  # reactive list of publications titles
-  observeEvent(input$localPub, {
-     updatePickerInput(session = session, inputId = "pubDrop",
-                     choices = unique(publicationList()$pTitle))
-   })
-  
+
   
   
   
