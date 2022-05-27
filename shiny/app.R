@@ -5,8 +5,22 @@ library(dashboardthemes)
 library(shinyFiles)
 library(shinyWidgets)
 library(DT)
+library(uuid)
 #library(tidyverse)
 #library(readxl)
+
+
+# Column1 (parameters) =  list of terms for the publication profiles
+# Column2 (values) =  NA
+publicationParameters <- 
+  read.csv("shinyData/publicationProfileFields.csv", sep=";")
+
+# Duplicate data set for export 
+#pExport <- publicationParameters
+
+
+
+
 
 
 # UI ----------------------------------------------------------------------
@@ -111,7 +125,18 @@ ui <-
 # '-------------       
 # **TAB Register Publication ----
       tabPanel("Register publication",
-        actionButton('populate', 'Populate form with values from the uploaded file'),       
+        
+               
+      # INPUT: populate     
+        #actionButton('populate', 'Populate form with values from the uploaded file'),       
+        materialSwitch(
+          inputId = "populate",
+          label = "Populate form with values from the uploaded file",
+          value = FALSE, 
+          status = "info"),
+        
+      
+        
         
         # create some space
         br(), br(),
@@ -124,7 +149,6 @@ ui <-
       
       
         
-        #DTOutput('test'),
         downloadButton("downloadData", "Download")
                ),
 
@@ -146,7 +170,7 @@ ui <-
   )
     
   
-# '-------------
+# ' ------------
 # ' ------------
 # ' ------------
 
@@ -272,31 +296,61 @@ server <- function(input, output, session) ({
   # ' ------------
 ## ** TAB Register Publication ----
   
- 
+  ## Populate form ----
+  pform <- reactive({
+    ifelse(input$populate == FALSE, 
+           return(publicationParameters),
+           return(uploadedPub()))
+  })
   
   
+  ## pZoteroID ----
   observeEvent(input$populate, {
     updateTextInput(session = session,
                     'pzoteroid',
-                    value = uploadedPub()$value[uploadedPub()$parameter == "pZoteroID"])
+                    value = pform()$value[pform()$parameter == "pZoteroID"])
     
   })
   
   
   
   
+#*********************************************************************************
+  # Compile CSVs for the publication profile
+  
+  
+  pExport <- reactive({
+    
+    # shorten name
+    dat <- publicationParameters
+    
+    #update value column based on input
+    dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
+    
+    dat$value[dat$parameter == "pID"] <- ifelse(pform()$value[pform()$parameter == "pID"] == "", 
+                                                 uuid::UUIDgenerate(),
+                                                 pform()$value[pform()$parameter == "pID"])
+    
+    dat
+    
+  })
+  
+
+  
+  #
+  
+  
+  
+  
+  
+  
   
   # ' ------------
-## ** TAB ALL ----
-  
-#*********************************************************************************
 
-  # TEST Print data table in the next tab over ----
-  output$test <- renderDT({
-    uploadedPub()
-    
-  })  
-    
+  
+
+ 
+
   
 #*********************************************************************************
   
@@ -305,17 +359,15 @@ server <- function(input, output, session) ({
   # the data is set as uploadedPub(), but that needs to be changed later
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste(Sys.time(), ".csv", sep = "")
+        paste0("pProfile_", 
+             gsub(":", "-", Sys.time()),
+             ".csv")  # the extension doesn't work ...
     },
     content = function(file) {
-      write.csv(uploadedPub(), file, row.names = FALSE)
+      write.csv(pExport(), file, row.names = FALSE)
     }
   )
   
-  
-  
-  
-
   
   
   
