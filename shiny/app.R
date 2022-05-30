@@ -41,12 +41,14 @@ ui <-
       # containing unpublished (unpushed) publication profiles.
       # The files, or paths, in the folder are listed, read, and compiled.
       
-      
+      tags$div(title = "Use this functionality to find an already existing publication profile in order to edit it. 
+               Navigate to the folder containg the file you want. If there are more than one file in the folder then slect all (Ctrl+A).
+               All the files need to me csv-files created using this app.",
       fileInput("localPub", "Choose CSV files",
                 multiple = T,
                 accept = c("text/csv",
                            "text/comma-separated-values,text/plain",
-                           ".csv")),
+                           ".csv"))),
       
       
       # Input: 'pubDrop'  ----
@@ -56,10 +58,11 @@ ui <-
       # To find and upload the correct file (to modify it)
       # requires that we first must read the indicator names
       # stored inside all the files
-          pickerInput('pubDrop', 'Publication Profile',
+      tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
+      pickerInput('pubDrop', 'Select publication by title',
                   choices = NA,
                   options = list(
-                    `live-search` = TRUE)),
+                    `live-search` = TRUE))),
       
       
       
@@ -75,11 +78,12 @@ ui <-
             
       # Input: 'sep' ----
       #Select separator
+          tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
           radioButtons("sep", "Separator",
                    choices = c(Comma = ",",
                              Semicolon = ";",
                              Tab = "\t"),
-                             selected = ";"),
+                             selected = ",")),
             
       # Input: 'quote' ----
       # Select quotes
@@ -97,7 +101,9 @@ ui <-
           radioButtons("disp", "Display",
             choices = c(Head = "head",
                          All = "all"),
-                    selected = "head")
+                    selected = "head"),
+      
+      
       
       
 ),  # end sidebar panel
@@ -127,13 +133,18 @@ ui <-
       tabPanel("Register publication",
         
                
-      # INPUT: populate     
+      # POPULATE FORM ----     
         #actionButton('populate', 'Populate form with values from the uploaded file'),       
+      
+      
+      h5("Hover the input fields for more information and examples of use"),
+      
+        tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
         materialSwitch(
           inputId = "populate",
-          label = "Populate form with values from the uploaded file",
+          label = "Populate form",
           value = FALSE, 
-          status = "info"),
+          status = "info")),
         
       
         
@@ -142,16 +153,89 @@ ui <-
         br(), br(),
         
       # INPUT pZoteroID ----
+        tags$div(title = "Example: https://www.zotero.org/groups/4630169/the_rescalable_indicator_review/collections/KDCY6DCS/items/8GALH26U/collection",
         textInput("pzoteroid", 
                   "Enter the full URL for the Zotero entry", 
-                  value = ""),
+                  value = "")),
+      
+      # INPUT pTitle ----
+        tags$div(title = "Example: 'Norwegian Arctic Tundra: a Panel-based Assessment of Ecosystem Condition'",
+        textInput("ptitle", 
+                "Enter publication title", 
+                value = "")),
+      
+      # INPUT pBibliography ----
+        tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
+        textInput("pbibliography", 
+                "Enter the full reference to the publication", 
+                value = "")),
+      
+      # INPUT githubUser ----
+        tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
+               textInput("githubuser", 
+                         "Enter your GitHub user name", 
+                         value = "")),
+      
+      # INPUT pRealm ----
+      tags$div(title = "Only publications referring to the terrestrial realm will be considered past this point.",  
+          checkboxGroupButtons(
+          inputId = "pRealm",
+          label = "Does the publication include indikatorsrelated to the terrestrial realm?",
+          choices = "Terrestrial",
+          checkIcon = list(
+            yes = tags$i(class = "fa fa-check-square", 
+                       style = "color: steelblue"),
+            no = tags$i(class = "fa fa-square-o", 
+                      style = "color: steelblue"))
+         )),
       
       
+      conditionalPanel("input.pRealm == 'Terrestrial'",
+      # INPUT pNormalised ----
+      checkboxGroupButtons(
+        inputId = "pNormalised",
+        label = "Containing normalised indicators", 
+        choices = c("Yes", "No"),
+        checkIcon = list(
+          yes = tags$i(class = "fa fa-check-square", 
+                       style = "color: steelblue"),
+          no = tags$i(class = "fa fa-square-o", 
+                      style = "color: steelblue"))
+      ),
       
+      conditionalPanel("input.pNormalised == 'Yes'",
+      # INPUT pRedundant ----
+      tags$div(title = "Is the publication related to another reference? For example, pre-prints and published versions are related, and we only want to consider one of them.",  
+        radioGroupButtons(
+         inputId = "pRedundant",
+         label = "Redundant?",
+         choices = c("Redundant", "Possibly redundant", "Unique"),
+         selected = "Unique",
+         checkIcon = list(
+           yes = tags$i(class = "fa fa-check-square", 
+                        style = "color: steelblue"),
+           no = tags$i(class = "fa fa-square-o", 
+                       style = "color: steelblue"))
+        )))),
+      
+      
+      # INPUT Replace ----
+        tags$div(title = "Click to create a new file name (and hence a new file) for the csv file that you are about to export. The default is to replace the csv file that you uploaded, or to create new csv file if you started this form form scratch.",
+          radioGroupButtons(
+           inputId = "replace",
+           label = "Replace the uploaded file?",
+           choices = c("Yes", 
+                       "No"),
+           justified = TRUE
+          )
+        ),
         
-        downloadButton("downloadData", "Download")
+        h6("This is the new filename:"),
+        textOutput('newFileName'),
+            
+        tags$div(title = "Click to open a 'Save as' dialogue window. Manually add 'csv' after the file name, but DO NOT change the file name itself.",
+        downloadButton("downloadData", "Download"))
                ),
-
 
 
         
@@ -201,6 +285,7 @@ server <- function(input, output, session) ({
                        quote = input$quote
       )
       temp[nrow(temp)+1,] <- c("filename", x)
+      temp[nrow(temp)+1,] <- c("filename_local", input$localPub$name[input$localPub$datapath == x])
       temp$ID <- temp$value[temp$parameter=="pID"]
       temp
     })
@@ -213,6 +298,9 @@ server <- function(input, output, session) ({
     
   })
   
+
+  
+  
   #*********************************************************************************  
   
   # REACT: title to path ----
@@ -221,6 +309,15 @@ server <- function(input, output, session) ({
   titleToPath <- reactive({
     p <- publicationList()
     p <- p$filename[p$pTitle == input$pubDrop]
+    p
+  })
+  
+  # REACT: title to filename ----
+  # Take the chosen publication title from pubDrop
+  # and link it to the corresponding file path
+  titleToFilename <- reactive({
+    p <- publicationList()
+    p <- p$filename_local[p$pTitle == input$pubDrop]
     p
   })
   
@@ -264,11 +361,7 @@ server <- function(input, output, session) ({
     # having a comma separator causes `read.csv` to error
     tryCatch(
       {
-        df <- read.csv(
-                       titleToPath(),
-                       header = input$header,
-                       sep = input$sep,
-                       quote = input$quote)
+        df <- uploadedPub()
       },
       error = function(e) {
         # return a safeError if a parsing error occurs
@@ -312,17 +405,58 @@ server <- function(input, output, session) ({
     
   })
   
+  ## pTitle ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'ptitle',
+                    value = pform()$value[pform()$parameter == "pTitle"])
+    
+  })
   
+  ## pBibliography ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'pbibliography',
+                    value = pform()$value[pform()$parameter == "pBibliography"])
+    
+  })
+  
+  ## githubUser ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'githubuser',
+                    value = pform()$value[pform()$parameter == "githubUser"])
+    
+  })
+  
+  ## pRealm ----
+  observeEvent(input$populate, {
+    updateCheckboxGroupButtons(session = session,
+                    'pRealm',
+                    choices = "Terrestrial",
+                    selected = pform()$value[pform()$parameter == "pRealm"])
+    
+  })
+
+  ## pNormalised ----
+  observeEvent(input$populate, {
+    updateCheckboxGroupButtons(session = session,
+                               'pNormalised',
+                               choices = c("Yes", "No"),
+                               selected = pform()$value[pform()$parameter == "pNormalised"])
+    
+  })
   
   
 #*********************************************************************************
+  # OUTPUT: pExport   ----
   # Compile CSVs for the publication profile
   
   
   pExport <- reactive({
     
     # shorten name
-    dat <- publicationParameters
+    dat <- pform()
     
     #update value column based on input
     dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
@@ -331,15 +465,23 @@ server <- function(input, output, session) ({
                                                  uuid::UUIDgenerate(),
                                                  pform()$value[pform()$parameter == "pID"])
     
+    dat$value[dat$parameter == "pTitle"] <- input$ptitle
+    
+    dat$value[dat$parameter == "pBibliography"] <- input$pbibliography
+
+    dat$value[dat$parameter == "githubUser"] <- input$githubuser
+    
+    dat$value[dat$parameter == "pRealm"] <- input$pRealm
+    
+    dat$value[dat$parameter == "pNormalised"] <- input$pNormalised
+    
+    dat$value[dat$parameter == "pRedundant"] <- input$pRedundant
+    
     dat
     
   })
   
 
-  
-  #
-  
-  
   
   
   
@@ -353,16 +495,26 @@ server <- function(input, output, session) ({
 
   
 #*********************************************************************************
+  # Replace? ----
+  fileName <- reactive({
+    ifelse(input$replace == "Yes",
+           basename(titleToFilename()),
+           paste0("pProfile_", 
+                  gsub(":", "-", Sys.time()),
+                  ".csv"))
+    })
+  
+  
+  output$newFileName <- renderText(
+                      fileName())
+    
+  
   
   # DOWNLOAD  ----
   # download the new or edited profile as csv
   # the data is set as uploadedPub(), but that needs to be changed later
   output$downloadData <- downloadHandler(
-    filename = function() {
-        paste0("pProfile_", 
-             gsub(":", "-", Sys.time()),
-             ".csv")  # the extension doesn't work ...
-    },
+    filename = fileName(),
     content = function(file) {
       write.csv(pExport(), file, row.names = FALSE)
     }
