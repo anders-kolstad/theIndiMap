@@ -1,3 +1,5 @@
+
+# TOP ----
 library(shiny)
 library(shinydashboard)
 library(ggplot2)
@@ -23,20 +25,20 @@ publicationParameters <-
 
 
 
-# UI ----------------------------------------------------------------------
+# UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
 
 ui <- 
   navbarPage("The IndiMap",
              
-             
+# '-------------       
 # **TAB Upload file ---------------------
     tabPanel("Upload file",
       sidebarLayout(
         sidebarPanel(
             
-      # Input: 'localPub' ----      
+      # 1 Input: 'localPub' ----      
       # Here's an option for manually locating the local folder 
       # containing unpublished (unpushed) publication profiles.
       # The files, or paths, in the folder are listed, read, and compiled.
@@ -51,7 +53,7 @@ ui <-
                            ".csv"))),
       
       
-      # Input: 'pubDrop'  ----
+      # 1 Input: 'pubDrop'  ----
       # Drop down list of publication profiles
       # Profiles (for indicators and publications alike)
       # are stored using time stamps as file names. 
@@ -72,11 +74,11 @@ ui <-
         # Horizontal line
           tags$hr(),
             
-      # Input: 'header' ----
+      # 1 Input: 'header' ----
       #Checkbox if file has header
           checkboxInput("header", "Header", TRUE),
             
-      # Input: 'sep' ----
+      # 1 Input: 'sep' ----
       #Select separator
           tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
           radioButtons("sep", "Separator",
@@ -85,7 +87,7 @@ ui <-
                              Tab = "\t"),
                              selected = ",")),
             
-      # Input: 'quote' ----
+      # 1 Input: 'quote' ----
       # Select quotes
           radioButtons("quote", "Quote",
                    choices = c(None = "",
@@ -96,8 +98,8 @@ ui <-
         # Horizontal line
           tags$hr(),
             
-      # Input: 'disp' ----
-      # Select number of rows to display ----
+      # 1 Input: 'disp' ----
+      # Select number of rows to display
           radioButtons("disp", "Display",
             choices = c(Head = "head",
                          All = "all"),
@@ -108,6 +110,8 @@ ui <-
       
 ),  # end sidebar panel
 
+
+# '-------------       
 # Main Panel PRINT FILE ---------------------
 
           mainPanel(
@@ -121,19 +125,22 @@ ui <-
          Then choose the correct file from the dropdown list. A preview of the import 
          allows you to adjust import settings like headers and seperators."),
       
-            # Output: Data file ----
+            # 2 Output: Data file ----
             tableOutput("uploaded")
           ),
           )
           ),
              
 
+
+
+
 # '-------------       
 # **TAB Register Publication ----
       tabPanel("Register publication",
         
                
-      # POPULATE FORM ----     
+      # 3 ACTION populate ----     
         #actionButton('populate', 'Populate form with values from the uploaded file'),       
       
       
@@ -152,59 +159,81 @@ ui <-
         # create some space
         br(), br(),
         
-      # INPUT pZoteroID ----
+      # 3 INPUT pZoteroID ----
         tags$div(title = "Example: https://www.zotero.org/groups/4630169/the_rescalable_indicator_review/collections/KDCY6DCS/items/8GALH26U/collection",
         textInput("pzoteroid", 
                   "Enter the full URL for the Zotero entry", 
                   value = "")),
       
-      # INPUT pTitle ----
+      # 3 INPUT pTitle ----
         tags$div(title = "Example: 'Norwegian Arctic Tundra: a Panel-based Assessment of Ecosystem Condition'",
         textInput("ptitle", 
                 "Enter publication title", 
                 value = "")),
       
-      # INPUT pBibliography ----
+      # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
         textInput("pbibliography", 
                 "Enter the full reference to the publication", 
                 value = "")),
       
-      # INPUT githubUser ----
+      # 3 INPUT githubUser ----
         tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
                textInput("githubuser", 
                          "Enter your GitHub user name", 
                          value = "")),
       
-      # INPUT pRealm ----
-      tags$div(title = "Only publications referring to the terrestrial realm will be considered past this point.",  
-          checkboxGroupButtons(
-          inputId = "pRealm",
-          label = "Does the publication include indikatorsrelated to the terrestrial realm?",
-          choices = "Terrestrial",
-          checkIcon = list(
-            yes = tags$i(class = "fa fa-check-square", 
-                       style = "color: steelblue"),
-            no = tags$i(class = "fa fa-square-o", 
-                      style = "color: steelblue"))
-         )),
       
+      # 3 INPUT pType ----
+      tags$div(title = "Chose the relevant publication type from the list.\n\n
+               'Unpublished' in this case means it is not publically available.",  
+               radioGroupButtons(
+                 inputId = "pType",
+                 label = "Type of publication",
+                 choices = c("Peer-reviewed article", 
+                             "Book", 
+                             "Book chapter",
+                             "Rapport",
+                             "Web resource",
+                             "Unpublished"),
+                 selected = NULL,
+                 checkIcon = list(
+                   yes = tags$i(class = "fa fa-check-square", 
+                                style = "color: steelblue"),
+                   no = tags$i(class = "fa fa-square-o", 
+                               style = "color: steelblue"))
+               )),
       
-      conditionalPanel("input.pRealm == 'Terrestrial'",
-      # INPUT pNormalised ----
-      checkboxGroupButtons(
-        inputId = "pNormalised",
-        label = "Containing normalised indicators", 
-        choices = c("Yes", "No"),
-        checkIcon = list(
-          yes = tags$i(class = "fa fa-check-square", 
-                       style = "color: steelblue"),
-          no = tags$i(class = "fa fa-square-o", 
-                      style = "color: steelblue"))
-      ),
-      
-      conditionalPanel("input.pNormalised == 'Yes'",
-      # INPUT pRedundant ----
+  # pRealm and pNormalised are treated as inclusion crieria, and don't need to be scored
+  #    # 3 INPUT pRealm ----
+  #    tags$div(title = "Only publications referring to the terrestrial realm will be considered past this point.",  
+  #        checkboxGroupButtons(
+  #        inputId = "pRealm",
+  #        label = "Does the publication include indikatorsrelated to the terrestrial realm?",
+  #        choices = "Terrestrial",
+  #        checkIcon = list(
+  #          yes = tags$i(class = "fa fa-check-square", 
+  #                     style = "color: steelblue"),
+  #          no = tags$i(class = "fa fa-square-o", 
+  #                    style = "color: steelblue"))
+  #       )),
+  #    
+  #    
+  #    conditionalPanel("input.pRealm == 'Terrestrial'",
+  #    # 3 INPUT pNormalised ----
+  #    checkboxGroupButtons(
+  #      inputId = "pNormalised",
+  #      label = "Containing normalised indicators", 
+  #      choices = c("Yes", "No"),
+  #      checkIcon = list(
+  #        yes = tags$i(class = "fa fa-check-square", 
+  #                     style = "color: steelblue"),
+  #        no = tags$i(class = "fa fa-square-o", 
+  #                    style = "color: steelblue"))
+  #    ),
+  #    
+  #    conditionalPanel("input.pNormalised == 'Yes'",
+      # 3 INPUT pRedundant ----
       tags$div(title = "Is the publication related to another reference? For example, pre-prints and published versions are related, and we only want to consider one of them.",  
         radioGroupButtons(
          inputId = "pRedundant",
@@ -216,16 +245,22 @@ ui <-
                         style = "color: steelblue"),
            no = tags$i(class = "fa fa-square-o", 
                        style = "color: steelblue"))
-        )))),
+    #    ))
+      )),
       
       
-      # INPUT Replace ----
+  
+  
+  
+  
+  
+      # 3 INPUT Replace ----
         tags$div(title = "Click to create a new file name (and hence a new file) for the csv file that you are about to export. The default is to replace the csv file that you uploaded, or to create new csv file if you started this form form scratch.",
           radioGroupButtons(
            inputId = "replace",
            label = "Replace the uploaded file?",
-           choices = c("Yes", 
-                       "No"),
+           choices = c("Replace the uploaded file", 
+                       "Create a new file"),
            justified = TRUE
           )
         ),
@@ -233,9 +268,23 @@ ui <-
         h6("This is the new filename:"),
         textOutput('newFileName'),
             
-        tags$div(title = "Click to open a 'Save as' dialogue window. Manually add 'csv' after the file name, but DO NOT change the file name itself.",
-        downloadButton("downloadData", "Download"))
-               ),
+  
+    br(), br(),
+    # 3 DOWNLOAD ----
+        tags$div(title = "Click to open a 'Save as' dialogue window.\n\n
+                 You may manually add 'csv' after the file name, but DO NOT change the file name itself.\n\n
+                 If you are chose to overwrite an existing file, as a failsafe you still will create a new file with the same name as the old file, but ending with (1).\n
+                 You'll need to manually delete the old file and remove the (1)-part of the updated file.",
+        downloadButton("downloadData", "Download")),
+  
+  
+  
+  
+  
+    # add some space at the bottom
+    br(), br()
+               ), # end tab
+
 
 
         
@@ -243,13 +292,19 @@ ui <-
 # **TAB Register indicator ----
       tabPanel("Register indicator"),
              
+# 4 ----
 
 
 # '-------------             
 # **TAB More ----
     navbarMenu("More",
       tabPanel("Instructions"),
+      
+# 5 Instructions----
+
       tabPanel("Contact")
+
+# 5 Contact ----
              )
   )
     
@@ -259,7 +314,8 @@ ui <-
 # ' ------------
 
 
-# SERVER -------------
+# SERVER ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
+# '-------------       
 
 
 
@@ -268,7 +324,7 @@ server <- function(input, output, session) ({
 #*********************************************************************************
 
 # ***TAB UPLOAD FILE -------------------------------
-  # REACT: publicationList ----------------
+  # A* REACT: publicationList ----------------
   
   # Compile local publication profiles 
   # Create a reactive data set
@@ -303,7 +359,7 @@ server <- function(input, output, session) ({
   
   #*********************************************************************************  
   
-  # REACT: title to path ----
+  # A* REACT: title to path ----
   # Take the chosen publication title from pubDrop
   # and link it to the corresponding file path
   titleToPath <- reactive({
@@ -312,7 +368,7 @@ server <- function(input, output, session) ({
     p
   })
   
-  # REACT: title to filename ----
+  # A* REACT: title to filename ----
   # Take the chosen publication title from pubDrop
   # and link it to the corresponding file path
   titleToFilename <- reactive({
@@ -324,7 +380,7 @@ server <- function(input, output, session) ({
   
   #*********************************************************************************  
   
-  # updatePicker pubDrop ----
+  # A* UPDATE pubDrop ----
   # reactive list of publications titles
   observeEvent(input$localPub, {
     updatePickerInput(session = session, inputId = "pubDrop",
@@ -334,7 +390,7 @@ server <- function(input, output, session) ({
   
 #*********************************************************************************
   
-  # REACT: uploadedPub ----
+  # A* REACT: uploadedPub ----
   # Make the uploaded publication profile file available through an reactive element 
   
   uploadedPub <- reactive({
@@ -347,7 +403,7 @@ server <- function(input, output, session) ({
   
 #*********************************************************************************
   
-  # Output: uploaded ----
+  # A* OUTPUT uploaded ----
   # Preview the chosen Publication Profile to make sure it's imported correctly
   output$uploaded <- renderTable({
     
@@ -387,15 +443,17 @@ server <- function(input, output, session) ({
   
   
   # ' ------------
-## ** TAB Register Publication ----
+# ** TAB Register Publication ----
   
-  ## Populate form ----
+  # B* REACT pform ----
   pform <- reactive({
     ifelse(input$populate == FALSE, 
            return(publicationParameters),
            return(uploadedPub()))
   })
   
+  
+  # B* UPDATEs: ----
   
   ## pZoteroID ----
   observeEvent(input$populate, {
@@ -429,28 +487,53 @@ server <- function(input, output, session) ({
     
   })
   
-  ## pRealm ----
-  observeEvent(input$populate, {
-    updateCheckboxGroupButtons(session = session,
-                    'pRealm',
-                    choices = "Terrestrial",
-                    selected = pform()$value[pform()$parameter == "pRealm"])
-    
-  })
-
-  ## pNormalised ----
-  observeEvent(input$populate, {
-    updateCheckboxGroupButtons(session = session,
-                               'pNormalised',
-                               choices = c("Yes", "No"),
-                               selected = pform()$value[pform()$parameter == "pNormalised"])
-    
-  })
+  ## pType ---- 
+    observeEvent(input$populate, {
+      updateRadioGroupButtons(session = session,
+                      'pType',
+                      choices = c("Peer-reviewed article", 
+                                  "Book", 
+                                  "Book chapter",
+                                  "Rapport",
+                                  "Web resource",
+                                  "Unpublished"),
+                      selected = pform()$value[pform()$parameter == "pType"])
+      
+    })
   
+#  ## pRealm ----
+#  observeEvent(input$populate, {
+#    updateCheckboxGroupButtons(session = session,
+#                    'pRealm',
+#                    choices = "Terrestrial",
+#                    selected = pform()$value[pform()$parameter == "pRealm"])
+#    
+#  })
+#
+#  ## pNormalised ----
+#  observeEvent(input$populate, {
+#    updateCheckboxGroupButtons(session = session,
+#                               'pNormalised',
+#                               choices = c("Yes", "No"),
+#                               selected = pform()$value[pform()$parameter == "pNormalised"])
+#    
+#  })
+  
+  ## pRedundant ----
+  observeEvent(input$populate, {
+    updateRadioGroupButtons(session = session,
+                    'pRedundant',
+                    choices = c("Redundant", "Possibly redundant", "Unique"),
+                    selected = pform()$value[pform()$parameter == "pRedundant"])
+    
+  })
   
 #*********************************************************************************
-  # OUTPUT: pExport   ----
-  # Compile CSVs for the publication profile
+
+
+# B* OUTPUT: pExport   ----
+  
+# Compile CSVs for the publication profile
   
   
   pExport <- reactive({
@@ -471,34 +554,29 @@ server <- function(input, output, session) ({
 
     dat$value[dat$parameter == "githubUser"] <- input$githubuser
     
-    dat$value[dat$parameter == "pRealm"] <- input$pRealm
-    
-    dat$value[dat$parameter == "pNormalised"] <- input$pNormalised
-    
+    # These are cut out and treated as inclusion criteria:
+    #dat$value[dat$parameter == "pRealm"] <- input$pRealm
+    #dat$value[dat$parameter == "pNormalised"] <- input$pNormalised
     dat$value[dat$parameter == "pRedundant"] <- input$pRedundant
+
+    dat$value[dat$parameter == "pType"] <- input$pType
     
     dat
     
   })
   
-
-  
-  
-  
-  
-  
-  # ' ------------
-
   
 
  
 
   
 #*********************************************************************************
-  # Replace? ----
+  
+  # B* REACT fileName ----
+  # Overwrite or create new csv?  
   fileName <- reactive({
-    ifelse(input$replace == "Yes",
-           basename(titleToFilename()),
+    ifelse(input$replace == "Replace the uploaded file",
+           ifelse(input$pubDrop == "NA", "Invalid option", basename(titleToFilename())),
            paste0("pProfile_", 
                   gsub(":", "-", Sys.time()),
                   ".csv"))
@@ -510,14 +588,16 @@ server <- function(input, output, session) ({
     
   
   
-  # DOWNLOAD  ----
+  # B* DOWNLOAD  ----
   # download the new or edited profile as csv
-  # the data is set as uploadedPub(), but that needs to be changed later
   output$downloadData <- downloadHandler(
-    filename = fileName(),
+    filename = function() {
+      fileName()
+      },
     content = function(file) {
       write.csv(pExport(), file, row.names = FALSE)
-    }
+    },
+    contentType = "text/csv"
   )
   
   
@@ -536,7 +616,7 @@ shinyApp(ui = ui, server = server)
 
 # '-------------
 # ' ------------
-# ' ------------
+# ''''''''''''''''END'''''''''''''''''''''''''''''''''''''''''' ------------
 
 
 # NOTES ----
