@@ -5,7 +5,7 @@ keywords:
 - publishing
 - manubot
 lang: en-US
-date-meta: '2022-05-18'
+date-meta: '2022-05-31'
 author-meta:
 - Anders L. Kolstad
 - Jane Roe
@@ -19,8 +19,8 @@ header-includes: |-
   <meta name="citation_title" content="The Re-scalable Indicator Review" />
   <meta property="og:title" content="The Re-scalable Indicator Review" />
   <meta property="twitter:title" content="The Re-scalable Indicator Review" />
-  <meta name="dc.date" content="2022-05-18" />
-  <meta name="citation_publication_date" content="2022-05-18" />
+  <meta name="dc.date" content="2022-05-31" />
+  <meta name="citation_publication_date" content="2022-05-31" />
   <meta name="dc.language" content="en-US" />
   <meta name="citation_language" content="en-US" />
   <meta name="dc.relation.ispartof" content="Manubot" />
@@ -41,9 +41,9 @@ header-includes: |-
   <meta name="citation_fulltext_html_url" content="https://anders-kolstad.github.io/theIndiMap/" />
   <meta name="citation_pdf_url" content="https://anders-kolstad.github.io/theIndiMap/manuscript.pdf" />
   <link rel="alternate" type="application/pdf" href="https://anders-kolstad.github.io/theIndiMap/manuscript.pdf" />
-  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/" />
-  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/" />
-  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/manuscript.pdf" />
+  <link rel="alternate" type="text/html" href="https://anders-kolstad.github.io/theIndiMap/v/ef6b6c78ee52ccdbe795c60754a79277748110ae/" />
+  <meta name="manubot_html_url_versioned" content="https://anders-kolstad.github.io/theIndiMap/v/ef6b6c78ee52ccdbe795c60754a79277748110ae/" />
+  <meta name="manubot_pdf_url_versioned" content="https://anders-kolstad.github.io/theIndiMap/v/ef6b6c78ee52ccdbe795c60754a79277748110ae/manuscript.pdf" />
   <meta property="og:type" content="article" />
   <meta property="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="192x192" href="https://manubot.org/favicon-192x192.png" />
@@ -65,10 +65,10 @@ manubot-clear-requests-cache: false
 
 <small><em>
 This manuscript
-([permalink](https://anders-kolstad.github.io/theIndiMap/v/a0914ec756366e257fd2dc6c899eb8debfce951d/))
+([permalink](https://anders-kolstad.github.io/theIndiMap/v/ef6b6c78ee52ccdbe795c60754a79277748110ae/))
 was automatically generated
-from [anders-kolstad/theIndiMap@a0914ec](https://github.com/anders-kolstad/theIndiMap/tree/a0914ec756366e257fd2dc6c899eb8debfce951d)
-on May 18, 2022.
+from [anders-kolstad/theIndiMap@ef6b6c7](https://github.com/anders-kolstad/theIndiMap/tree/ef6b6c78ee52ccdbe795c60754a79277748110ae)
+on May 31, 2022.
 </em></small>
 
 ## Authors
