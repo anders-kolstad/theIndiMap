@@ -221,12 +221,7 @@ ui <-
          inputId = "pRedundant",
          label = "Redundant?",
          choices = c("Redundant", "Possibly redundant", "Unique"),
-         selected = "Unique",
-         checkIcon = list(
-           yes = tags$i(class = "fa fa-check-square", 
-                        style = "color: steelblue"),
-           no = tags$i(class = "fa fa-square-o", 
-                       style = "color: steelblue"))
+         selected = "Unique"
     #    ))
       )),
       
@@ -242,12 +237,7 @@ ui <-
                          "Rapport",
                          "Web resource",
                          "Unpublished"),
-             selected = NULL,
-             checkIcon = list(
-               yes = tags$i(class = "fa fa-check-square", 
-                            style = "color: steelblue"),
-               no = tags$i(class = "fa fa-square-o", 
-                           style = "color: steelblue"))
+             selected = NULL
            )),
   
   
@@ -292,6 +282,19 @@ ui <-
            min = 0
          )
        ),
+  
+  # 3 INPUT pAssessmentYear ----
+  tags$div(title = "Example: 2022
+           
+           The final year covered by the overall assessment",
+           numericInput(
+             inputId = "pAssessmentYear",
+             label = "Assessment year",
+             value = NA,
+             min = 1950,
+             max = 2050
+           )
+  ),
   
   # 3 INPUT pAggregation ----
  
@@ -343,11 +346,10 @@ ui <-
            checkboxGroupButtons(
              inputId = "pDirective",
              label = "Reported to the following programs",
-             choices = c("Water Framework Directive", 
-                         "Marine Strategy Framework Directive",
+             choices = c("Not relevant",
                          "EU Birds Directive",
                          "EU Habitats Directive"),
-             selected = NULL
+             selected = "Not relevant"
            )),
            
            
@@ -363,7 +365,7 @@ ui <-
         
         h6("This is the new filename:"),
         textOutput('newFileName'),
-            
+        h6("Don't create a new file name if you have edited an existing file. The UUIDs will not have changed."),    
   
     br(), br(),
     # 3 DOWNLOAD ----
@@ -583,19 +585,6 @@ server <- function(input, output, session) ({
     
   })
   
-  ## pType ---- 
-    observeEvent(input$populate, {
-      updateRadioGroupButtons(session = session,
-                      'pType',
-                      choices = c("Peer-reviewed article", 
-                                  "Book", 
-                                  "Book chapter",
-                                  "Rapport",
-                                  "Web resource",
-                                  "Unpublished"),
-                      selected = pform()$value[pform()$parameter == "pType"])
-      
-    })
   
 #  ## pRealm ----
 #  observeEvent(input$populate, {
@@ -670,6 +659,14 @@ server <- function(input, output, session) ({
                             value = pform()$value[pform()$parameter == "pEAAarea"])
   })
   
+  ## pAssessmentYear ----
+  observeEvent(input$populate, {
+    updateNumericInput(session = session,
+                       'pAssessmentYear',
+                       value = pform()$value[pform()$parameter == "pAssessmentYear"])
+  })
+  
+  
   ## pAggregation ----
   observeEvent(input$populate, {
     updateNumericInput(session = session,
@@ -694,18 +691,19 @@ server <- function(input, output, session) ({
   
   ## pDirective ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updateCheckboxGroupButtons(session = session,
                             'pDirective',
-                            choices = c("Water Framework Directive", 
-                                        "Marine Strategy Framework Directive",
+                            choices = c("Not relevant",
                                         "EU Birds Directive",
                                         "EU Habitats Directive"),
                             selected = pform()$value[pform()$parameter == "pDirective"])
   })
   
+ 
+  
 #*********************************************************************************
 
-
+# '-------------
 # B* OUTPUT: pExport   ----
   
 # Compile CSVs for the publication profile
@@ -719,7 +717,7 @@ server <- function(input, output, session) ({
     #update value column based on input
     dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
     
-    dat$value[dat$parameter == "pID"] <- ifelse(pform()$value[pform()$parameter == "pID"] == "", 
+    dat$value[dat$parameter == "pID"] <- ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
                                                  uuid::UUIDgenerate(),
                                                  pform()$value[pform()$parameter == "pID"])
     
@@ -745,13 +743,15 @@ server <- function(input, output, session) ({
     
     dat$value[dat$parameter == "pEAAarea"] <- input$pEAAarea
 
+    dat$value[dat$parameter == "pAssessmentYear"] <- input$pAssessmentYear
+    
     dat$value[dat$parameter == "pAggregation"] <- input$pAggregation
 
     dat$value[dat$parameter == "pAggregationRemark"] <- input$pAggregationRemark
     
     dat$value[dat$parameter == "pTotalNumberOfIndicators"] <- input$pTotalNumberOfIndicators
     
-    dat$value[dat$parameter == "pDirective"] <- input$pDirective
+    dat$value[dat$parameter == "pDirective"] <- paste(input$pDirective, collapse = " | ") 
     
     dat
     
