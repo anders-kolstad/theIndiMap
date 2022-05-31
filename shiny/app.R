@@ -149,7 +149,7 @@ ui <-
         tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
         materialSwitch(
           inputId = "populate",
-          label = "Populate form",
+          label = "Populate form (careful...)",
           value = FALSE, 
           status = "info")),
         
@@ -184,25 +184,7 @@ ui <-
                          value = "")),
       
       
-      # 3 INPUT pType ----
-      tags$div(title = "Chose the relevant publication type from the list.\n\n
-               'Unpublished' in this case means it is not publically available.",  
-               radioGroupButtons(
-                 inputId = "pType",
-                 label = "Type of publication",
-                 choices = c("Peer-reviewed article", 
-                             "Book", 
-                             "Book chapter",
-                             "Rapport",
-                             "Web resource",
-                             "Unpublished"),
-                 selected = NULL,
-                 checkIcon = list(
-                   yes = tags$i(class = "fa fa-check-square", 
-                                style = "color: steelblue"),
-                   no = tags$i(class = "fa fa-square-o", 
-                               style = "color: steelblue"))
-               )),
+    
       
   # pRealm and pNormalised are treated as inclusion crieria, and don't need to be scored
   #    # 3 INPUT pRealm ----
@@ -248,20 +230,134 @@ ui <-
     #    ))
       )),
       
-      
+  # 3 INPUT pType ----
+  tags$div(title = "Chose the relevant publication type from the list.\n\n
+               'Unpublished' in this case means it is not publically available.",  
+           radioGroupButtons(
+             inputId = "pType",
+             label = "Type of publication",
+             choices = c("Peer-reviewed article", 
+                         "Book", 
+                         "Book chapter",
+                         "Rapport",
+                         "Web resource",
+                         "Unpublished"),
+             selected = NULL,
+             checkIcon = list(
+               yes = tags$i(class = "fa fa-check-square", 
+                            style = "color: steelblue"),
+               no = tags$i(class = "fa fa-square-o", 
+                           style = "color: steelblue"))
+           )),
   
   
+  # 3 INPUT pJournal ----
+  # This could perhaps be standardised with a drop down menu later
+  conditionalPanel("input.pType == 'Peer-reviewed article'",
+  tags$div(title = "Example: 'Ecological Indicators", 
+           textInput("pJournal", 
+                     "Enter the journal name, without abbreviations", 
+                     value = ""))),
+  
+  # 3 INPUT pAssessment ----
+  tags$div(title = "Does the publication contain an assessment of ecosystem condition based on multiple indicators?",
+           radioGroupButtons(
+             inputId = "pAssessment",
+             label = "Ecosystem condition assessment?",
+             choices = c("Assessment", 
+                         "Not an assessment"),
+             selected = "Assessment"
+           )
+  ),
+  
+  # 3 INPUT pEAAextent ----
+  conditionalPanel("input.pAssessment == 'Assessment'",
+  tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)
+           
+           Sub-local here means a scale lower than the typical administrative unit",
+           radioGroupButtons(
+             inputId = "pEAAextent",
+             label = "The extent of the Ecosystem Accounting Area",
+             choices = c("global", "continent", "country", "region", "local", "sub-local"),
+             selected = NULL
+           )
+          ),
+  
+  # 3 INPUT pEAAarea ----
+  tags$div(title = "Example: 385207\n\n The area (km2) of the ecosystem assessment/accounting area(s). No spaces.",
+         numericInput(
+           inputId = "pEAAarea",
+           label = "The total area of the Ecosystem Accounting Area in km2",
+           value = NA,
+           min = 0
+         )
+       ),
+  
+  # 3 INPUT pAggregation ----
+ 
+  tags$div(title = "The highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
+                    Examples: 0 = indicators reported seperately with no aggregation
+                              1 = E.g. an Amphibian index, or a SEEA ECT class
+                              2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
+                              3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
+                              4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
+                              5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs",
+           numericInput(
+             inputId = "pAggregation",
+             label = "Level of aggregation",
+             value = NA,
+             min = 0,
+             max=5
+           )),
+    h5("0 - None (i.e. metric level)"),
+    h5("1 - Thematic level (e.g. a species group or some level that does not span several SEEA ECT classes"),
+    h5("2 - BSU level"),
+    h5("3 - EA level"),
+    h5("4 - ET level"),
+    h5("5 - EAA level"),
   
   
+  # 3 INPUT pAggregationRemark ----
+  tags$div(title = "Example: 'They have only one indicator for condition, but they have aggregeted that across all assests.' (level 1)
+           
+           Example 2: Most indicators are not rescaled or aggregeted. Some indicators are aggregated to ECT class level (level 1).",
+           
+           textInput("pAggregationRemark", 
+                     "Remarks to the chosen level of aggregation", 
+                     value = "")),
   
-      # 3 INPUT Replace ----
-        tags$div(title = "Click to create a new file name (and hence a new file) for the csv file that you are about to export. The default is to replace the csv file that you uploaded, or to create new csv file if you started this form form scratch.",
+  # 3 INPUT pTotalNumberOfIndicators ----
+  conditionalPanel("input.pAggregation > 1",
+  tags$div(title = "If level of aggregation >=2 : The total number of indicators used in the aggregated condition estimation",
+           numericInput(
+             inputId = "pTotalNumberOfIndicators",
+             label = "Number of (aggregated) indicators",
+             value = NA,
+             min = 0
+           ))),
+                   
+  ),
+  
+  # 3 INPUT pDirective ----
+  tags$div(title = "Tick of the boxes that the publication explicitly states that it is reporting to",
+           checkboxGroupButtons(
+             inputId = "pDirective",
+             label = "Reported to the following programs",
+             choices = c("Water Framework Directive", 
+                         "Marine Strategy Framework Directive",
+                         "EU Birds Directive",
+                         "EU Habitats Directive"),
+             selected = NULL
+           )),
+           
+           
+  # 3 INPUT Replace ----
+      tags$div(title = "Click to create a new file name (and hence a new file) for the csv file that you are about to export. The default is to replace the csv file that you uploaded, or to create new csv file if you started this form form scratch.",
           radioGroupButtons(
            inputId = "replace",
            label = "Replace the uploaded file?",
            choices = c("Replace the uploaded file", 
-                       "Create a new file"),
-           justified = TRUE
+                       "Create a new file")
           )
         ),
         
@@ -528,6 +624,85 @@ server <- function(input, output, session) ({
     
   })
   
+  ## pType ----
+  observeEvent(input$populate, {
+    updateRadioGroupButtons(session = session,
+                            'pType',
+                            choices = c("Peer-reviewed article", 
+                                        "Book", 
+                                        "Book chapter",
+                                        "Rapport",
+                                        "Web resource",
+                                        "Unpublished"),
+                            selected = pform()$value[pform()$parameter == "pType"])
+    
+  })
+  
+  ## pJournal ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'pJournal',
+                    value = pform()$value[pform()$parameter == "pJournal"])
+    
+  })
+  
+  ## pAssessment ----
+  observeEvent(input$populate, {
+    updateRadioGroupButtons(session = session,
+                            'pAssessment',
+                            choices = c("Assessment", 
+                                        "Not an assessment"),
+                            selected = pform()$value[pform()$parameter == "pAssessment"])
+  })
+  
+  ## pEAAextent ----
+  observeEvent(input$populate, {
+    updateRadioGroupButtons(session = session,
+                            'pEAAextent',
+                            choices = c("global", "continent", "country", "region", "local", "sub-local"),
+                            selected = pform()$value[pform()$parameter == "pEAAextent"])
+  })
+  
+  ## pEAAarea ----
+  observeEvent(input$populate, {
+    updateNumericInput(session = session,
+                            'pEAAarea',
+                            value = pform()$value[pform()$parameter == "pEAAarea"])
+  })
+  
+  ## pAggregation ----
+  observeEvent(input$populate, {
+    updateNumericInput(session = session,
+                            'pAggregation',
+                            value = pform()$value[pform()$parameter == "pAggregation"])
+  })
+  
+  ## pAggregationRemark ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'pAggregationRemark',
+                    value = pform()$value[pform()$parameter == "pAggregationRemark"])
+    
+  })
+  
+  ## pTotalNumberOfIndicators ----
+  observeEvent(input$populate, {
+    updateNumericInput(session = session,
+                       'pTotalNumberOfIndicators',
+                       value = pform()$value[pform()$parameter == "pTotalNumberOfIndicators"])
+  })
+  
+  ## pDirective ----
+  observeEvent(input$populate, {
+    updateRadioGroupButtons(session = session,
+                            'pDirective',
+                            choices = c("Water Framework Directive", 
+                                        "Marine Strategy Framework Directive",
+                                        "EU Birds Directive",
+                                        "EU Habitats Directive"),
+                            selected = pform()$value[pform()$parameter == "pDirective"])
+  })
+  
 #*********************************************************************************
 
 
@@ -557,9 +732,26 @@ server <- function(input, output, session) ({
     # These are cut out and treated as inclusion criteria:
     #dat$value[dat$parameter == "pRealm"] <- input$pRealm
     #dat$value[dat$parameter == "pNormalised"] <- input$pNormalised
+    
     dat$value[dat$parameter == "pRedundant"] <- input$pRedundant
 
     dat$value[dat$parameter == "pType"] <- input$pType
+
+    dat$value[dat$parameter == "pJournal"] <- input$pJournal
+    
+    dat$value[dat$parameter == "pAssessment"] <- input$pAssessment
+    
+    dat$value[dat$parameter == "pEAAextent"] <- input$pEAAextent
+    
+    dat$value[dat$parameter == "pEAAarea"] <- input$pEAAarea
+
+    dat$value[dat$parameter == "pAggregation"] <- input$pAggregation
+
+    dat$value[dat$parameter == "pAggregationRemark"] <- input$pAggregationRemark
+    
+    dat$value[dat$parameter == "pTotalNumberOfIndicators"] <- input$pTotalNumberOfIndicators
+    
+    dat$value[dat$parameter == "pDirective"] <- input$pDirective
     
     dat
     
