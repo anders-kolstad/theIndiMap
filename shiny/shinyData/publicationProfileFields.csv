@@ -1,17 +1,17 @@
 parameter;value
-pZoteroID;paste url here
+pZoteroID;NA
 pID;NA
-pTitle;paste title  here
-pBibliography;paste reference here
-githubUser;type your github user name here
+pTitle;NA
+pBibliography;NA
+githubUser;NA
 pRedundant;Unique
 pType;Peer-reviewed article
-pJournal;
-pAssessment;
-pAssessmentYear;
-pEAAextent;
-pEAAarea;
-pAggregation;
-pAggregationRemark;type text here
-pTotalNumberOfIndicators;
-pDirective;
+pJournal;NA
+pAssessment;NA
+pAssessmentYear;NA
+pEAAextent;NA
+pEAAarea;NA
+pAggregation;NA
+pAggregationRemark;NA
+pTotalNumberOfIndicators;NA
+pDirective;Not relevant

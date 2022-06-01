@@ -35,7 +35,7 @@ Matt searched web of science (WoS) using `ecosystem condition assessment indicat
 
 The app gives a list of words or phrases that typically occur together within the title, abstract and author defined key words.
 
-It then condence this list to identify key words that you could use in order to obtain 25, 50, or 80% of the papers.
+It then condense this list to identify key words that you could use in order to obtain 25, 50, or 80% of the papers.
 
 The most condensed list (25%) contained around 170 phrases. 
 

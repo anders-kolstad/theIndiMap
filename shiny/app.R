@@ -138,11 +138,9 @@ ui <-
 # '-------------       
 # **TAB Register Publication ----
       tabPanel("Register publication",
-        
-               
-      # 3 ACTION populate ----     
-        #actionButton('populate', 'Populate form with values from the uploaded file'),       
       
+sidebarLayout(
+  sidebarPanel(width = 6,        
       
       h5("Hover the input fields for more information and examples of use"),
       
@@ -348,8 +346,7 @@ ui <-
              label = "Reported to the following programs",
              choices = c("Not relevant",
                          "EU Birds Directive",
-                         "EU Habitats Directive"),
-             selected = "Not relevant"
+                         "EU Habitats Directive")
            )),
            
            
@@ -367,13 +364,7 @@ ui <-
         textOutput('newFileName'),
         h6("Don't create a new file name if you have edited an existing file. The UUIDs will not have changed."),    
   
-    br(), br(),
-    # 3 DOWNLOAD ----
-        tags$div(title = "Click to open a 'Save as' dialogue window.\n\n
-                 You may manually add 'csv' after the file name, but DO NOT change the file name itself.\n\n
-                 If you are chose to overwrite an existing file, as a failsafe you still will create a new file with the same name as the old file, but ending with (1).\n
-                 You'll need to manually delete the old file and remove the (1)-part of the updated file.",
-        downloadButton("downloadData", "Download")),
+  
   
   
   
@@ -381,7 +372,31 @@ ui <-
   
     # add some space at the bottom
     br(), br()
-               ), # end tab
+               ),
+  
+  
+  
+# '-------------
+  mainPanel(width = 6,
+    # 3 OUTPUT previewP ----
+    h4("Preview"),
+    DTOutput('previewP'),
+    
+    # 3 DOWNLOAD ----
+    
+    tags$hr(),  # Horizontal line
+    h3("Download the publicatio profile"),
+    h6("If you have a copy of the project github repo on you computer, 
+       you probably want to save this under 'data/publicationProfiles' 
+       so that you can upload them later to the main branch via a pull request."),
+    h6("If this is greek to you, you can save it to any local and dedicated folder
+       on you computer and contact the project leader about how to get you csv file
+       submitted to the mina githib branch"),
+    tags$div(title = "Click to open a 'Save as' dialogue window.\n\nDO NOT change the file name.",
+             downloadButton("downloadData", "Download"))
+  )
+  )
+), # end tab
 
 
 
@@ -558,7 +573,13 @@ server <- function(input, output, session) ({
     updateTextInput(session = session,
                     'pzoteroid',
                     value = pform()$value[pform()$parameter == "pZoteroID"])
-    
+  })
+  
+  ## pID ----
+  pUUID <- reactive({
+    ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
+           uuid::UUIDgenerate(),
+           pform()$value[pform()$parameter == "pID"])
   })
   
   ## pTitle ----
@@ -696,7 +717,9 @@ server <- function(input, output, session) ({
                             choices = c("Not relevant",
                                         "EU Birds Directive",
                                         "EU Habitats Directive"),
-                            selected = pform()$value[pform()$parameter == "pDirective"])
+                            selected = stringr::str_split(
+                                             pform()$value[pform()$parameter == "pDirective"],
+                                             " \\| ", simplify = T))
   })
   
  
@@ -717,9 +740,10 @@ server <- function(input, output, session) ({
     #update value column based on input
     dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
     
-    dat$value[dat$parameter == "pID"] <- ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
-                                                 uuid::UUIDgenerate(),
-                                                 pform()$value[pform()$parameter == "pID"])
+    dat$value[dat$parameter == "pID"] <- pUUID()
+      #ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
+      #  uuid::UUIDgenerate(),
+      #  pform()$value[pform()$parameter == "pID"])
     
     dat$value[dat$parameter == "pTitle"] <- input$ptitle
     
@@ -735,21 +759,23 @@ server <- function(input, output, session) ({
 
     dat$value[dat$parameter == "pType"] <- input$pType
 
-    dat$value[dat$parameter == "pJournal"] <- input$pJournal
+    dat$value[dat$parameter == "pJournal"] <- ifelse(input$pType == "Peer-reviewed article", input$pJournal, NA)
     
     dat$value[dat$parameter == "pAssessment"] <- input$pAssessment
     
-    dat$value[dat$parameter == "pEAAextent"] <- input$pEAAextent
+    dat$value[dat$parameter == "pEAAextent"] <- ifelse(input$pAssessment == "Assessment", input$pEAAextent, NA)
     
-    dat$value[dat$parameter == "pEAAarea"] <- input$pEAAarea
+    dat$value[dat$parameter == "pEAAarea"] <- ifelse(input$pAssessment == "Assessment", input$pEAAarea, NA)
 
-    dat$value[dat$parameter == "pAssessmentYear"] <- input$pAssessmentYear
+    dat$value[dat$parameter == "pAssessmentYear"] <- ifelse(input$pAssessment == "Assessment", input$pAssessmentYear, NA)
     
-    dat$value[dat$parameter == "pAggregation"] <- input$pAggregation
+    dat$value[dat$parameter == "pAggregation"] <- ifelse(input$pAssessment == "Assessment", input$pAggregation, NA)
 
-    dat$value[dat$parameter == "pAggregationRemark"] <- input$pAggregationRemark
+    dat$value[dat$parameter == "pAggregationRemark"] <- ifelse(input$pAssessment == "Assessment", input$pAggregationRemark, NA)
     
-    dat$value[dat$parameter == "pTotalNumberOfIndicators"] <- input$pTotalNumberOfIndicators
+    dat$value[dat$parameter == "pTotalNumberOfIndicators"] <- ifelse(input$pAssessment == "Assessment",
+                                                                ifelse(input$pAggregation > 1, input$pTotalNumberOfIndicators, NA),
+                                                                NA)
     
     dat$value[dat$parameter == "pDirective"] <- paste(input$pDirective, collapse = " | ") 
     
@@ -761,6 +787,12 @@ server <- function(input, output, session) ({
 
  
 
+# B* OUTPUT previewP ----
+output$previewP <- renderDT(
+                      pExport(),
+                      options = list(pageLength = 50, 
+                                     scrollY = "600px",
+                                     scollX = T))
   
 #*********************************************************************************
   
