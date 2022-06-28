@@ -198,7 +198,7 @@ sidebarLayout(
       
       # 3 INPUT sep ----
       #Select separator
-      tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
+      tags$div(title = "This option should normally not be changed - all files from this app are saved using ',' as seperator.",
                radioGroupButtons("sep", "Separator",
                             choices = c(Comma = ",",
                                         Semicolon = ";",
@@ -493,9 +493,132 @@ sidebarLayout(
         
 # '-------------
 # **TAB Register indicator ----
-      tabPanel("Register indicator"),
-             
-# 4 ----
+  tabPanel("Register indicator",
+      sidebarLayout(
+        sidebarPanel(width = 6,     
+    h5("Hover the input fields for more information and examples of use"),             
+# 4 INPUT iNew  --------
+
+tags$div(title = "Click Edit to import and modify a existing publication profile, or click Create new to start processing a new publication.",  
+         radioGroupButtons(
+           inputId = "iNew",
+           label = NULL,
+           choices = c("Edit", "Create new"),
+           selected = "Create new"
+         )),
+
+# 4 INPUT localInd ----      
+# Here's an option for manually locating the local folder 
+# containing unpublished (unpushed) indicator profiles.
+# The files, or paths, in the folder are listed, read, and compiled.
+conditionalPanel("input.iNew == 'Edit'",
+                 
+                 h3("INFORMATION"),
+                 h5("Here you can choose to upload a cvs file so that you can modify them.\n
+         In order to find the correct file, first use the 'Choose CVS files' 
+         function to select all the crypically names files (typically using Ctrl+A inside
+         the main folder containing the publication og indikator profiles).
+         Then choose the correct file from the dropdown list. A preview of the import 
+         allows you to adjust import settings like headers and seperators."),
+                 
+                 
+                 tags$div(title = "Use this functionality to find an already existing indicator profile in order to edit it. 
+        Navigate to the folder containg the file you want. If there are more than one file in the folder then slect all (Ctrl+A).
+        All the files need to be csv-files created using this app.",
+                          
+                          fileInput("localInd", "Choose CSV files",
+                                    multiple = T,
+                                    accept = c("text/csv",
+                                               "text/comma-separated-values,text/plain",
+                                               ".csv"))),
+                 
+    # 4 INPUT indDrop ----
+    # Drop down list of publication profiles
+    # Profiles (for indicators and publications alike)
+    # are stored using time stamps as file names. 
+    # To find and upload the correct file (to modify it)
+    # requires that we first must read the indicator names
+    # stored inside all the files
+    tags$div(title = "This dropdown menu is poplated with indicator names from the files you selected above. Pick the one you want.",
+             pickerInput('indDrop', 'Select indicator by its name',
+                         choices = NA,
+                         options = list(
+                           `live-search` = TRUE))),
+                 
+    # 4 INPUT i_header ----
+    #Checkbox if file has header
+    checkboxInput("i_header", "Header", TRUE),
+                 
+    # 4 INPUT i_sep ----
+    #Select separator
+    tags$div(title = "This option should normally not be changed - all files from this app are saved using ',' as seperator.",
+             radioGroupButtons("i_sep", "Separator",
+                               choices = c(Comma = ",",
+                                           Semicolon = ";",
+                                           Tab = "\t"),
+                               selected = ",")),
+                 
+    # 4 INPUT i_quote ----
+    # Select quotes
+    radioGroupButtons("i_quote", "Quote",
+                      choices = c(None = "",
+                                  "Double Quote" = '"',
+                                  "Single Quote" = "'"),
+                      selected = '"'),
+                 
+    # 4 INPUT i_disp ----
+    # Select number of rows to display
+    radioGroupButtons("i_disp", "Display",
+                      choices = c(Head = "head",
+                                  All = "all"),
+                      selected = "head"),
+                 
+    # 4 INPUT i_populate ----
+    tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
+             materialSwitch(
+               inputId = "i_populate",
+               label = "Populate form (careful...)",
+               value = FALSE, 
+               status = "info"))
+),
+
+
+
+
+tags$hr(),
+
+# create some space
+  br(), br(),
+
+
+# 4 INPUT localPubTitles 
+h3("Tie the indicator to the correct publication"),
+h5("Click 'Choose CVS files' and navigate to the folder containing all the publication profiles. Select all the files in tha folder using Ctr+A and press OK."),
+
+# I've only added the functionality to import local publicatio profiles, and not profiles from GitHub.
+# This can be added later potentially.
+tags$div(title = "Use this functionality to locate the already existing publication profile so that you may later find the publication associated with this indicator. 
+         All the files need to me csv-files created using this app.",
+  
+  # 4 INPUT localPub2 ----
+  fileInput("localPub2", "Choose CSV files",
+                   multiple = T,
+                   accept = c("text/csv",
+                              "text/comma-separated-values,text/plain",
+                              ".csv"))),
+
+  # 4 INPUT pubDrop2 ----
+  # Drop down list of publication titles
+  tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
+           pickerInput('pubDrop2', 'Select the associated publication by it title',
+                       choices = NA,
+                       options = list(
+                         `live-search` = TRUE)))
+
+  ),
+  mainPanel(width = 6)
+ )
+),
 
 
 # '-------------             
@@ -526,7 +649,18 @@ server <- function(input, output, session) ({
   
 #*********************************************************************************
 
-# ***TAB UPLOAD FILE -------------------------------
+
+  
+  
+  
+  
+  
+  # ' ------------
+# ** TAB Register Publication ----
+  
+  # '-------------       
+  
+  # *** UPLOAD FILE -------------------------------
   # A* REACT: publicationList ----------------
   
   # Compile local publication profiles 
@@ -557,7 +691,31 @@ server <- function(input, output, session) ({
     
   })
   
-
+  # A* REACT: publicationList2 ----------------
+  # Now a duplicat eof the same reactive elemet for use in in pID
+  publicationList2 <- reactive({
+    req(input$localPub2)
+    # Read the csv's, add path and ID, and finally rbind them
+    combined <- plyr::ldply(input$localPub2[,"datapath"], function(x) {
+      temp <- read.csv(x,
+                       header = T,    #   input$i_header,
+                       sep    =  ",", #   input$i_sep,
+                       quote  =  '"'  #   input$i_quote
+      )
+      temp[nrow(temp)+1,] <- c("filename", x)
+      temp[nrow(temp)+1,] <- c("filename_local", input$localPub$name[input$localPub$datapath == x])
+      temp$ID <- temp$value[temp$parameter=="pID"]
+      temp
+    })
+    
+    
+    # transpose from long to wide format
+    data.table::dcast(
+      data.table::setDT(combined),
+      formula = ID~parameter)
+    
+  })
+  
   
   
   #*********************************************************************************  
@@ -591,7 +749,7 @@ server <- function(input, output, session) ({
   })
   
   
-#*********************************************************************************
+  #*********************************************************************************
   
   # A* REACT: uploadedPub ----
   # Make the uploaded publication profile file available through an reactive element 
@@ -604,7 +762,7 @@ server <- function(input, output, session) ({
       quote = input$quote)
   })
   
-#*********************************************************************************
+  #*********************************************************************************
   
   # A* OUTPUT uploaded ----
   # Preview the chosen Publication Profile to make sure it's imported correctly
@@ -636,24 +794,14 @@ server <- function(input, output, session) ({
     }
   })
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  # ' ------------
-# ** TAB Register Publication ----
-  
-  # B* REACT pform ----
+  # A* REACT pform ----
   pform <- reactive({
     ifelse(input$populate == FALSE, 
            return(publicationParameters),
            return(uploadedPub()))
   })
+  # '-------------       
+ 
   
   
   # B* UPDATEs: ----
@@ -915,6 +1063,15 @@ output$previewP <- renderDT(
   )
   
   
+  # '-------------
+  # ' ------------
+  
+  # C* UPDATE pubDrop2 ----
+  # reactive list of publications titles
+  observeEvent(input$localPub2, {
+    updatePickerInput(session = session, inputId = "pubDrop2",
+                      choices = unique(publicationList2()$pTitle))
+  })
   
   
   
@@ -930,6 +1087,8 @@ shinyApp(ui = ui, server = server)
 
 # '-------------
 # ' ------------
+
+
 # ''''''''''''''''END'''''''''''''''''''''''''''''''''''''''''' ------------
 
 
