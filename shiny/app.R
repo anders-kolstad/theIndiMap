@@ -1,7 +1,7 @@
 
 # TOP ----
 library(shiny)
-library(shinydashboard)
+#library(shinydashboard)
 library(ggplot2)
 library(dashboardthemes)
 library(shinyFiles)
@@ -34,105 +34,105 @@ ui <-
              
 # '-------------       
 # **TAB Upload file ---------------------
-    tabPanel("Upload file",
-      sidebarLayout(
-        sidebarPanel(
-            
-      # 1 Input: 'localPub' ----      
-      # Here's an option for manually locating the local folder 
-      # containing unpublished (unpushed) publication profiles.
-      # The files, or paths, in the folder are listed, read, and compiled.
-      
-      tags$div(title = "Use this functionality to find an already existing publication profile in order to edit it. 
-               Navigate to the folder containg the file you want. If there are more than one file in the folder then slect all (Ctrl+A).
-               All the files need to me csv-files created using this app.",
-      fileInput("localPub", "Choose CSV files",
-                multiple = T,
-                accept = c("text/csv",
-                           "text/comma-separated-values,text/plain",
-                           ".csv"))),
-      
-      
-      # 1 Input: 'pubDrop'  ----
-      # Drop down list of publication profiles
-      # Profiles (for indicators and publications alike)
-      # are stored using time stamps as file names. 
-      # To find and upload the correct file (to modify it)
-      # requires that we first must read the indicator names
-      # stored inside all the files
-      tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
-      pickerInput('pubDrop', 'Select publication by title',
-                  choices = NA,
-                  options = list(
-                    `live-search` = TRUE))),
-      
-      
-      
-      
-      
-            
-        # Horizontal line
-          tags$hr(),
-            
-      # 1 Input: 'header' ----
-      #Checkbox if file has header
-          checkboxInput("header", "Header", TRUE),
-            
-      # 1 Input: 'sep' ----
-      #Select separator
-          tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
-          radioButtons("sep", "Separator",
-                   choices = c(Comma = ",",
-                             Semicolon = ";",
-                             Tab = "\t"),
-                             selected = ",")),
-            
-      # 1 Input: 'quote' ----
-      # Select quotes
-          radioButtons("quote", "Quote",
-                   choices = c(None = "",
-                     "Double Quote" = '"',
-                     "Single Quote" = "'"),
-                           selected = '"'),
-            
-        # Horizontal line
-          tags$hr(),
-            
-      # 1 Input: 'disp' ----
-      # Select number of rows to display
-          radioButtons("disp", "Display",
-            choices = c(Head = "head",
-                         All = "all"),
-                    selected = "head"),
-      
-      
-      
-      
-),  # end sidebar panel
-
-
-# '-------------       
-# Main Panel PRINT FILE ---------------------
-
-          mainPanel(
-            
-            # Info
-      h3("INFORMATION"),
-      h5("Here you can choose to upload a cvs file so that you can modify them.\n
-         In order to find the correct file, first use the 'Choose CVS files' 
-         function to select all the crypically names files (typically using Ctrl+A inside
-         the main folder containing the publication og indikator profiles).
-         Then choose the correct file from the dropdown list. A preview of the import 
-         allows you to adjust import settings like headers and seperators."),
-      
-            # 2 Output: Data file ----
-            tableOutput("uploaded")
-          ),
-          )
-          ),
-             
-
-
+#    tabPanel("Upload file",
+#      sidebarLayout(
+#        sidebarPanel(
+#                
+#          # 1 Input: 'localPubX' ----      
+#          # Here's an option for manually locating the local folder 
+#          # containing unpublished (unpushed) publication profiles.
+#          # The files, or paths, in the folder are listed, read, and compiled.
+#          
+#          tags$div(title = "Use this functionality to find an already existing publication profile in order to edit it. 
+#                   Navigate to the folder containg the file you want. If there are more than one file in the folder then slect all (Ctrl+A).
+#                   All the files need to me csv-files created using this app.",
+#          fileInput("localPubX", "Choose CSV files",
+#                    multiple = T,
+#                    accept = c("text/csv",
+#                               "text/comma-separated-values,text/plain",
+#                               ".csv"))),
+#          
+#          
+#          # 1 Input: 'pubDropX'  ----
+#          # Drop down list of publication profiles
+#          # Profiles (for indicators and publications alike)
+#          # are stored using time stamps as file names. 
+#          # To find and upload the correct file (to modify it)
+#          # requires that we first must read the indicator names
+#          # stored inside all the files
+#          tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
+#          pickerInput('pubDropX', 'Select publication by title',
+#                      choices = NA,
+#                      options = list(
+#                        `live-search` = TRUE))),
+#          
+#          
+#          
+#          
+#          
+#                
+#            # Horizontal line
+#              tags$hr(),
+#                
+#          # 1 Input: 'header' ----
+#          #Checkbox if file has header
+#              checkboxInput("header", "Header", TRUE),
+#                
+#          # 1 Input: 'sep' ----
+#          #Select separator
+#              tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
+#              radioButtons("sep", "Separator",
+#                       choices = c(Comma = ",",
+#                                 Semicolon = ";",
+#                                 Tab = "\t"),
+#                                 selected = ",")),
+#                
+#          # 1 Input: 'quote' ----
+#          # Select quotes
+#              radioButtons("quote", "Quote",
+#                       choices = c(None = "",
+#                         "Double Quote" = '"',
+#                         "Single Quote" = "'"),
+#                               selected = '"'),
+#                
+#            # Horizontal line
+#              tags$hr(),
+#                
+#          # 1 Input: 'disp' ----
+#          # Select number of rows to display
+#              radioButtons("disp", "Display",
+#                choices = c(Head = "head",
+#                             All = "all"),
+#                        selected = "head"),
+#          
+#          
+#          
+#          
+#    ),  # end sidebar panel
+#    
+#    
+#    # '-------------       
+#    # Main Panel PRINT FILE ---------------------
+#    
+#              mainPanel(
+#                
+#                # Info
+#          h3("INFORMATION"),
+#          h5("Here you can choose to upload a cvs file so that you can modify them.\n
+#             In order to find the correct file, first use the 'Choose CVS files' 
+#             function to select all the crypically names files (typically using Ctrl+A inside
+#             the main folder containing the publication og indikator profiles).
+#             Then choose the correct file from the dropdown list. A preview of the import 
+#             allows you to adjust import settings like headers and seperators."),
+#          
+#                # 2 Output: Data file ----
+#                tableOutput("uploadedX")
+#              ),
+#              )
+#              ),
+#                 
+#    
+#    
 
 
 # '-------------       
@@ -144,15 +144,95 @@ sidebarLayout(
       
       h5("Hover the input fields for more information and examples of use"),
       
-        tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
-        materialSwitch(
-          inputId = "populate",
-          label = "Populate form (careful...)",
-          value = FALSE, 
-          status = "info")),
+      
+      # 3 INPUT pNew  ----
+      tags$div(title = "Click Edit to import and modify a existing publication profile, or click Create new to start processing a new publication.",  
+               radioGroupButtons(
+                 inputId = "pNew",
+                 label = NULL,
+                 choices = c("Edit", "Create new"),
+                 selected = "Create new"
+               )),
+      
+      # 3 INPUT localPub ----      
+      # Here's an option for manually locating the local folder 
+      # containing unpublished (unpushed) publication profiles.
+      # The files, or paths, in the folder are listed, read, and compiled.
+      conditionalPanel("input.pNew == 'Edit'",
+                       
+                       h3("INFORMATION"),
+                       h5("Here you can choose to upload a cvs file so that you can modify them.\n
+         In order to find the correct file, first use the 'Choose CVS files' 
+         function to select all the crypically names files (typically using Ctrl+A inside
+         the main folder containing the publication og indikator profiles).
+         Then choose the correct file from the dropdown list. A preview of the import 
+         allows you to adjust import settings like headers and seperators."),
+                       
+                       
+                tags$div(title = "Use this functionality to find an already existing publication profile in order to edit it. 
+        Navigate to the folder containg the file you want. If there are more than one file in the folder then slect all (Ctrl+A).
+        All the files need to me csv-files created using this app.",
+                         
+      fileInput("localPub", "Choose CSV files",
+                multiple = T,
+                accept = c("text/csv",
+                           "text/comma-separated-values,text/plain",
+                           ".csv"))),
+      
+      # 3 INPUT pubDrop ----
+      # Drop down list of publication profiles
+      # Profiles (for indicators and publications alike)
+      # are stored using time stamps as file names. 
+      # To find and upload the correct file (to modify it)
+      # requires that we first must read the indicator names
+      # stored inside all the files
+      tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
+               pickerInput('pubDrop', 'Select publication by title',
+                           choices = NA,
+                           options = list(
+                             `live-search` = TRUE))),
+      
+      # 3 INPUT header ----
+      #Checkbox if file has header
+      checkboxInput("header", "Header", TRUE),
+      
+      # 3 INPUT sep ----
+      #Select separator
+      tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
+               radioGroupButtons("sep", "Separator",
+                            choices = c(Comma = ",",
+                                        Semicolon = ";",
+                                        Tab = "\t"),
+                            selected = ",")),
+      
+      # 3 INPUT quote ----
+      # Select quotes
+      radioGroupButtons("quote", "Quote",
+                   choices = c(None = "",
+                               "Double Quote" = '"',
+                               "Single Quote" = "'"),
+                   selected = '"'),
+      
+      # 3 INPUT disp ----
+      # Select number of rows to display
+      radioGroupButtons("disp", "Display",
+                   choices = c(Head = "head",
+                               All = "all"),
+                   selected = "head"),
+      
+      # 3 INPUT populate ----
+      tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
+               materialSwitch(
+                 inputId = "populate",
+                 label = "Populate form (careful...)",
+                 value = FALSE, 
+                 status = "info"))
+      ),
+                       
+        
         
       
-        
+      tags$hr(),
         
         # create some space
         br(), br(),
@@ -213,7 +293,8 @@ sidebarLayout(
   #    ),
   #    
   #    conditionalPanel("input.pNormalised == 'Yes'",
-      # 3 INPUT pRedundant ----
+      
+  # 3 INPUT pRedundant ----
       tags$div(title = "Is the publication related to another reference? For example, pre-prints and published versions are related, and we only want to consider one of them.",  
         radioGroupButtons(
          inputId = "pRedundant",
@@ -351,7 +432,7 @@ sidebarLayout(
            
            
   # 3 INPUT Replace ----
-      tags$div(title = "Click to create a new file name (and hence a new file) for the csv file that you are about to export. The default is to replace the csv file that you uploaded, or to create new csv file if you started this form form scratch.",
+      tags$div(title = "Chose whether to create a new file name (and hence a new file) for the csv file that you are about to export, or to overwrite the uploaded file that you have edited.",
           radioGroupButtons(
            inputId = "replace",
            label = "Replace the uploaded file?",
@@ -378,14 +459,23 @@ sidebarLayout(
   
 # '-------------
   mainPanel(width = 6,
+            
+    conditionalPanel("input.pNew == 'Edit'",      
+        # 3 OUTPUT: uploaded ----
+      h5("Preview of the uploaded publication profile (before any new edits):"),
+      tableOutput("uploaded")     
+    ),
+            
+    br(),
     # 3 OUTPUT previewP ----
-    h4("Preview"),
+    h4("Publication profile"),
+    h6("This is what you download when you press the button below this table"),
     DTOutput('previewP'),
     
     # 3 DOWNLOAD ----
     
     tags$hr(),  # Horizontal line
-    h3("Download the publicatio profile"),
+    h3("Download the publication profile"),
     h6("If you have a copy of the project github repo on you computer, 
        you probably want to save this under 'data/publicationProfiles' 
        so that you can upload them later to the main branch via a pull request."),
