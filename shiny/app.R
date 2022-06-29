@@ -12,15 +12,16 @@ library(uuid)
 #library(readxl)
 
 
-# Column1 (parameters) =  list of terms for the publication profiles
-# Column2 (values) =  NA
 publicationParameters <- 
   read.csv("shinyData/publicationProfileFields.csv", sep=";")
+# Column1 (parameters) =  list of terms for the publication profiles
+# Column2 (values) =  NA
 
 # Duplicate data set for export 
 #pExport <- publicationParameters
 
-
+ISO3166 <- read.csv("shinyData/ISO3166.csv", sep=";")
+ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
 
@@ -32,107 +33,6 @@ publicationParameters <-
 ui <- 
   navbarPage("The IndiMap",
              
-# '-------------       
-# **TAB Upload file ---------------------
-#    tabPanel("Upload file",
-#      sidebarLayout(
-#        sidebarPanel(
-#                
-#          # 1 Input: 'localPubX' ----      
-#          # Here's an option for manually locating the local folder 
-#          # containing unpublished (unpushed) publication profiles.
-#          # The files, or paths, in the folder are listed, read, and compiled.
-#          
-#          tags$div(title = "Use this functionality to find an already existing publication profile in order to edit it. 
-#                   Navigate to the folder containg the file you want. If there are more than one file in the folder then slect all (Ctrl+A).
-#                   All the files need to me csv-files created using this app.",
-#          fileInput("localPubX", "Choose CSV files",
-#                    multiple = T,
-#                    accept = c("text/csv",
-#                               "text/comma-separated-values,text/plain",
-#                               ".csv"))),
-#          
-#          
-#          # 1 Input: 'pubDropX'  ----
-#          # Drop down list of publication profiles
-#          # Profiles (for indicators and publications alike)
-#          # are stored using time stamps as file names. 
-#          # To find and upload the correct file (to modify it)
-#          # requires that we first must read the indicator names
-#          # stored inside all the files
-#          tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
-#          pickerInput('pubDropX', 'Select publication by title',
-#                      choices = NA,
-#                      options = list(
-#                        `live-search` = TRUE))),
-#          
-#          
-#          
-#          
-#          
-#                
-#            # Horizontal line
-#              tags$hr(),
-#                
-#          # 1 Input: 'header' ----
-#          #Checkbox if file has header
-#              checkboxInput("header", "Header", TRUE),
-#                
-#          # 1 Input: 'sep' ----
-#          #Select separator
-#              tags$div(title = "This option chould not be changed - all files from this app are save using ',' as seperator.",
-#              radioButtons("sep", "Separator",
-#                       choices = c(Comma = ",",
-#                                 Semicolon = ";",
-#                                 Tab = "\t"),
-#                                 selected = ",")),
-#                
-#          # 1 Input: 'quote' ----
-#          # Select quotes
-#              radioButtons("quote", "Quote",
-#                       choices = c(None = "",
-#                         "Double Quote" = '"',
-#                         "Single Quote" = "'"),
-#                               selected = '"'),
-#                
-#            # Horizontal line
-#              tags$hr(),
-#                
-#          # 1 Input: 'disp' ----
-#          # Select number of rows to display
-#              radioButtons("disp", "Display",
-#                choices = c(Head = "head",
-#                             All = "all"),
-#                        selected = "head"),
-#          
-#          
-#          
-#          
-#    ),  # end sidebar panel
-#    
-#    
-#    # '-------------       
-#    # Main Panel PRINT FILE ---------------------
-#    
-#              mainPanel(
-#                
-#                # Info
-#          h3("INFORMATION"),
-#          h5("Here you can choose to upload a cvs file so that you can modify them.\n
-#             In order to find the correct file, first use the 'Choose CVS files' 
-#             function to select all the crypically names files (typically using Ctrl+A inside
-#             the main folder containing the publication og indikator profiles).
-#             Then choose the correct file from the dropdown list. A preview of the import 
-#             allows you to adjust import settings like headers and seperators."),
-#          
-#                # 2 Output: Data file ----
-#                tableOutput("uploadedX")
-#              ),
-#              )
-#              ),
-#                 
-#    
-#    
 
 
 # '-------------       
@@ -142,7 +42,7 @@ ui <-
 sidebarLayout(
   sidebarPanel(width = 6,        
       
-      h5("Hover the input fields for more information and examples of use"),
+      h5(tags$i("Hover the input fields for more information and examples of use")),
       
       
       # 3 INPUT pNew  ----
@@ -262,44 +162,13 @@ sidebarLayout(
                          value = "")),
       
       
-    
-      
-  # pRealm and pNormalised are treated as inclusion crieria, and don't need to be scored
-  #    # 3 INPUT pRealm ----
-  #    tags$div(title = "Only publications referring to the terrestrial realm will be considered past this point.",  
-  #        checkboxGroupButtons(
-  #        inputId = "pRealm",
-  #        label = "Does the publication include indikatorsrelated to the terrestrial realm?",
-  #        choices = "Terrestrial",
-  #        checkIcon = list(
-  #          yes = tags$i(class = "fa fa-check-square", 
-  #                     style = "color: steelblue"),
-  #          no = tags$i(class = "fa fa-square-o", 
-  #                    style = "color: steelblue"))
-  #       )),
-  #    
-  #    
-  #    conditionalPanel("input.pRealm == 'Terrestrial'",
-  #    # 3 INPUT pNormalised ----
-  #    checkboxGroupButtons(
-  #      inputId = "pNormalised",
-  #      label = "Containing normalised indicators", 
-  #      choices = c("Yes", "No"),
-  #      checkIcon = list(
-  #        yes = tags$i(class = "fa fa-check-square", 
-  #                     style = "color: steelblue"),
-  #        no = tags$i(class = "fa fa-square-o", 
-  #                    style = "color: steelblue"))
-  #    ),
-  #    
-  #    conditionalPanel("input.pNormalised == 'Yes'",
-      
   # 3 INPUT pRedundant ----
-      tags$div(title = "Is the publication related to another reference? For example, pre-prints and published versions are related, and we only want to consider one of them.",  
+      tags$div(title = "Is the publication related to another reference? For example, pre-prints and published versions are related, and we only want to consider one of them. Chosing anything but 'Unique' here will work to flag the publication, but it will not remove it. If the publication is very clearly a duplicate of another, then you should exclude the least relevant publication. Consult the review team if in doubt.",
+               
         radioGroupButtons(
          inputId = "pRedundant",
          label = "Redundant?",
-         choices = c("Redundant", "Possibly redundant", "Unique"),
+         choices = c("Unique", "Possibly redundant",  "Redundant"),
          selected = "Unique"
     #    ))
       )),
@@ -496,10 +365,10 @@ sidebarLayout(
   tabPanel("Register indicator",
       sidebarLayout(
         sidebarPanel(width = 6,     
-    h5("Hover the input fields for more information and examples of use"),             
-# 4 INPUT iNew  --------
+    h5(tags$i("Hover the input fields for more information and examples of use")),             
 
-tags$div(title = "Click Edit to import and modify a existing publication profile, or click Create new to start processing a new publication.",  
+  # 4 INPUT iNew  --------
+  tags$div(title = "Click Edit to import and modify a existing publication profile, or click Create new to start processing a new publication.",  
          radioGroupButtons(
            inputId = "iNew",
            label = NULL,
@@ -592,8 +461,13 @@ tags$hr(),
 
 
 # 4 INPUT localPubTitles 
-h3("Tie the indicator to the correct publication"),
-h5("Click 'Choose CVS files' and navigate to the folder containing all the publication profiles. Select all the files in tha folder using Ctr+A and press OK."),
+h4("Tie the indicator to the correct publication"),
+h5("Click", style = "display: inline;"), 
+tags$i("Choose CVS files",style = "display: inline;"),
+h5("and navigate to the folder 
+   containing all the publication profiles. Select all 
+   the files in tha folder using Ctr+A and press Open", 
+   style = "display: inline;"),
 
 # I've only added the functionality to import local publicatio profiles, and not profiles from GitHub.
 # This can be added later potentially.
@@ -613,9 +487,127 @@ tags$div(title = "Use this functionality to locate the already existing publicat
            pickerInput('pubDrop2', 'Select the associated publication by it title',
                        choices = NA,
                        options = list(
-                         `live-search` = TRUE)))
+                         `live-search` = TRUE))),
 
-  ),
+  tags$hr(),
+
+  # 4 INPUT iName ----
+  tags$div(title = "Type a human readable name for the indicator. Preferreably unique. For example: Tree cover Netherlands.",
+         textInput("iName", 
+                   "Indicator name", 
+                   value = "")),
+
+  
+  # 4 INPUT githubUser2 ----
+  tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
+           textInput("githubuser2", 
+                     "Enter your GitHub user name", 
+                     value = "")),
+
+  # 4 INPUT iRedundant ----
+  tags$div(title = "Is the indicator described in another reference? For example, an indicator can we presented both in a national assessment and in a stand-alone peer-reviewd paper. Selecting 'Yes' or 'Partly' here will work to flag it as potentially redundant. The following remarks field will help the analyst in making this call later. If the indicator is clearly the same as another indiator describes elsewhere (i.e. same data set, same method, same temporal scope, everything), then you may chose to only register the indiator once, using the most appropriate publication (ideally an assessment) as the source.",  
+           radioGroupButtons(
+             inputId = "iRedundant",
+             label = "Redundant?",
+             choices = c("No", "Partly", "Yes"),
+             selected = "No"
+           )),
+
+  # 4 INPUT iRedundantRemarks ----
+conditionalPanel(condition =  "input.iRedundant != 'No'",
+  tags$div(title = "Use tis field to elaborate if you chose 'Partly or 'Yes' above",
+           textInput("iRedundantRemarks", 
+                     "Remarks to the above", 
+                     value = ""))),
+
+ # 4 INPUT iContinent ----
+tags$div(title = "Select the continent(s) where the indicator has been applied, eiether as a test or as part of an assessment.",
+         pickerInput(
+           inputId = "iContinent",
+           label = "Continent(s)",
+           multiple = T,
+           choices = c("Africa",
+                       "Antactica", 
+                       "Asia",
+                       "Australia",
+                       "Europe",
+                       "North America",
+                       "South America"
+                       ),
+           options = list(
+             `multiple-separator` = " | "
+           )
+         )),
+
+  # 4 iCountry ----
+  tags$div(title = "Search and select the country(ies) where the indicator has been applied, eiether as a test or as part of an assessment.",
+     pickerInput('iCountry', 'Country',
+          choices = ISO3166_v2,
+          multiple = T,
+          options = list(
+            `live-search` = TRUE,
+            `actions-box` = TRUE,
+            `deselect-all-text` = "Deselect all",
+            `multiple-separator` = " | "
+            ))),
+
+  # 4 iLowerGeography
+  tags$div(title = "If relevant, type the name of any lower geography, i.e. the name of an area/place/region within a country, where the indicator has been applied.
+           Example: Oslo",
+         textInput("iLowerGeography", 
+                   "Lower geography (if relevant)", 
+                   value = "")),
+
+  # 4 INPUT iLatitude
+  conditionalPanel("input.iLowerGeography != ''",
+    tags$div(title = "Enter the Latitude of the Lower Geography in decimal degrees WGS84",
+        numericInput("iLatitude", 
+                  "Latitude",
+                  value = NA,
+                  min = -90,
+                  max = 90,
+                  step = 0.1)),
+    tags$div(title = "Enter the Longitude of the Lower Geography in decimal degrees WGS84",
+        numericInput("iLongitude", 
+                     "Longitude",
+                     value = NA,
+                     min = -90,
+                     max = 90,
+                     step = 0.1))
+    ),
+
+  # 4 dName
+  tags$div(title = "The name of the underlying dataset(s) (comma seperated). If there are several underlying datasets, consider mentioning only the most essential one, the one that determines the main characteristics of the resulting indicator.
+           Example: The Norwegian Forest Inventory, Living Planet Index",
+         textInput("dName", 
+                   "Dataset name(s)", 
+                   value = "")),
+
+  # 4 dReference
+  tags$div(title = "If possible, enter a reference (e.g. url, doi) to the dataset(s) (comma seperated) metioned above",
+         textInput("dReference", 
+                   "Dataset reference(s)", 
+                   value = "")),
+
+  # 4 dOrigin ----
+  tags$div(title = "The origin of the munderlying dataset. If the indicator requires modelling, this question asks about the data that goes into the model, not the model output. If the indicator is designed around several datasets, consider if one dataset is more important than the rest, and report only for that. Otherwise, yuo may also check multiple boxes here to account for multiple datasets with different origins.",
+      pickerInput('dOrigin', 'Dataset origin',
+                     choices = c("RS - remotely sensed",
+                                 "MP - established monitoring program",
+                                 "FS - field sampling",
+                                 "CS - crowd sourced",
+                                 "EO - expert opinion",
+                                 "OT - others or unsure"),
+                     multiple = T,
+                     options = list(
+                       `multiple-separator` = " | "
+                     )))
+
+
+
+
+
+ ), # end side panel
   mainPanel(width = 6)
  )
 ),
