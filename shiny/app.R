@@ -14,6 +14,8 @@ library(uuid)
 
 publicationParameters <- 
   read.csv("shinyData/publicationProfileFields.csv", sep=";")
+indicatorParameters <- 
+  read.csv("shinyData/indicatorProfileFields.csv", sep=";")
 # Column1 (parameters) =  list of terms for the publication profiles
 # Column2 (values) =  NA
 
@@ -24,7 +26,27 @@ ISO3166 <- read.csv("shinyData/ISO3166.csv", sep=";")
 ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
+# Named lists
+scale1 <- c(unknown = "UNK - unknown",
+            global  = "GLO - global",
+            continent = "CON - continent",
+            continent = "CON - continent", 
+            country = "COU - country",
+            region = "REG - region",
+            local = "LOC - local",
+            'sub-local' = "SLO - sub-local")
 
+refStates <- c("Undisturbed or minimally-disturbed condition" = "UND- Undisturbed or minimally-disturbed condition",
+               "Historical condition" = "HIS - Historical condition",
+               "Least-disturbed condition" = "LDI - Least-disturbed condition",
+               "Contemporary condition" = "CON - Contemporary condition",
+               "Best-attainable condition" =  "BAT - Best-attainable condition",
+               "other" = "OTH - other")
+
+rescalingMethod <- c(linear = "LIN - linear",
+                     "non-linear" = "NLI - non-linear",
+                     "two-sided" = "TSI - two-sided",
+                     unclear = "UNC - unclear")
 
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
@@ -331,13 +353,15 @@ sidebarLayout(
             
     conditionalPanel("input.pNew == 'Edit'",      
         # 3 OUTPUT: uploaded ----
-      h5("Preview of the uploaded publication profile (before any new edits):"),
+      h5("Preview of the uploaded publication profile (before any new edits):", style="background-color:lightgreen;"),
       tableOutput("uploaded")     
     ),
             
     br(),
+    
+    
     # 3 OUTPUT previewP ----
-    h4("Publication profile"),
+    h4("Publication profile", style="background-color:lightgreen;"),
     h6("This is what you download when you press the button below this table"),
     DTOutput('previewP'),
     
@@ -461,7 +485,7 @@ tags$hr(),
 
 
 # 4 INPUT localPubTitles 
-h4("Tie the indicator to the correct publication"),
+h4("Tie the indicator to the correct publication", style="background-color:lightblue;"),
 h5("Click", style = "display: inline;"), 
 tags$i("Choose CVS files",style = "display: inline;"),
 h5("and navigate to the folder 
@@ -489,20 +513,23 @@ tags$div(title = "Use this functionality to locate the already existing publicat
                        options = list(
                          `live-search` = TRUE))),
 
-  tags$hr(),
+tags$hr(),
+h4("General fields:", style="background-color:lightblue;"),
 
-  # 4 INPUT iName ----
-  tags$div(title = "Type a human readable name for the indicator. Preferreably unique. For example: Tree cover Netherlands.",
+# 4 INPUT githubUser2 ----
+tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
+         textInput("githubuser2", 
+                   "Enter your GitHub user name", 
+                   value = "")),
+
+# 4 INPUT iName ----
+  tags$div(title = "Type a human readable name for the indicator. Preferably unique. For example: Tree cover Netherlands.",
          textInput("iName", 
                    "Indicator name", 
                    value = "")),
 
   
-  # 4 INPUT githubUser2 ----
-  tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
-           textInput("githubuser2", 
-                     "Enter your GitHub user name", 
-                     value = "")),
+  
 
   # 4 INPUT iRedundant ----
   tags$div(title = "Is the indicator described in another reference? For example, an indicator can we presented both in a national assessment and in a stand-alone peer-reviewd paper. Selecting 'Yes' or 'Partly' here will work to flag it as potentially redundant. The following remarks field will help the analyst in making this call later. If the indicator is clearly the same as another indiator describes elsewhere (i.e. same data set, same method, same temporal scope, everything), then you may chose to only register the indiator once, using the most appropriate publication (ideally an assessment) as the source.",  
@@ -539,7 +566,7 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
            )
          )),
 
-  # 4 iCountry ----
+  # 4 INPUT iCountry ----
   tags$div(title = "Search and select the country(ies) where the indicator has been applied, eiether as a test or as part of an assessment.",
      pickerInput('iCountry', 'Country',
           choices = ISO3166_v2,
@@ -551,14 +578,14 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
             `multiple-separator` = " | "
             ))),
 
-  # 4 iLowerGeography
+  # 4 INPUT iLowerGeography ----
   tags$div(title = "If relevant, type the name of any lower geography, i.e. the name of an area/place/region within a country, where the indicator has been applied.
            Example: Oslo",
          textInput("iLowerGeography", 
                    "Lower geography (if relevant)", 
                    value = "")),
 
-  # 4 INPUT iLatitude
+  # 4 INPUT iLatitude ----
   conditionalPanel("input.iLowerGeography != ''",
     tags$div(title = "Enter the Latitude of the Lower Geography in decimal degrees WGS84",
         numericInput("iLatitude", 
@@ -576,20 +603,25 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                      step = 0.1))
     ),
 
-  # 4 dName
+
+
+tags$hr(),
+h4("Fields related to the underlying dataset(s):", style="background-color:lightblue;"),
+
+  # 4 INPUT dName ----
   tags$div(title = "The name of the underlying dataset(s) (comma seperated). If there are several underlying datasets, consider mentioning only the most essential one, the one that determines the main characteristics of the resulting indicator.
            Example: The Norwegian Forest Inventory, Living Planet Index",
          textInput("dName", 
                    "Dataset name(s)", 
                    value = "")),
 
-  # 4 dReference
+  # 4 INPUT dReference ----
   tags$div(title = "If possible, enter a reference (e.g. url, doi) to the dataset(s) (comma seperated) metioned above",
          textInput("dReference", 
                    "Dataset reference(s)", 
                    value = "")),
 
-  # 4 dOrigin ----
+  # 4 INPUT dOrigin ----
   tags$div(title = "The origin of the munderlying dataset. If the indicator requires modelling, this question asks about the data that goes into the model, not the model output. If the indicator is designed around several datasets, consider if one dataset is more important than the rest, and report only for that. Otherwise, yuo may also check multiple boxes here to account for multiple datasets with different origins.",
       pickerInput('dOrigin', 'Dataset origin',
                      choices = c("RS - remotely sensed",
@@ -601,14 +633,230 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                      multiple = T,
                      options = list(
                        `multiple-separator` = " | "
-                     )))
+                     ))),
 
+  # 4 INPUT dSPatialCoverage ----
+  tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s). 
+           
+          \nIf *Complete*, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
+           
+          \nIf *Area representative*, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
+          
+          \nIf *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
+           
+           If the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)",
+    pickerInput('dSPatialCoverage', 'Spatial Coverage of underlying dataset',
+      choices = c("1 - complete",
+                  "2 - area representative",
+                  "3 - oppurtunistic or sporadic",
+                  "4 - unknown"),
+                     multiple = T,
+                     options = list(
+                       `multiple-separator` = " | "
+                     ))),
+
+
+tags$hr(),
+h4("Fields related to the indicator itself:", style="background-color:lightblue;"),
+
+
+  # 4 INPUT iDescriptionSnippet ----
+  tags$div(title = "A snippet of text (1-10 lines) COPIED DIRECTLY from the original publication, describing the indicator, its relevans and how it is produced or calculated.",
+         textInput("iDescriptionSnippet", 
+                   "Indicator description - snippet", 
+                   value = "")),
+
+  # 4 INPUT iDescription ----
+  tags$div(title = "A relatively short description (can be a single sentence) of the indicator and what it represents. Usually it can be a shortened version of the iDescriptionSnippet",
+         textInput("iDescription", 
+                   "Indicator description", 
+                   value = "")),
+
+
+  # 4 INPUT iSpatialExtent ----
+  tags$div(title = "What is the extent (size of the total area) for which the indicator has been calculated? Do not consider parts of the same dataset or indicator which is not reported in this exact publication. 
+           Example: If you have an indicator on forest canopy structure which is reported with unique estimates at regional levels across Norway, and which is based on area representaive monitoring data, then the spatial extent is country",
+         pickerInput('iSpatialExtent', 'Spatial extent',
+                     choices = scale1)),
+
+
+  # 4 INPUT iSpatialResolution ----
+  tags$div(title = "What is the finest spatial scale that this indicator has been calcuated at. Note that if the indicator is used for saying something about a single ecosystem, but for an entire country, the iSpatialExtent is still 'country'. If, on the other hand, there are unique indicator values tied to polygons or grid cells that are smaller than the average political administrative unit, then the resolution is 'sub-local'.",
+         pickerInput('iSpatialResolution', 'Spatial resolution',
+                     choices = scale1)),
+
+  # 4 INPUT iTemporalCoverage ----
+  tags$div(title = "The length of the time series at the time of publication (years). Duration less than 1 year is reported an 1 year.",
+    numericInput("iTemporalCoverage", 
+       "Temporal coverage (length of time series)",
+       value = NA,
+       min = 1,
+       step = 1,
+       width = '30%')),
+
+  # 4 INPUT iMap ----
+  tags$div(title = "Is the indicator presented as a map? This map may be included in the printable publication or simply linked to or made available on a digital platform.",
+    radioGroupButtons(
+     inputId = "iMap",
+     label = "Presented as map?",
+     choices = c("No", "Yes", "Not by itself, but as part of an aggregated index"),
+     selected = "No"
+    )),
+
+  # 4 INPUT iYear ----
+  tags$div(title = "The latest year for which the indicator value has been caluculated and reported",
+         numericInput("iYear", 
+                      "Year",
+                      value = NA,
+                      min = 1900,
+                      max = 2100,
+                      step = 1,
+                      width = '30%')),
+
+  # 4 INPUT iBiome ----
+  tags$div(title = "IUCN Global Ecosystem Typology 2.0, level 2.",
+         pickerInput('iBiome', 'Biome',
+            choices = c(
+              "T1 - Tropical-subtropical forests",
+              "T2 - Temperate-boreal forests & woodlands",
+              "T3 - Shrublands & shrubby woodlands",
+              "T4 - Savannas and grasslands",
+              "T5 - Deserts and semi-deserts",
+              "T6 - Polar-alpine",
+              "T7 - Intensive land-use systems",
+              "UNK - Unknown or dont fit"),
+            multiple = T,
+            options = list(
+              `multiple-separator` = " | "
+            )
+          )),
+
+  # 4 INPUT iSubIndex ----
+  tags$div(title = "Is the indicator a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species.",
+         radioGroupButtons('iSubIndex', 'Is the indicator itself an index?',
+          choices = c(
+            "No", "Yes", "Unclear"))),
+
+  # 4 INPUT iModelling ----
+  tags$div(title = "Does the indicator (or the reference value) require modeling outside of what is included in the underlying dataset (i.e. lots of mathemtical steps)? This typically means the indicator is derived from raw data, but it is not itself the raw data.
+           For example, any indicator that relies on other, preditcory variables, or which requires interpolation or extrapolation, is modelled. This includes most climate datasets which tend to be interpolated, but if this interpolated dataset is used as the raw data for the indicator, and reported 'as is', then you should still select 'No' here. If the indicator instead used this meterological or climate data to estimate/model drought risk (extrapolation) or something similar, then you should select 'Yes'.",
+         radioGroupButtons('iModelling', 'Is the indicator a result from a model?',
+                           choices = c(
+                             "No", "Yes", "Unclear"))),
+
+  # 4 INPUT iOriginalUnits ----
+  tags$div(title = "Original unit for the variable. e.g. meters, hectares, kilograms",
+         textInput("iOriginalUnits", 
+                   "Original units", 
+                   value = "")),
+
+
+tags$hr(),
+h4("Fields related to SEEA EA:", style="background-color:lightblue;"),
+
+
+  # 4 INPUT iECT ----
+  tags$div(title = "The class may not be reported, and in any case, it's is thre reviewer that must assign the indicator to the correct or the most correct class.
+           Examples:
+A1: water quantity (e.g. hydrological flow, groundwater table)
+A2: air quality (pollutants concentrations); water quality (e.g. pollutant concentrations); soil quality (e.g. soil carbon stock)
+B1: birds, fish, habitats-based indices (red-list indices, LPI) 
+B2: vegetation cover (e.g. shrub cover); timber stock; litter; forest age
+B3: flood risk; NPP, biomass growth
+C1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
+Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))",
+         pickerInput('iECT', 'SEEA Ecosystem Condition Typology Class',
+                     choices = c(
+                       "A1 Physical state characteristics",
+                       "A2 Chemical state characteristics",
+                       "B1 Compositional state characteristics",
+                       "B2 Structural state characteristics",
+                       "B3 Functional state characteristics",
+                       "C1 Landscape and seascape characteristics",
+                       "Other (e.g. pre-aggregated indices)"),
+                     multiple = T,
+                     options = list(
+                       `multiple-separator` = " | "
+                     )
+         )),
+
+  # 4 INPUT iECTsnippet ----
+  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the ECT assignment. It may be the same text as what you use in 'Indicator description - snippet', but without the same technical details. Here it is more about the ecological significans of the indicator",
+         textInput("iECTsnippet", 
+                   "ECT justification", 
+                   value = "")),
+
+#  # 4 INPUT iEScategory ----
+#  tags$div(title = "What ecosystem service category(ies) is this indicator related to, if any? The reviewer must assign the #category regardless of what the publication itself claims. Weak or speculative links should not be reported, but empirical #relationships between the indicator and the ES category is not required. Biodiversity related indicators may fit into one or #several of the categories, depending on the species. For example, moose densities is related both to provisioning (meat) and #cultural services (hunting).",
+#         radioGroupButtons('iEScategory', 'Associated ecosystem service category',
+#                           choices = c(
+#                             "Supporting", 
+#                             "Provisioning", 
+#                             "Cultural",
+#                             "Regulating"))),
+
+
+tags$hr(),
+h4("Fields related to the reference state:", style="background-color:lightblue;"),
+
+  # 4 INPUT rType ----
+  tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'.",
+         pickerInput('rType', "Type of reference state.",
+                     choices = refStates,
+                     selected = "OTH - other"
+         )),
+
+  # 4 INPUT rTypeSnippet ----
+  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference state. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
+         textInput("rTypeSnippet", 
+                   "Reference state - justification", 
+                   value = "")),
+
+  # 4 INPUT rTypeRemarks ----
+  tags$div(title = "An optional field where yuo can comment on the choice of reference state. 
+           Example: Year 1850 was used to define the reference state.",
+         textInput("rTypeRemarks", 
+                   "Comments on choice of reference state", 
+                   value = "")),
+
+# 4 INPUT rResolution ----
+tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. uique reference value for each grid cell), then rResolution equals iSpatialResolution.",
+         pickerInput('rResolution', "Spatial resolution of the reference value(s)",
+                     choices = scale1
+         )),
+
+
+  # 4 INPUT rRescalingMethod ----
+  tags$div(title = "Pick the category that fits the bets. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
+         radioGroupButtons('rRescalingMethod', "Rescaling method",
+                     choices = rescalingMethod
+         )),
+
+  # 4 INPUT rMax ----
+  tags$div(title = "A definition or description of the reference value, i.e. the maximum indicator value.
+           Example: 'A species composition and a CWM similar to a reference community'",
+           textInput("rMax", 
+                     "Explanation of the reference value", 
+                     value = "")),
+  
+  # 4 INPUT rMin ----
+  tags$div(title = "A definition or description of the lower limit for the indicator (the porest condition).
+           Example: 'Species extinct'",
+           textInput("rMin", 
+                     "Explanation of the lower limit value", 
+                     value = ""))
 
 
 
 
  ), # end side panel
-  mainPanel(width = 6)
+  mainPanel(width = 6,
+            
+    # 4 OUTPUT previewI ----
+    h4("Indicator profile", style="background-color:lightgreen;"),
+    h6("This is what you download when you press the button below this table"),
+    DTOutput('previewI')
+            )
  )
 ),
 
@@ -657,7 +905,7 @@ server <- function(input, output, session) ({
   
   # Compile local publication profiles 
   # Create a reactive data set
-  # If we had a locally deployd app and used shinyChooseDir()
+  # If we had a locally deployed app and used shinyChooseDir()
   # then just use the myLocalFiles part as the first arg in ldply
   
   publicationList <- reactive({
@@ -684,7 +932,7 @@ server <- function(input, output, session) ({
   })
   
   # A* REACT: publicationList2 ----------------
-  # Now a duplicat eof the same reactive elemet for use in in pID
+  # Now a duplicate of the same reactive element for use in in pID
   publicationList2 <- reactive({
     req(input$localPub2)
     # Read the csv's, add path and ID, and finally rbind them
@@ -695,8 +943,33 @@ server <- function(input, output, session) ({
                        quote  =  '"'  #   input$i_quote
       )
       temp[nrow(temp)+1,] <- c("filename", x)
-      temp[nrow(temp)+1,] <- c("filename_local", input$localPub$name[input$localPub$datapath == x])
+      temp[nrow(temp)+1,] <- c("filename_local", input$localPub2$name[input$localPub2$datapath == x])
       temp$ID <- temp$value[temp$parameter=="pID"]
+      temp
+    })
+    
+    
+    # transpose from long to wide format
+    data.table::dcast(
+      data.table::setDT(combined),
+      formula = ID~parameter)
+    
+  })
+  
+  # A* REACT: indicatorList ----------------
+  # Compile local indicator profiles 
+  indicatorList <- reactive({
+    req(input$localInd)
+    # Read the csv's, add path and ID, and finally rbind them
+    combined <- plyr::ldply(input$localInd[,"datapath"], function(x) {
+      temp <- read.csv(x,
+                       header = T,    #   input$i_header,
+                       sep    =  ",", #   input$i_sep,
+                       quote  =  '"'  #   input$i_quote
+      )
+      temp[nrow(temp)+1,] <- c("filename", x)
+      temp[nrow(temp)+1,] <- c("filename_local", input$localInd$name[input$localInd$datapath == x])
+      temp$ID <- temp$value[temp$parameter=="iID"]
       temp
     })
     
@@ -710,6 +983,7 @@ server <- function(input, output, session) ({
   
   
   
+  
   #*********************************************************************************  
   
   # A* REACT: title to path ----
@@ -720,6 +994,15 @@ server <- function(input, output, session) ({
     p <- p$filename[p$pTitle == input$pubDrop]
     p
   })
+ 
+  # A* REACT: title to path (indicator) ----
+  # Take the chosen indicator name from indDrop
+  # and link it to the corresponding local file path
+  titleToPath_i <- reactive({
+    p <- indicatorList()
+    p <- p$filename[p$iName == input$indDrop]
+    p
+  })
   
   # A* REACT: title to filename ----
   # Take the chosen publication title from pubDrop
@@ -727,6 +1010,15 @@ server <- function(input, output, session) ({
   titleToFilename <- reactive({
     p <- publicationList()
     p <- p$filename_local[p$pTitle == input$pubDrop]
+    p
+  })
+  
+  # A* REACT: title to filename (indicator) ----
+  # Take the chosen indicator name from indDrop
+  # and link it to the corresponding local file path
+  titleToFilename_i <- reactive({
+    p <- indicatorList()
+    p <- p$filename_local[p$iName == input$indDrop]
     p
   })
   
@@ -740,6 +1032,12 @@ server <- function(input, output, session) ({
                       choices = unique(publicationList()$pTitle))
   })
   
+  # A* UPDATE indDrop ----
+  # reactive list of publications titles
+  observeEvent(input$localInd, {
+    updatePickerInput(session = session, inputId = "indDrop",
+                      choices = unique(indicatorList()$iName))
+  })
   
   #*********************************************************************************
   
@@ -752,6 +1050,17 @@ server <- function(input, output, session) ({
       header = input$header,
       sep = input$sep,
       quote = input$quote)
+  })
+  
+  # A* REACT: uploadedInd ----
+  # Make the uploaded indicator profile file available through an reactive element 
+  
+  uploadedInd <- reactive({
+    read.csv(
+      titleToPath_i(),
+      header = input$i_header,
+      sep = input$i_sep,
+      quote = input$i_quote)
   })
   
   #*********************************************************************************
@@ -791,6 +1100,13 @@ server <- function(input, output, session) ({
     ifelse(input$populate == FALSE, 
            return(publicationParameters),
            return(uploadedPub()))
+  })
+  
+  # A* REACT iForm ----
+  iForm <- reactive({
+    ifelse(input$i_populate == FALSE, 
+           return(indicatorParameters),
+           return(uploadedInd()))
   })
   # '-------------       
  
@@ -957,6 +1273,24 @@ server <- function(input, output, session) ({
 #*********************************************************************************
 
 # '-------------
+  
+  ## iName ----
+observeEvent(input$i_populate, {
+  updateTextInput(session = session,
+                  'iName',
+                  value = iForm()$value[iForm()$parameter == "iName"])
+})
+  
+ ## githubUser2 ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'githubUser2',
+                    value = iForm()$value[iForm()$parameter == "githubUser2"])
+  })
+  
+  # '-------------
+  
+  
 # B* OUTPUT: pExport   ----
   
 # Compile CSVs for the publication profile
@@ -1014,6 +1348,21 @@ server <- function(input, output, session) ({
   })
   
   
+  
+# B* OUTPUT: iExport   ----
+  
+  # Compile CSVs for the indicator profile
+  
+  
+  iExport <- reactive({
+    # shorten name
+    dat <- iForm()
+    
+    dat$value[dat$parameter == "iName"] <- input$iName
+    dat$value[dat$parameter == "githubUser"] <- input$githubuser2
+    
+    dat
+    })
 
  
 
@@ -1024,6 +1373,13 @@ output$previewP <- renderDT(
                                      scrollY = "600px",
                                      scollX = T))
   
+# B* OUTPUT previewI ----
+output$previewI <- renderDT(
+  iExport(),
+  options = list(pageLength = 50, 
+                 scrollY = "600px",
+                 scollX = T))
+
 #*********************************************************************************
   
   # B* REACT fileName ----
