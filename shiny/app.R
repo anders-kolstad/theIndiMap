@@ -30,7 +30,6 @@ ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 scale1 <- c(unknown = "UNK - unknown",
             global  = "GLO - global",
             continent = "CON - continent",
-            continent = "CON - continent", 
             country = "COU - country",
             region = "REG - region",
             local = "LOC - local",
@@ -374,7 +373,7 @@ sidebarLayout(
        so that you can upload them later to the main branch via a pull request."),
     h6("If this is greek to you, you can save it to any local and dedicated folder
        on you computer and contact the project leader about how to get you csv file
-       submitted to the mina githib branch"),
+       submitted to the main github branch"),
     tags$div(title = "Click to open a 'Save as' dialogue window.\n\nDO NOT change the file name.",
              downloadButton("downloadData", "Download"))
   )
@@ -508,7 +507,7 @@ tags$div(title = "Use this functionality to locate the already existing publicat
   # 4 INPUT pubDrop2 ----
   # Drop down list of publication titles
   tags$div(title = "This dropdown menu is poplated with publication titles from the files you selected above. Pick the one you want.",
-           pickerInput('pubDrop2', 'Select the associated publication by it title',
+           pickerInput('pubDrop2', 'Select the associated publication by its title',
                        choices = NA,
                        options = list(
                          `live-search` = TRUE))),
@@ -635,25 +634,17 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                        `multiple-separator` = " | "
                      ))),
 
-  # 4 INPUT dSPatialCoverage ----
-  tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s). 
-           
-          \nIf *Complete*, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
-           
-          \nIf *Area representative*, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
-          
-          \nIf *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
-           
+  # 4 INPUT dSpatialCoverage ----
+  tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s). If *Complete*, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
+          If *Area representative*, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
+          If *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
            If the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)",
-    pickerInput('dSPatialCoverage', 'Spatial Coverage of underlying dataset',
-      choices = c("1 - complete",
+    pickerInput('dSpatialCoverage', 'Spatial Coverage of underlying dataset',
+      choices = c("NA",
+                  "1 - complete",
                   "2 - area representative",
                   "3 - oppurtunistic or sporadic",
-                  "4 - unknown"),
-                     multiple = T,
-                     options = list(
-                       `multiple-separator` = " | "
-                     ))),
+                  "4 - unknown"))),
 
 
 tags$hr(),
@@ -755,8 +746,8 @@ tags$hr(),
 h4("Fields related to SEEA EA:", style="background-color:lightblue;"),
 
 
-  # 4 INPUT iECT ----
-  tags$div(title = "The class may not be reported, and in any case, it's is thre reviewer that must assign the indicator to the correct or the most correct class.
+  # 4 INPUT iECTclass ----
+  tags$div(title = "The class may not be reported, and in any case, it's is the reviewer that must assign the indicator to the correct or the most correct class.
            Examples:
 A1: water quantity (e.g. hydrological flow, groundwater table)
 A2: air quality (pollutants concentrations); water quality (e.g. pollutant concentrations); soil quality (e.g. soil carbon stock)
@@ -765,19 +756,15 @@ B2: vegetation cover (e.g. shrub cover); timber stock; litter; forest age
 B3: flood risk; NPP, biomass growth
 C1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
 Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))",
-         pickerInput('iECT', 'SEEA Ecosystem Condition Typology Class',
-                     choices = c(
+         pickerInput('iECTclass', 'SEEA Ecosystem Condition Typology Class',
+                     choices = c("NA",
                        "A1 Physical state characteristics",
                        "A2 Chemical state characteristics",
                        "B1 Compositional state characteristics",
                        "B2 Structural state characteristics",
                        "B3 Functional state characteristics",
                        "C1 Landscape and seascape characteristics",
-                       "Other (e.g. pre-aggregated indices)"),
-                     multiple = T,
-                     options = list(
-                       `multiple-separator` = " | "
-                     )
+                       "Other (e.g. pre-aggregated indices)")
          )),
 
   # 4 INPUT iECTsnippet ----
@@ -844,7 +831,23 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
            Example: 'Species extinct'",
            textInput("rMin", 
                      "Explanation of the lower limit value", 
-                     value = ""))
+                     value = "")),
+
+  # 4 INPUT replace_i ----
+  tags$div(title = "Chose whether to create a new file name (and hence a new file) for the csv file that you are about to export, or to overwrite the uploaded file that you have edited.",
+           radioGroupButtons(
+             inputId = "replace_i",
+             label = "Replace the uploaded file?",
+             choices = c("Replace the uploaded file", 
+                         "Create a new file")
+           )
+  ),
+  
+  h6("This is the new filename:"),
+  textOutput('newFileName_i'),
+  h6("Don't create a new file name if you have edited an existing file. The UUIDs will not have changed.",
+     style="color:red;")
+
 
 
 
@@ -855,8 +858,25 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
     # 4 OUTPUT previewI ----
     h4("Indicator profile", style="background-color:lightgreen;"),
     h6("This is what you download when you press the button below this table"),
-    DTOutput('previewI')
+    DTOutput('previewI'),
+    
+    # 4 DOWNLOAD ----
+    
+    tags$hr(),  # Horizontal line
+    h3("Download the indicator profile", style="background-color:lightgreen;"),
+    
+    h6("If you have a copy of the project github repo on you computer, 
+         you probably want to save this under 'data/indicatorProfiles' 
+         so that you can upload them later to the main branch via a pull request."),
+    h6("If this is greek to you, you can save it to any local and dedicated folder
+         on you computer and contact the project leader about how to get you csv file
+         submitted to the main github branch"),
+    tags$div(title = "Click to open a 'Save as' dialogue window.\n\nDO NOT change the file name.",
+             downloadButton("downloadData_i", "Download"))
+    
             )
+
+ 
  )
 ),
 
@@ -1127,6 +1147,13 @@ server <- function(input, output, session) ({
            uuid::UUIDgenerate(),
            pform()$value[pform()$parameter == "pID"])
   })
+  ## iID ----
+  iUUID <- reactive({
+    ifelse(is.na(iForm()$value[iForm()$parameter == "pID"]), 
+           uuid::UUIDgenerate(),
+           iForm()$value[iForm()$parameter == "pID"])
+  })
+  
   
   ## pTitle ----
   observeEvent(input$populate, {
@@ -1288,6 +1315,54 @@ observeEvent(input$i_populate, {
                     value = iForm()$value[iForm()$parameter == "githubUser2"])
   })
   
+  ##  iRedundant ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iRedundant',
+                    value = iForm()$value[iForm()$parameter == "iRedundant"])
+  })
+  
+  ## iRedundantRemarks ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iRedundantRemarks',
+                    value = iForm()$value[iForm()$parameter == "iRedundantRemarks"])
+  })
+  
+  ## iContinent ----
+  observeEvent(input$i_populate, {
+    updateCheckboxGroupButtons(session = session,
+                               'iContinent',
+                               choices = c("Africa",
+                                           "Antactica", 
+                                           "Asia",
+                                           "Australia",
+                                           "Europe",
+                                           "North America",
+                                           "South America"
+                               ),
+                               selected = stringr::str_split(
+                                 iForm()$value[iForm()$parameter == "iContinent"],
+                                 " \\| ", simplify = T))
+  })
+  
+  ## iCountry ----
+  observeEvent(input$i_populate, {
+    updateCheckboxGroupButtons(session = session,
+                               'iCountry',
+                               choices = ISO3166_v2,
+                               selected = stringr::str_split(
+                                 iForm()$value[iForm()$parameter == "iCountry"],
+                                 " \\| ", simplify = T))
+  })
+  
+  ## iLowerGeography ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iLowerGeography',
+                    value = iForm()$value[iForm()$parameter == "iLowerGeography"])
+  })
+  
   # '-------------
   
   
@@ -1357,9 +1432,44 @@ observeEvent(input$i_populate, {
   iExport <- reactive({
     # shorten name
     dat <- iForm()
-    
+    dat$value[dat$parameter == "iID"] <- iUUID()
+    dat$value[dat$parameter == "pID"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
+    dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
+    dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(
+      input$iRedundant == "No",
+        NA,
+        input$iRedundantRemarks)
+    dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")
+    dat$value[dat$parameter == "iCountry"] <- paste(input$iCountry, collapse = " | ")
+    dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
+    dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
+    dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
+    dat$value[dat$parameter == "dName"] <- input$dName
+    dat$value[dat$parameter == "dReference"] <- input$dReference
+    dat$value[dat$parameter == "dOrigin"] <- paste(input$dOrigin, collapse = " | ")
+    dat$value[dat$parameter == "dSpatialCoverage"] <- input$dSpatialCoverage
+    dat$value[dat$parameter == "iDescriptionSnippet"] <- input$iDescriptionSnippet
+    dat$value[dat$parameter == "iDescription"] <- input$iDescription
+    dat$value[dat$parameter == "iSpatialExtent"] <- input$iSpatialExtent
+    dat$value[dat$parameter == "iSpatialResolution"] <- input$iSpatialResolution
+    dat$value[dat$parameter == "iTemporalCoverage"] <- input$iTemporalCoverage
+    dat$value[dat$parameter == "iMap"] <- input$iMap
+    dat$value[dat$parameter == "iYear"] <- input$iYear
+    dat$value[dat$parameter == "iBiome"] <- paste(input$iBiome, collapse = " | ")
+    dat$value[dat$parameter == "iSubIndex"] <- input$iSubIndex
+    dat$value[dat$parameter == "iModelling"] <- input$iModelling
+    dat$value[dat$parameter == "iOriginalUnits"] <- input$iOriginalUnits
+    dat$value[dat$parameter == "iECTclass"] <- input$iECTclass
+    dat$value[dat$parameter == "iECTsnippet"] <- input$iECTsnippet
+    dat$value[dat$parameter == "rType"] <- input$rType
+    dat$value[dat$parameter == "rTypeSnippet"] <- input$rTypeSnippet
+    dat$value[dat$parameter == "rTypeRemarks"] <- input$rTypeRemarks
+    dat$value[dat$parameter == "rResolution"] <- input$rResolution
+    dat$value[dat$parameter == "rRescalingMethod"] <- input$rRescalingMethod
+    dat$value[dat$parameter == "rMax"] <- input$rMax
+    dat$value[dat$parameter == "rMin"] <- input$rMin
     
     dat
     })
@@ -1396,9 +1506,22 @@ output$previewI <- renderDT(
   output$newFileName <- renderText(
                       fileName())
     
+  # B* REACT fileName_i ----
+  # Overwrite or create new csv?  
+  fileName_i <- reactive({
+    ifelse(input$replace_i == "Replace the uploaded file",
+           ifelse(input$indDrop == "NA", "Invalid option", basename(titleToFilename_i())),
+           paste0("iProfile_", 
+                  gsub(":", "-", Sys.time()),
+                  ".csv"))
+  })
   
   
-  # B* DOWNLOAD  ----
+  output$newFileName_i <- renderText(
+    fileName_i())
+  
+  
+  # B* DOWNLOAD publication profile ----
   # download the new or edited profile as csv
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -1410,6 +1533,18 @@ output$previewI <- renderDT(
     contentType = "text/csv"
   )
   
+  
+  # B* DOWNLOAD indicator profile ----
+  # download the new or edited profile as csv
+  output$downloadData_i <- downloadHandler(
+    filename = function() {
+      fileName_i()
+    },
+    content = function(file) {
+      write.csv(iExport(), file, row.names = FALSE)
+    },
+    contentType = "text/csv"
+  )
   
   # '-------------
   # ' ------------
