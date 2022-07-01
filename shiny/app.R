@@ -81,7 +81,8 @@ sidebarLayout(
       # The files, or paths, in the folder are listed, read, and compiled.
       conditionalPanel("input.pNew == 'Edit'",
                        
-                       h3("INFORMATION"),
+                       h4("Locate and upload existing publication profile:", style="background-color:lightblue;"),
+                       
                        h5("Here you can choose to upload a cvs file so that you can modify them.\n
          In order to find the correct file, first use the 'Choose CVS files' 
          function to select all the crypically names files (typically using Ctrl+A inside
@@ -143,6 +144,7 @@ sidebarLayout(
       
       # 3 INPUT populate ----
       tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
+               style="color:red; text-decoration-line: underline;",
                materialSwitch(
                  inputId = "populate",
                  label = "Populate form (careful...)",
@@ -158,17 +160,28 @@ sidebarLayout(
         # create some space
         br(), br(),
         
+      
+     
+      h4("General fields:", style="background-color:lightblue;"),
+      
+      # 3 INPUT githubUser ----
+      tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
+               textInput("githubuser", 
+                         "Enter your GitHub user name", 
+                         value = "")),
+     
+       # 3 INPUT pTitle ----
+        tags$div(title = "Example: 'Norwegian Arctic Tundra: a Panel-based Assessment of Ecosystem Condition'",
+        textInput("ptitle", 
+                "Enter publication title", 
+                value = "")),
+      
       # 3 INPUT pZoteroID ----
         tags$div(title = "Example: https://www.zotero.org/groups/4630169/the_rescalable_indicator_review/collections/KDCY6DCS/items/8GALH26U/collection",
         textInput("pzoteroid", 
                   "Enter the full URL for the Zotero entry", 
                   value = "")),
       
-      # 3 INPUT pTitle ----
-        tags$div(title = "Example: 'Norwegian Arctic Tundra: a Panel-based Assessment of Ecosystem Condition'",
-        textInput("ptitle", 
-                "Enter publication title", 
-                value = "")),
       
       # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
@@ -176,11 +189,7 @@ sidebarLayout(
                 "Enter the full reference to the publication", 
                 value = "")),
       
-      # 3 INPUT githubUser ----
-        tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact info in you GitHub profile.", 
-               textInput("githubuser", 
-                         "Enter your GitHub user name", 
-                         value = "")),
+      
       
       
   # 3 INPUT pRedundant ----
@@ -217,6 +226,18 @@ sidebarLayout(
            textInput("pJournal", 
                      "Enter the journal name, without abbreviations", 
                      value = ""))),
+  
+  # 3 INPUT pDirective ----
+  tags$div(title = "Tick of the boxes that the publication explicitly states that it is reporting to",
+           checkboxGroupButtons(
+             inputId = "pDirective",
+             label = "Reported to the following programs",
+             choices = c("Not relevant",
+                         "EU Birds Directive",
+                         "EU Habitats Directive")
+           )),
+  
+  h4("Field related to ecosystem assessment publications:", style="background-color:lightblue;"),
   
   # 3 INPUT pAssessment ----
   tags$div(title = "Does the publication contain an assessment of ecosystem condition based on multiple indicators?",
@@ -310,17 +331,9 @@ sidebarLayout(
                    
   ),
   
-  # 3 INPUT pDirective ----
-  tags$div(title = "Tick of the boxes that the publication explicitly states that it is reporting to",
-           checkboxGroupButtons(
-             inputId = "pDirective",
-             label = "Reported to the following programs",
-             choices = c("Not relevant",
-                         "EU Birds Directive",
-                         "EU Habitats Directive")
-           )),
            
-           
+  h4("Create file name", style="background-color:lightblue;"),
+  
   # 3 INPUT Replace ----
       tags$div(title = "Chose whether to create a new file name (and hence a new file) for the csv file that you are about to export, or to overwrite the uploaded file that you have edited.",
           radioGroupButtons(
@@ -333,7 +346,8 @@ sidebarLayout(
         
         h6("This is the new filename:"),
         textOutput('newFileName'),
-        h6("Don't create a new file name if you have edited an existing file. The UUIDs will not have changed."),    
+        h6("Don't create a new file name if you have edited an existing file. The UUIDs will not have changed.",
+           style="color:red;"),    
   
   
   
@@ -367,7 +381,7 @@ sidebarLayout(
     # 3 DOWNLOAD ----
     
     tags$hr(),  # Horizontal line
-    h3("Download the publication profile"),
+    h4("Download the publication profile", style="background-color:lightgreen;"),
     h6("If you have a copy of the project github repo on you computer, 
        you probably want to save this under 'data/publicationProfiles' 
        so that you can upload them later to the main branch via a pull request."),
@@ -387,7 +401,8 @@ sidebarLayout(
 # **TAB Register indicator ----
   tabPanel("Register indicator",
       sidebarLayout(
-        sidebarPanel(width = 6,     
+        sidebarPanel(width = 6,    
+                  
     h5(tags$i("Hover the input fields for more information and examples of use")),             
 
   # 4 INPUT iNew  --------
@@ -405,7 +420,7 @@ sidebarLayout(
 # The files, or paths, in the folder are listed, read, and compiled.
 conditionalPanel("input.iNew == 'Edit'",
                  
-                 h3("INFORMATION"),
+                 h4("Locate and upload existing publication profile:", style="background-color:lightblue;"),
                  h5("Here you can choose to upload a cvs file so that you can modify them.\n
          In order to find the correct file, first use the 'Choose CVS files' 
          function to select all the crypically names files (typically using Ctrl+A inside
@@ -467,6 +482,7 @@ conditionalPanel("input.iNew == 'Edit'",
                  
     # 4 INPUT i_populate ----
     tags$div(title = "Populate form from uploaded file. \n\nOBS! Toggling the switch below will reset the form and delete unsaved work.",
+             style="color:red; text-decoration-line: underline;",
              materialSwitch(
                inputId = "i_populate",
                label = "Populate form (careful...)",
@@ -534,13 +550,15 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
   tags$div(title = "Is the indicator described in another reference? For example, an indicator can we presented both in a national assessment and in a stand-alone peer-reviewd paper. Selecting 'Yes' or 'Partly' here will work to flag it as potentially redundant. The following remarks field will help the analyst in making this call later. If the indicator is clearly the same as another indiator describes elsewhere (i.e. same data set, same method, same temporal scope, everything), then you may chose to only register the indiator once, using the most appropriate publication (ideally an assessment) as the source.",  
            radioGroupButtons(
              inputId = "iRedundant",
-             label = "Redundant?",
-             choices = c("No", "Partly", "Yes"),
-             selected = "No"
+             label = "Redundant?"
+             ,
+             choices = c("Redundant", "Possibly redundant", "Unique")
+             #,
+             #selected = "Unique"
            )),
 
   # 4 INPUT iRedundantRemarks ----
-conditionalPanel(condition =  "input.iRedundant != 'No'",
+conditionalPanel(condition =  "input.iRedundant != 'Unique'",
   tags$div(title = "Use tis field to elaborate if you chose 'Partly or 'Yes' above",
            textInput("iRedundantRemarks", 
                      "Remarks to the above", 
@@ -553,7 +571,7 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
            label = "Continent(s)",
            multiple = T,
            choices = c("Africa",
-                       "Antactica", 
+                       "Antarctica", 
                        "Asia",
                        "Australia",
                        "Europe",
@@ -770,7 +788,7 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
   # 4 INPUT iECTsnippet ----
   tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the ECT assignment. It may be the same text as what you use in 'Indicator description - snippet', but without the same technical details. Here it is more about the ecological significans of the indicator",
          textInput("iECTsnippet", 
-                   "ECT justification", 
+                   "ECT snippet", 
                    value = "")),
 
 #  # 4 INPUT iEScategory ----
@@ -796,7 +814,7 @@ h4("Fields related to the reference state:", style="background-color:lightblue;"
   # 4 INPUT rTypeSnippet ----
   tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference state. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
          textInput("rTypeSnippet", 
-                   "Reference state - justification", 
+                   "Reference state - snippet", 
                    value = "")),
 
   # 4 INPUT rTypeRemarks ----
@@ -833,6 +851,9 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                      "Explanation of the lower limit value", 
                      value = "")),
 
+  
+
+  h4("Create file name", style="background-color:lightblue;"),
   # 4 INPUT replace_i ----
   tags$div(title = "Chose whether to create a new file name (and hence a new file) for the csv file that you are about to export, or to overwrite the uploaded file that you have edited.",
            radioGroupButtons(
@@ -855,6 +876,7 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
  ), # end side panel
   mainPanel(width = 6,
             
+            
     # 4 OUTPUT previewI ----
     h4("Indicator profile", style="background-color:lightgreen;"),
     h6("This is what you download when you press the button below this table"),
@@ -863,7 +885,7 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
     # 4 DOWNLOAD ----
     
     tags$hr(),  # Horizontal line
-    h3("Download the indicator profile", style="background-color:lightgreen;"),
+    h4("Download the indicator profile", style="background-color:lightgreen;"),
     
     h6("If you have a copy of the project github repo on you computer, 
          you probably want to save this under 'data/indicatorProfiles' 
@@ -884,11 +906,32 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
 # '-------------             
 # **TAB More ----
     navbarMenu("More",
-      tabPanel("Instructions"),
+      tabPanel("Instructions",
+               
+               p("This app was developed by Anders L. Kolstad with the purpuse of aiding and standardising the data entrering for a systematic review nicknamed ", tags$a(href="https://github.com/anders-kolstad/theIndiMap/", "The IndiMap"), "This is a crowd sourced review, meaning that in principle anyone can contribute. The app is (or will be made) available online.",style = "width: 500px;"),
+               
+               p("The data entry is hierarchical, with a one-to-many relationship between selected publications and the indicators that are reported inside these. The", 
+                 tags$a(href="https://anders-kolstad.github.io/theIndiMap/", "review itself"), 
+                 "will eventually explain in more detail how we selected the publications for the review, and what inclusion criteria we used, both for the publications and the indicators. Most importantly, all the indicators are rescaled (i.e. normalised according to a reference value) and developed for terrestrial ecosystems.",style = "width: 500px;"),
+               
+               p("Before you can start entering information about the indicators you first need to enter information about the publication. If you are starting from scratch, go to", tags$i("Register publication"), "and select", tags$i("Create new"), ". This will autogenerate a uniqe identifier. Continue filling out the form. You can alway see the updated preview of you data on the right. when done, select", tags$i("Create a new file"), "at the bottom, and then press the download botton in the lower right part of the screen, below the data preview.", tags$i("(Pro tip: you may want to read the publication before opening the app, and use your notes to quickly fill in the form all at once. This is because the app may shut down if you go for coffee!)."), "This file is a standalone cvs file, and we call this a publication profile. The file name is just a time stamp.",style = "width: 500px;"),
+               
+               p("If you want to edit the publication profile you just made, go back to the top and select", tags$i("Edit."), "Follow the instruction to locate the folder where you saved the csv. This should be the same folder where you keep all the publication profiles. If you have cloned the entire GitHub repo (which is the recomended workflow) then this folder should be /data/publicationProfiles. Now, because the file names are so cryptic, you need to initially select all of them and let the app extract the publication titles, which you then pick from in order to upload the correct profile. After you've selected a publication by its title, you can preview that datafile to the right, above the edited version. When you have the correct publication profile, you can populate the form using the switch. Control that the", tags$i("Publication profile"),  "on the right is updated correctly. Continue editing the file. When reaching the end, in most cases you want to overwrite the existing profile to avoid duplications. Therefore, this time select", tags$i("Replace the uploaded file."), "This will reuse the file name and overwrite the old version.",style = "width: 500px;"),
+               
+               p("When you have a poblication profile, you can go on to process the individual indicators that are described in it. Switch to the", tags$i("Register indicator"), "tab. Most of the workflow is similar as what you just did for the publication, except you also need to be careful to link the indicator to the correct publication.", style = "width: 500px;")
+      ),
       
 # 5 Instructions----
 
-      tabPanel("Contact")
+      tabPanel("Contact",
+               
+        p("For technical issues with the app itself, including suggestions for improvments, please look though", tags$a(href="https://github.com/anders-kolstad/theIndiMap/issues", "existing issues"), "in the GitHub repo if the issue is already raised, and if not, create a new issue there.",style = "width: 500px;"),
+        
+        p("For other questions or comments, either about the app or the systematic review, contact Anders L. Kolstad: anders.kolstad@nina.no",
+          style = "width: 500px;")
+               
+               
+               )
 
 # 5 Contact ----
              )
@@ -1149,9 +1192,9 @@ server <- function(input, output, session) ({
   })
   ## iID ----
   iUUID <- reactive({
-    ifelse(is.na(iForm()$value[iForm()$parameter == "pID"]), 
+    ifelse(is.na(iForm()$value[iForm()$parameter == "iID"]), 
            uuid::UUIDgenerate(),
-           iForm()$value[iForm()$parameter == "pID"])
+           iForm()$value[iForm()$parameter == "iID"])
   })
   
   
@@ -1301,68 +1344,70 @@ server <- function(input, output, session) ({
 
 # '-------------
   
-  ## iName ----
+   ## iName ----
+  observeEvent(input$i_populate, {
+   updateTextInput(session = session,
+                   'iName',
+                   value = iForm()$value[iForm()$parameter == "iName"])
+  })
+ 
+## githubUser2 ----
+ observeEvent(input$i_populate, {
+   updateTextInput(session = session,
+                   'githubuser2',
+                   value = iForm()$value[iForm()$parameter == "githubUser"])
+ })
+ 
+##  iRedundant ----
 observeEvent(input$i_populate, {
-  updateTextInput(session = session,
-                  'iName',
-                  value = iForm()$value[iForm()$parameter == "iName"])
+  updateRadioGroupButtons(session = session,
+                  'iRedundant',
+                  choices = c("Redundant", "Possibly redundant", "Unique"),
+                  selected = iForm()$value[iForm()$parameter == "iRedundant"]
+                  )
 })
-  
- ## githubUser2 ----
-  observeEvent(input$i_populate, {
-    updateTextInput(session = session,
-                    'githubUser2',
-                    value = iForm()$value[iForm()$parameter == "githubUser2"])
-  })
-  
-  ##  iRedundant ----
-  observeEvent(input$i_populate, {
-    updateTextInput(session = session,
-                    'iRedundant',
-                    value = iForm()$value[iForm()$parameter == "iRedundant"])
-  })
-  
-  ## iRedundantRemarks ----
-  observeEvent(input$i_populate, {
-    updateTextInput(session = session,
-                    'iRedundantRemarks',
-                    value = iForm()$value[iForm()$parameter == "iRedundantRemarks"])
-  })
-  
-  ## iContinent ----
-  observeEvent(input$i_populate, {
-    updateCheckboxGroupButtons(session = session,
-                               'iContinent',
-                               choices = c("Africa",
-                                           "Antactica", 
-                                           "Asia",
-                                           "Australia",
-                                           "Europe",
-                                           "North America",
-                                           "South America"
-                               ),
-                               selected = stringr::str_split(
-                                 iForm()$value[iForm()$parameter == "iContinent"],
-                                 " \\| ", simplify = T))
-  })
-  
-  ## iCountry ----
-  observeEvent(input$i_populate, {
-    updateCheckboxGroupButtons(session = session,
-                               'iCountry',
-                               choices = ISO3166_v2,
-                               selected = stringr::str_split(
-                                 iForm()$value[iForm()$parameter == "iCountry"],
-                                 " \\| ", simplify = T))
-  })
-  
-  ## iLowerGeography ----
-  observeEvent(input$i_populate, {
-    updateTextInput(session = session,
-                    'iLowerGeography',
-                    value = iForm()$value[iForm()$parameter == "iLowerGeography"])
-  })
-  
+ 
+ ## iRedundantRemarks ----
+ observeEvent(input$i_populate, {
+   updateTextInput(session = session,
+                   'iRedundantRemarks',
+                   value = iForm()$value[iForm()$parameter == "iRedundantRemarks"])
+ })
+ 
+ ## iContinent ----
+ observeEvent(input$i_populate, {
+   updatePickerInput(session = session,
+                              'iContinent',
+                              choices = c("Africa",
+                                          "Antarctica", 
+                                          "Asia",
+                                          "Australia",
+                                          "Europe",
+                                          "North America",
+                                          "South America"
+                              ),
+                              selected = stringr::str_split(
+                                iForm()$value[iForm()$parameter == "iContinent"],
+                                " \\| ", simplify = T))
+ })
+ 
+ ## iCountry ----
+ observeEvent(input$i_populate, {
+   updatePickerInput(session = session,
+                              'iCountry',
+                              choices = ISO3166_v2,
+                              selected = stringr::str_split(
+                                iForm()$value[iForm()$parameter == "iCountry"],
+                                " \\| ", simplify = T))
+ })
+ 
+ ## iLowerGeography ----
+ observeEvent(input$i_populate, {
+   updateTextInput(session = session,
+                   'iLowerGeography',
+                   value = iForm()$value[iForm()$parameter == "iLowerGeography"])
+ })
+ 
   # '-------------
   
   
@@ -1438,7 +1483,7 @@ observeEvent(input$i_populate, {
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
     dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(
-      input$iRedundant == "No",
+      input$iRedundant == "Unique",
         NA,
         input$iRedundantRemarks)
     dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")

@@ -3,7 +3,7 @@ iID;NA
 pID;NA
 githubUser;NA
 iName;NA
-iRedundant;No
+iRedundant;Unique
 iRedundantRemarks;NA
 iContinent;NA
 iCountry;NA
@@ -28,7 +28,7 @@ iOriginalUnits;NA
 iECTclass;NA
 iECTsnippet;NA
 rType;NA
-rSnippet;NA
+rTypeSnippet;NA
 rTypeRemarks;NA
 rResolution;NA
 rRescalingMethod;NA

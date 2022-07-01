@@ -1,12 +1,13 @@
 parameter;value
+githubUser;NA
+pTitle;NA
 pZoteroID;NA
 pID;NA
-pTitle;NA
 pBibliography;NA
-githubUser;NA
 pRedundant;Unique
 pType;Peer-reviewed article
 pJournal;NA
+pDirective;Not relevant
 pAssessment;NA
 pAssessmentYear;NA
 pEAAextent;NA
@@ -14,4 +15,3 @@ pEAAarea;NA
 pAggregation;NA
 pAggregationRemark;NA
 pTotalNumberOfIndicators;NA
-pDirective;Not relevant
