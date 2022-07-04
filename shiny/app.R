@@ -62,7 +62,7 @@ ui <-
       
 sidebarLayout(
   sidebarPanel(width = 6,        
-      
+      style = "position: fixed; width: 45%; height: 90vh; overflow-y: auto;",
       h5(tags$i("Hover the input fields for more information and examples of use")),
       
       
@@ -366,7 +366,8 @@ sidebarLayout(
             
     conditionalPanel("input.pNew == 'Edit'",      
         # 3 OUTPUT: uploaded ----
-      h5("Preview of the uploaded publication profile (before any new edits):", style="background-color:lightgreen;"),
+      h5("Preview of the uploaded publication profile (before any new edits):", 
+         style="background-color:lightgreen;"),
       tableOutput("uploaded")     
     ),
             
@@ -401,7 +402,8 @@ sidebarLayout(
 # **TAB Register indicator ----
   tabPanel("Register indicator",
       sidebarLayout(
-        sidebarPanel(width = 6,    
+        sidebarPanel(width = 6,
+        style = "position: fixed; width: 45%; height: 90vh; overflow-y: auto;",
                   
     h5(tags$i("Hover the input fields for more information and examples of use")),             
 
@@ -875,7 +877,15 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
 
  ), # end side panel
   mainPanel(width = 6,
-            
+    
+    conditionalPanel("input.iNew == 'Edit'",      
+      # 4 OUTPUT: i_uploaded ----
+      h5("Preview of the uploaded indicator profile (before any new edits):", 
+         style="background-color:lightgreen;"),
+      tableOutput("i_uploaded")     
+    ),
+    
+    br(),        
             
     # 4 OUTPUT previewI ----
     h4("Indicator profile", style="background-color:lightgreen;"),
@@ -1158,6 +1168,38 @@ server <- function(input, output, session) ({
     }
   })
   
+  
+  # A* OUTPUT i_uploaded ----
+  # Preview the chosen Indicator Profile to make sure it's imported correctly
+  output$i_uploaded <- renderTable({
+    
+    # input$indDrop will be NULL initially. After the user selects
+    # and uploads a file, head of that data file by default,
+    # or all rows if selected, will be shown.
+    
+    req(input$indDrop)
+    
+    # when reading semicolon separated files,
+    # having a comma separator causes `read.csv` to error
+    tryCatch(
+      {
+        df <- uploadedInd()
+      },
+      error = function(e) {
+        # return a safeError if a parsing error occurs
+        stop(safeError(e))
+      }
+    )
+    
+    if(input$disp == "head") {
+      return(head(df))
+    }
+    else {
+      return(df)
+    }
+  })
+  
+  
   # A* REACT pform ----
   pform <- reactive({
     ifelse(input$populate == FALSE, 
@@ -1344,6 +1386,17 @@ server <- function(input, output, session) ({
 
 # '-------------
   
+  ## pID ----
+  observeEvent(input$localPub2, {
+    updatePickerInput(session = session, inputId = "pubDrop2",
+                      choices = unique(publicationList2()$pTitle))
+  })
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session, inputId = "pubDrop2",
+                      choices = iForm()$value[iForm()$parameter == "pID"])
+  })
+ 
+  
    ## iName ----
   observeEvent(input$i_populate, {
    updateTextInput(session = session,
@@ -1407,6 +1460,222 @@ observeEvent(input$i_populate, {
                    'iLowerGeography',
                    value = iForm()$value[iForm()$parameter == "iLowerGeography"])
  })
+  
+  ## iLatitude ----
+  observeEvent(input$i_populate, {
+    updateNumericInput(session = session,
+                       'iLatitude',
+                       value = iForm()$value[iForm()$parameter == "iLatitude"])
+  })
+  
+  ## iLongitude ----
+    observeEvent(input$i_populate, {
+      updateNumericInput(session = session,
+                         'iLongitude',
+                         value = iForm()$value[iForm()$parameter == "iLongitude"])
+    })
+  
+  
+  ## dName ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'dName',
+                    value = iForm()$value[iForm()$parameter == "dName"])
+  })
+  
+  ## dReference ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'dReference',
+                    value = iForm()$value[iForm()$parameter == "dReference"])
+  })
+  
+  ## dOrigin ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'dOrigin',
+                      choices = c("RS - remotely sensed",
+                                  "MP - established monitoring program",
+                                  "FS - field sampling",
+                                  "CS - crowd sourced",
+                                  "EO - expert opinion",
+                                  "OT - others or unsure"),
+                      selected = stringr::str_split(
+                        iForm()$value[iForm()$parameter == "dOrigin"],
+                        " \\| ", simplify = T))
+  })
+  ## dSpatialCoverage ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'dSpatialCoverage',
+                      choices = c("NA",
+                                  "1 - complete",
+                                  "2 - area representative",
+                                  "3 - oppurtunistic or sporadic",
+                                  "4 - unknown"),
+                      selected = iForm()$value[iForm()$parameter == "dSpatialCoverage"])
+  })
+  
+  
+  ## iDescriptionSnippet ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iDescriptionSnippet',
+                    value = iForm()$value[iForm()$parameter == "iDescriptionSnippet"])
+  })
+  
+  ## iDescription ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iDescription',
+                    value = iForm()$value[iForm()$parameter == "iDescription"])
+  })
+  ## iSpatialExtent ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'iSpatialExtent',
+                      choices = scale1,
+                      selected = iForm()$value[iForm()$parameter == "iSpatialExtent"])
+  })
+  ## iSpatialResolution ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'iSpatialResolution',
+                      choices = scale1,
+                      selected = iForm()$value[iForm()$parameter == "iSpatialResolution"])
+  })
+  ## iTemporalCoverage ----
+  observeEvent(input$i_populate, {
+    updateNumericInput(session = session,
+                      'iTemporalCoverage',
+                      value = iForm()$value[iForm()$parameter == "iTemporalCoverage"])
+  })
+  ## iMap ----
+  observeEvent(input$i_populate, {
+    updateRadioGroupButtons(session = session,
+                       'iMap',
+                       choices = c("No", "Yes", "Not by itself, but as part of an aggregated index"),
+                       selected = iForm()$value[iForm()$parameter == "iMap"])
+  })
+  ## iYear ----
+  
+  observeEvent(input$i_populate, {
+    updateNumericInput(session = session,
+                            'iYear',
+                            value = iForm()$value[iForm()$parameter == "iYear"])
+  })
+  ## iBiome ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'iBiome',
+                      choices = c(
+                        "T1 - Tropical-subtropical forests",
+                        "T2 - Temperate-boreal forests & woodlands",
+                        "T3 - Shrublands & shrubby woodlands",
+                        "T4 - Savannas and grasslands",
+                        "T5 - Deserts and semi-deserts",
+                        "T6 - Polar-alpine",
+                        "T7 - Intensive land-use systems",
+                        "UNK - Unknown or dont fit"),
+                      selected = stringr::str_split(
+                        iForm()$value[iForm()$parameter == "iBiome"],
+                        " \\| ", simplify = T))
+  })
+  
+  ## iSubIndex ----
+    
+    observeEvent(input$i_populate, {
+      updateRadioGroupButtons(session = session,
+                              'iSubIndex',
+                              choices = c("No", "Yes", "Unclear"),
+                              selected = iForm()$value[iForm()$parameter == "iSubIndex"])    
+      })
+    
+  ## iModelling ----
+    observeEvent(input$i_populate, {
+      updateRadioGroupButtons(session = session,
+                              'iModelling',
+                              choices = c("No", "Yes", "Unclear"),
+                              selected = iForm()$value[iForm()$parameter == "iModelling"])    
+    })
+  ## iOriginalUnits  ----
+      
+    observeEvent(input$i_populate, {
+      updateTextInput(session = session,
+                      'iOriginalUnits',
+                      value = iForm()$value[iForm()$parameter == "iOriginalUnits"])
+    })
+  ## iECTclass ----
+    
+    observeEvent(input$i_populate, {
+      updatePickerInput(session = session,
+                        'iECTclass',
+                        choices = c("NA",
+                                    "A1 Physical state characteristics",
+                                    "A2 Chemical state characteristics",
+                                    "B1 Compositional state characteristics",
+                                    "B2 Structural state characteristics",
+                                    "B3 Functional state characteristics",
+                                    "C1 Landscape and seascape characteristics",
+                                    "Other (e.g. pre-aggregated indices)"),
+                        selected = iForm()$value[iForm()$parameter == "iECTclass"])
+      })
+    
+  ## iECTsnippet ----
+    observeEvent(input$i_populate, {
+      updateTextInput(session = session,
+                      'iECTsnippet',
+                      value = iForm()$value[iForm()$parameter == "iECTsnippet"])
+    })
+  ## rType ----
+   
+    observeEvent(input$i_populate, {
+      updatePickerInput(session = session,
+                        'rType',
+                        choices = refStates,
+                        selected = iForm()$value[iForm()$parameter == "rType"])
+    })
+  ## rTypeSnippet ----
+    observeEvent(input$i_populate, {
+      updateTextInput(session = session,
+                      'rTypeSnippet',
+                      value = iForm()$value[iForm()$parameter == "rTypeSnippet"])
+    })
+  
+  ## rTypeRemarks ----
+    observeEvent(input$i_populate, {
+      updateTextInput(session = session,
+                      'rTypeRemarks',
+                      value = iForm()$value[iForm()$parameter == "rTypeRemarks"])
+    })
+  ## rResolution ----
+    
+    observeEvent(input$i_populate, {
+      updatePickerInput(session = session,
+                        'rResolution',
+                        choices = scale1,
+                        selected = iForm()$value[iForm()$parameter == "rResolution"])
+    })
+  ## rRescalingMethod ----
+      observeEvent(input$i_populate, {
+      updateRadioGroupButtons(session = session,
+                              'rRescalingMethod',
+                              choices = rescalingMethod,
+                              selected = iForm()$value[iForm()$parameter == "rRescalingMethod"])    
+    })
+  ## rMax ----
+    observeEvent(input$i_populate, {
+      updateTextInput(session = session,
+                      'rMax',
+                      value = iForm()$value[iForm()$parameter == "rMax"])
+    })
+  ## rMin ----
+    observeEvent(input$i_populate, {
+      updateTextInput(session = session,
+                      'rMin',
+                      value = iForm()$value[iForm()$parameter == "rMin"])
+    })
+  
  
   # '-------------
   
@@ -1478,7 +1747,9 @@ observeEvent(input$i_populate, {
     # shorten name
     dat <- iForm()
     dat$value[dat$parameter == "iID"] <- iUUID()
-    dat$value[dat$parameter == "pID"] <- input$pubDrop2
+    dat$value[dat$parameter == "pID"] <- #ifelse(input$i_populate == T, 
+                                          #      iForm()$value[iForm()$parameter == "pID"]
+                                                input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
@@ -1594,12 +1865,7 @@ output$previewI <- renderDT(
   # '-------------
   # ' ------------
   
-  # C* UPDATE pubDrop2 ----
-  # reactive list of publications titles
-  observeEvent(input$localPub2, {
-    updatePickerInput(session = session, inputId = "pubDrop2",
-                      choices = unique(publicationList2()$pTitle))
-  })
+  
   
   
   
