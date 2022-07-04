@@ -1,7 +1,7 @@
 # Output directory containing the formatted manuscript
 
 The [`gh-pages`](https://github.com/anders-kolstad/theIndiMap/tree/gh-pages) branch hosts the contents of this directory at <https://anders-kolstad.github.io/theIndiMap/>.
-The permalink for this webpage version is <https://anders-kolstad.github.io/theIndiMap/v/5d871ec36ec07bf130289d3066bcacc606bb8668/>.
+The permalink for this webpage version is <https://anders-kolstad.github.io/theIndiMap/v/aa14196bbd43c0013b16863b895a9c6d2e84d774/>.
 To redirect to the permalink for the latest manuscript version at anytime, use the link <https://anders-kolstad.github.io/theIndiMap/v/freeze/>.
 
 ## Files
@@ -35,4 +35,4 @@ Verifying timestamps with the `ots verify` command requires running a local bitc
 ## Source
 
 The manuscripts in this directory were built from
-[`5d871ec36ec07bf130289d3066bcacc606bb8668`](https://github.com/anders-kolstad/theIndiMap/commit/5d871ec36ec07bf130289d3066bcacc606bb8668).
+[`aa14196bbd43c0013b16863b895a9c6d2e84d774`](https://github.com/anders-kolstad/theIndiMap/commit/aa14196bbd43c0013b16863b895a9c6d2e84d774).
