@@ -52,13 +52,33 @@ rescalingMethod <- c(linear = "LIN - linear",
 
 
 ui <- 
-  navbarPage("The IndiMap",
-             
+  navbarPage(
+    # add title and logos inside a div
+    title = div(
+      #"indiMAP",
+      div(img(src='indimaplogo4.png',
+              style="margin-top: -14px;
+                               padding-right:15px;
+                               padding-bottom:15px",
+              height = 60)),        
+                tags$script(HTML("var header = $('.navbar > .container-fluid');
+header.append('<div style=\"float:right\"><a href=\"https://www.nina.no/\"><img src=\"NINA_logo_sort_txt_engelsk_under.png\" alt=\"alt\" style=\"float:right;width:50px;padding-top:5px;padding-bottom:0px;\"> </a></div>');
+header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-kolstad/theIndiMap\"><img src=\"githublogo.png\" alt=\"alt\" style=\"float:right;width:50px;padding-top:5px;padding-bottom:0px;padding-right:15px;\"> </a></div>');
+    console.log(header)"))
+                ),
+
+    
+    # fix the navbar so that it doesn't scroll
+    position = "fixed-top", 
+    # add padding to the navbar doesn't overlay content
+    tags$style(type="text/css", "body {padding-top: 70px;}"), #.navbar { background: #9cbff7; }
+
 
 
 # '-------------       
 # **TAB Register Publication ----
       tabPanel("Register publication",
+              
       
 sidebarLayout(
   sidebarPanel(width = 6,        
