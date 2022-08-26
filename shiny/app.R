@@ -27,13 +27,13 @@ ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
 # Named lists
-scale1 <- c(unknown = "UNK - unknown",
-            global  = "GLO - global",
-            continent = "CON - continent",
-            country = "COU - country",
-            region = "REG - region",
-            local = "LOC - local",
-            'sub-local' = "SLO - sub-local")
+scale1 <- c(unknown = "0 - unknown",
+            global  = "1 - global",
+            continent = "2 - continent",
+            country = "3 - country",
+            region = "4 - region",
+            local = "5 - local",
+            'project area' = "6 - project-area")
 
 refStates <- c("Undisturbed or minimally-disturbed condition" = "UND- Undisturbed or minimally-disturbed condition",
                "Historical condition" = "HIS - Historical condition",
@@ -274,11 +274,21 @@ sidebarLayout(
   conditionalPanel("input.pAssessment == 'Assessment'",
   tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)
            
-           Sub-local here means a scale lower than the typical administrative unit",
+           Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+           
+           Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+           
+           Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+           
+           "
+           
+           
+           
+           ,
            radioGroupButtons(
              inputId = "pEAAextent",
              label = "The extent of the Ecosystem Accounting Area",
-             choices = c("global", "continent", "country", "region", "local", "sub-local"),
+             choices = scale1,
              selected = NULL
            )
           ),
@@ -717,7 +727,12 @@ h4("Fields related to the indicator itself:", style="background-color:lightblue;
                      choices = scale1)),
 
   # 4 INPUT iTemporalCoverage ----
-  tags$div(title = "The length of the time series at the time of publication (years). Duration less than 1 year is reported an 1 year.",
+  tags$div(title = "The length of the time series at the time of publication (years). 
+           
+           Duration less than 1 year is reported as 1 year.
+           
+           If unknown, enter 999.
+           ",
     numericInput("iTemporalCoverage", 
        "Temporal coverage (length of time series)",
        value = NA,
@@ -1211,7 +1226,7 @@ server <- function(input, output, session) ({
       }
     )
     
-    if(input$disp == "head") {
+    if(input$i_disp == "head") {
       return(head(df))
     }
     else {
@@ -1347,7 +1362,7 @@ server <- function(input, output, session) ({
   observeEvent(input$populate, {
     updateRadioGroupButtons(session = session,
                             'pEAAextent',
-                            choices = c("global", "continent", "country", "region", "local", "sub-local"),
+                            choices = scale1,
                             selected = pform()$value[pform()$parameter == "pEAAextent"])
   })
   
