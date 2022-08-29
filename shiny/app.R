@@ -282,8 +282,6 @@ sidebarLayout(
            
            "
            
-           
-           
            ,
            radioGroupButtons(
              inputId = "pEAAextent",
@@ -419,6 +417,7 @@ sidebarLayout(
     h6("If this is greek to you, you can save it to any local and dedicated folder
        on you computer and contact the project leader about how to get you csv file
        submitted to the main github branch"),
+    actionButton("validate_p", "Validate"),
     tags$div(title = "Click to open a 'Save as' dialogue window.\n\nDO NOT change the file name.",
              downloadButton("downloadData", "Download"))
   )
@@ -584,17 +583,24 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
              inputId = "iRedundant",
              label = "Redundant?"
              ,
-             choices = c("Redundant", "Possibly redundant", "Unique")
-             #,
-             #selected = "Unique"
+             choices = c("Redundant", "Possibly redundant", "Unique"),
+             selected = "Unique"
            )),
 
   # 4 INPUT iRedundantRemarks ----
 conditionalPanel(condition =  "input.iRedundant != 'Unique'",
-  tags$div(title = "Use tis field to elaborate if you chose 'Partly or 'Yes' above",
+  tags$div(title = "Use this field to elaborate if you chose 'Partly or 'Yes' above",
            textInput("iRedundantRemarks", 
                      "Remarks to the above", 
-                     value = ""))),
+                     value = "")),
+  
+  # 4 INPUT iRedundantReferences
+  tags$div(title = "Enter a reference, preferrabluy a doi, to the duplicate resource. For example, if the paper you are reading reports an indicator that it borrows from another reference that they cite. All duplicates, with the exeption of pre-prints when published versione exist, should be processed in the app in the normal way.",
+           textInput("iRedundantReferences", 
+                     "Source reference", 
+                     value = "")),
+  
+  ),
 
  # 4 INPUT iContinent ----
 tags$div(title = "Select the continent(s) where the indicator has been applied, eiether as a test or as part of an assessment.",
@@ -1461,6 +1467,14 @@ observeEvent(input$i_populate, {
                    'iRedundantRemarks',
                    value = iForm()$value[iForm()$parameter == "iRedundantRemarks"])
  })
+  
+  
+  ## iRedundantReferences ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iRedundantReferences',
+                    value = iForm()$value[iForm()$parameter == "iRedundantReferences"])
+  })
  
  ## iContinent ----
  observeEvent(input$i_populate, {
@@ -1714,6 +1728,29 @@ observeEvent(input$i_populate, {
  
   # '-------------
   
+
+  
+# B* showNotification: validate_p ----
+  
+  
+  
+  observeEvent(input$validate_p, {
+    showNotification(
+      paste(
+      if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3) "MISSING: Publication title is not valid",
+      if(nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3) "MISSING: Please enter GitHub user name",
+      if(nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Enter the full URL for the Zotero entry",
+      if(input$pAssessment == "Assessment"){
+        if(!is.numeric(pExport()$value[pExport()$parameter == "pAssessmentYear"])) {"MISSING: Publication Year is missing"}
+        },
+      if(input$pAssessment == "Assessment"){
+        if(!is.numeric(pExport()$value[pExport()$parameter == "pAggregation"])) {"MISSING: The level of aggregetaion is missing"}
+      }
+      ),
+      type = "error",
+      duration = NA
+    )
+  })
   
 # B* OUTPUT: pExport   ----
   
@@ -1729,19 +1766,12 @@ observeEvent(input$i_populate, {
     dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
     
     dat$value[dat$parameter == "pID"] <- pUUID()
-      #ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
-      #  uuid::UUIDgenerate(),
-      #  pform()$value[pform()$parameter == "pID"])
-    
+      
     dat$value[dat$parameter == "pTitle"] <- input$ptitle
     
     dat$value[dat$parameter == "pBibliography"] <- input$pbibliography
 
     dat$value[dat$parameter == "githubUser"] <- input$githubuser
-    
-    # These are cut out and treated as inclusion criteria:
-    #dat$value[dat$parameter == "pRealm"] <- input$pRealm
-    #dat$value[dat$parameter == "pNormalised"] <- input$pNormalised
     
     dat$value[dat$parameter == "pRedundant"] <- input$pRedundant
 
@@ -1781,10 +1811,9 @@ observeEvent(input$i_populate, {
   iExport <- reactive({
     # shorten name
     dat <- iForm()
+    
     dat$value[dat$parameter == "iID"] <- iUUID()
-    dat$value[dat$parameter == "pID"] <- #ifelse(input$i_populate == T, 
-                                          #      iForm()$value[iForm()$parameter == "pID"]
-                                                input$pubDrop2
+    dat$value[dat$parameter == "pID"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
@@ -1792,6 +1821,10 @@ observeEvent(input$i_populate, {
       input$iRedundant == "Unique",
         NA,
         input$iRedundantRemarks)
+    dat$value[dat$parameter == "iRedundantReferences"] <- ifelse(
+      input$iRedundant == "Unique",
+      NA,
+      input$iRedundantReferences)
     dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")
     dat$value[dat$parameter == "iCountry"] <- paste(input$iCountry, collapse = " | ")
     dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
