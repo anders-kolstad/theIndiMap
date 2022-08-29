@@ -8,6 +8,7 @@ library(shinyFiles)
 library(shinyWidgets)
 library(DT)
 library(uuid)
+library(shinyalert)
 #library(tidyverse)
 #library(readxl)
 
@@ -73,6 +74,7 @@ header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-ko
     # add padding to the navbar doesn't overlay content
     tags$style(type="text/css", "body {padding-top: 70px;}"), #.navbar { background: #9cbff7; }
 
+    useShinyalert(),
 
 
 # '-------------       
@@ -83,7 +85,7 @@ header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-ko
 sidebarLayout(
   sidebarPanel(width = 6,        
       style = "position: fixed; width: 45%; height: 90vh; overflow-y: auto;",
-      h5(tags$i("Hover the input fields for more information and examples of use")),
+      h5(tags$i("Hover the input fields or press the info buttons for more information and examples of use.")),
       
       
       # 3 INPUT pNew  ----
@@ -201,7 +203,7 @@ sidebarLayout(
         textInput("pzoteroid", 
                   "Enter the full URL for the Zotero entry", 
                   value = "")),
-      
+      h5(tags$i("This is the url for the zotero library: https://www.zotero.org/groups/4630169/the_indimap_review/library")),
       
       # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
@@ -272,17 +274,7 @@ sidebarLayout(
   
   # 3 INPUT pEAAextent ----
   conditionalPanel("input.pAssessment == 'Assessment'",
-  tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)
-           
-           Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
-           
-           Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
-           
-           Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
-           
-           "
-           
-           ,
+  tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)",
            radioGroupButtons(
              inputId = "pEAAextent",
              label = "The extent of the Ecosystem Accounting Area",
@@ -291,8 +283,11 @@ sidebarLayout(
            )
           ),
   
+  actionButton("pEAAextantINFO", "",
+               icon = icon("info")),
+  
   # 3 INPUT pEAAarea ----
-  tags$div(title = "Example: 385207\n\n The area (km2) of the ecosystem assessment/accounting area(s). No spaces.",
+  tags$div(title = "Example: 385207\n\nThe area (km2) of the ecosystem assessment/accounting area(s). No spaces. If the EAA extant is not reported in the reference it is encouraged that you find out by googleing. It is OK to use an approximate or rounded of number",
          numericInput(
            inputId = "pEAAarea",
            label = "The total area of the Ecosystem Accounting Area in km2",
@@ -336,6 +331,10 @@ sidebarLayout(
     h5("3 - EA level"),
     h5("4 - ET level"),
     h5("5 - EAA level"),
+  
+  actionButton("pAggregationINFO", "",
+               icon = icon("info")),
+  
   
   
   # 3 INPUT pAggregationRemark ----
@@ -1372,6 +1371,22 @@ server <- function(input, output, session) ({
                             selected = pform()$value[pform()$parameter == "pEAAextent"])
   })
   
+  observeEvent(input$pEAAextantINFO, {
+    shinyalert::shinyalert(
+      "The spatial extent of the ecosystem assessment/accounting area(s)
+           
+           Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+           
+           Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+           
+           Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+           
+           "
+    )
+  })
+  
+  
+  
   ## pEAAarea ----
   observeEvent(input$populate, {
     updateNumericInput(session = session,
@@ -1392,6 +1407,21 @@ server <- function(input, output, session) ({
     updateNumericInput(session = session,
                             'pAggregation',
                             value = pform()$value[pform()$parameter == "pAggregation"])
+  })
+  
+  observeEvent(input$pAggregationINFO, {
+    shinyalert::shinyalert(
+      "-- 'Close' button at the bottom. If you cannot reach it, press Ctrl +/- to change resolution untill it becomes visible again. --
+      
+      \nThe highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
+                    \nExamples: 
+                    \n0 = indicators reported seperately with no aggregation
+                    \n1 = E.g. an Amphibian index, or a SEEA ECT class
+                    \n2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
+                    \n3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
+                    \n4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
+                    \n5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs"
+    )
   })
   
   ## pAggregationRemark ----
