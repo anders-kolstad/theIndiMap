@@ -311,13 +311,7 @@ sidebarLayout(
   
   # 3 INPUT pAggregation ----
  
-  tags$div(title = "The highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
-                    Examples: 0 = indicators reported seperately with no aggregation
-                              1 = E.g. an Amphibian index, or a SEEA ECT class
-                              2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
-                              3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
-                              4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
-                              5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs",
+  tags$div(title = "The highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.",
            numericInput(
              inputId = "pAggregation",
              label = "Level of aggregation",
@@ -326,7 +320,7 @@ sidebarLayout(
              max=5
            )),
     h5("0 - None (i.e. metric level)"),
-    h5("1 - Thematic level (e.g. a species group or some level that does not span several SEEA ECT classes"),
+    h5("1 - Thematic level"),
     h5("2 - BSU level"),
     h5("3 - EA level"),
     h5("4 - ET level"),
@@ -416,7 +410,7 @@ sidebarLayout(
     h6("If this is greek to you, you can save it to any local and dedicated folder
        on you computer and contact the project leader about how to get you csv file
        submitted to the main github branch"),
-    actionButton("validate_p", "Validate"),
+    actionButton("validate_p", "Simplified validation"),
     tags$div(title = "Click to open a 'Save as' dialogue window.\n\nDO NOT change the file name.",
              downloadButton("downloadData", "Download"))
   )
@@ -571,7 +565,7 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
   tags$div(title = "Type a human readable name for the indicator. Preferably unique. For example: Tree cover Netherlands.",
          textInput("iName", 
                    "Indicator name", 
-                   value = "")),
+                   value = "ENTER INDICATOR NAME")),
 
   
   
@@ -695,7 +689,7 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
           If *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
            If the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)",
     pickerInput('dSpatialCoverage', 'Spatial Coverage of underlying dataset',
-      choices = c("NA",
+      choices = c("0 - NA",
                   "1 - complete",
                   "2 - area representative",
                   "3 - oppurtunistic or sporadic",
@@ -817,7 +811,7 @@ B3: flood risk; NPP, biomass growth
 C1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
 Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))",
          pickerInput('iECTclass', 'SEEA Ecosystem Condition Typology Class',
-                     choices = c("NA",
+                     choices = c("Choose a category",
                        "A1 Physical state characteristics",
                        "A2 Chemical state characteristics",
                        "B1 Compositional state characteristics",
@@ -1416,7 +1410,7 @@ server <- function(input, output, session) ({
       \nThe highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
                     \nExamples: 
                     \n0 = indicators reported seperately with no aggregation
-                    \n1 = E.g. an Amphibian index, or a SEEA ECT class
+                    \n1 = A species group or some level that does not span several SEEA ECT classes. 
                     \n2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
                     \n3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
                     \n4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
@@ -1458,10 +1452,13 @@ server <- function(input, output, session) ({
 # '-------------
   
   ## pID ----
+  # update the drop down list based on what you selected in 'localPub2', i.e. the csv's you uploaded
   observeEvent(input$localPub2, {
     updatePickerInput(session = session, inputId = "pubDrop2",
                       choices = unique(publicationList2()$pTitle))
   })
+  
+  # update the same drop down list with the publication name in the uploaded version
   observeEvent(input$i_populate, {
     updatePickerInput(session = session, inputId = "pubDrop2",
                       choices = iForm()$value[iForm()$parameter == "pID"])
@@ -1587,7 +1584,7 @@ observeEvent(input$i_populate, {
   observeEvent(input$i_populate, {
     updatePickerInput(session = session,
                       'dSpatialCoverage',
-                      choices = c("NA",
+                      choices = c("0 - NA",
                                   "1 - complete",
                                   "2 - area representative",
                                   "3 - oppurtunistic or sporadic",
@@ -1689,7 +1686,7 @@ observeEvent(input$i_populate, {
     observeEvent(input$i_populate, {
       updatePickerInput(session = session,
                         'iECTclass',
-                        choices = c("NA",
+                        choices = c("Choose a category",
                                     "A1 Physical state characteristics",
                                     "A2 Chemical state characteristics",
                                     "B1 Compositional state characteristics",
@@ -1770,16 +1767,9 @@ observeEvent(input$i_populate, {
       if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3) "MISSING: Publication title is not valid",
       if(nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3) "MISSING: Please enter GitHub user name",
       if(nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Enter the full URL for the Zotero entry",
-      if(input$pAssessment == "Assessment"){
-        if(!is.numeric(pExport()$value[pExport()$parameter == "pAssessmentYear"])) {"MISSING: Publication Year is missing"}
-        },
-      if(input$pAssessment == "Assessment"){
-        if(!is.numeric(pExport()$value[pExport()$parameter == "pAggregation"])) {"MISSING: The level of aggregetaion is missing"}
-      }
-      ),
       type = "error",
       duration = NA
-    )
+    ))
   })
   
 # B* OUTPUT: pExport   ----
@@ -1847,14 +1837,10 @@ observeEvent(input$i_populate, {
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
-    dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(
-      input$iRedundant == "Unique",
-        NA,
-        input$iRedundantRemarks)
-    dat$value[dat$parameter == "iRedundantReferences"] <- ifelse(
-      input$iRedundant == "Unique",
-      NA,
-      input$iRedundantReferences)
+    dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(input$iRedundant == "Unique",
+        NA,input$iRedundantRemarks)
+    dat$value[dat$parameter == "iRedundantReferences"] <- ifelse(input$iRedundant == "Unique",
+        NA,input$iRedundantReferences)
     dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")
     dat$value[dat$parameter == "iCountry"] <- paste(input$iCountry, collapse = " | ")
     dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
