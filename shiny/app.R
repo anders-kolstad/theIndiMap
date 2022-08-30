@@ -8,6 +8,7 @@ library(shinyFiles)
 library(shinyWidgets)
 library(DT)
 library(uuid)
+library(shinyalert)
 #library(tidyverse)
 #library(readxl)
 
@@ -27,13 +28,13 @@ ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
 # Named lists
-scale1 <- c(unknown = "UNK - unknown",
-            global  = "GLO - global",
-            continent = "CON - continent",
-            country = "COU - country",
-            region = "REG - region",
-            local = "LOC - local",
-            'sub-local' = "SLO - sub-local")
+scale1 <- c(unknown = "0 - unknown",
+            global  = "1 - global",
+            continent = "2 - continent",
+            country = "3 - country",
+            region = "4 - region",
+            local = "5 - local",
+            'project area' = "6 - project-area")
 
 refStates <- c("Undisturbed or minimally-disturbed condition" = "UND- Undisturbed or minimally-disturbed condition",
                "Historical condition" = "HIS - Historical condition",
@@ -73,6 +74,7 @@ header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-ko
     # add padding to the navbar doesn't overlay content
     tags$style(type="text/css", "body {padding-top: 70px;}"), #.navbar { background: #9cbff7; }
 
+    useShinyalert(),
 
 
 # '-------------       
@@ -83,7 +85,7 @@ header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-ko
 sidebarLayout(
   sidebarPanel(width = 6,        
       style = "position: fixed; width: 45%; height: 90vh; overflow-y: auto;",
-      h5(tags$i("Hover the input fields for more information and examples of use")),
+      h5(tags$i("Hover the input fields or press the info buttons for more information and examples of use.")),
       
       
       # 3 INPUT pNew  ----
@@ -201,7 +203,7 @@ sidebarLayout(
         textInput("pzoteroid", 
                   "Enter the full URL for the Zotero entry", 
                   value = "")),
-      
+      h5(tags$i("This is the url for the zotero library: https://www.zotero.org/groups/4630169/the_indimap_review/library")),
       
       # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
@@ -272,19 +274,20 @@ sidebarLayout(
   
   # 3 INPUT pEAAextent ----
   conditionalPanel("input.pAssessment == 'Assessment'",
-  tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)
-           
-           Sub-local here means a scale lower than the typical administrative unit",
+  tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)",
            radioGroupButtons(
              inputId = "pEAAextent",
              label = "The extent of the Ecosystem Accounting Area",
-             choices = c("global", "continent", "country", "region", "local", "sub-local"),
+             choices = scale1,
              selected = NULL
            )
           ),
   
+  actionButton("pEAAextantINFO", "",
+               icon = icon("info")),
+  
   # 3 INPUT pEAAarea ----
-  tags$div(title = "Example: 385207\n\n The area (km2) of the ecosystem assessment/accounting area(s). No spaces.",
+  tags$div(title = "Example: 385207\n\nThe area (km2) of the ecosystem assessment/accounting area(s). No spaces. If the EAA extant is not reported in the reference it is encouraged that you find out by googleing. It is OK to use an approximate or rounded of number",
          numericInput(
            inputId = "pEAAarea",
            label = "The total area of the Ecosystem Accounting Area in km2",
@@ -308,13 +311,7 @@ sidebarLayout(
   
   # 3 INPUT pAggregation ----
  
-  tags$div(title = "The highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
-                    Examples: 0 = indicators reported seperately with no aggregation
-                              1 = E.g. an Amphibian index, or a SEEA ECT class
-                              2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
-                              3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
-                              4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
-                              5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs",
+  tags$div(title = "The highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.",
            numericInput(
              inputId = "pAggregation",
              label = "Level of aggregation",
@@ -323,11 +320,15 @@ sidebarLayout(
              max=5
            )),
     h5("0 - None (i.e. metric level)"),
-    h5("1 - Thematic level (e.g. a species group or some level that does not span several SEEA ECT classes"),
+    h5("1 - Thematic level"),
     h5("2 - BSU level"),
     h5("3 - EA level"),
     h5("4 - ET level"),
     h5("5 - EAA level"),
+  
+  actionButton("pAggregationINFO", "",
+               icon = icon("info")),
+  
   
   
   # 3 INPUT pAggregationRemark ----
@@ -409,6 +410,7 @@ sidebarLayout(
     h6("If this is greek to you, you can save it to any local and dedicated folder
        on you computer and contact the project leader about how to get you csv file
        submitted to the main github branch"),
+    actionButton("validate_p", "Simplified validation"),
     tags$div(title = "Click to open a 'Save as' dialogue window.\n\nDO NOT change the file name.",
              downloadButton("downloadData", "Download"))
   )
@@ -446,7 +448,7 @@ conditionalPanel("input.iNew == 'Edit'",
                  h5("Here you can choose to upload a cvs file so that you can modify them.\n
          In order to find the correct file, first use the 'Choose CVS files' 
          function to select all the crypically names files (typically using Ctrl+A inside
-         the main folder containing the publication og indikator profiles).
+         the main folder containing the publication og indicator profiles).
          Then choose the correct file from the dropdown list. A preview of the import 
          allows you to adjust import settings like headers and seperators."),
                  
@@ -563,28 +565,35 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
   tags$div(title = "Type a human readable name for the indicator. Preferably unique. For example: Tree cover Netherlands.",
          textInput("iName", 
                    "Indicator name", 
-                   value = "")),
+                   value = "ENTER INDICATOR NAME")),
 
   
   
 
   # 4 INPUT iRedundant ----
-  tags$div(title = "Is the indicator described in another reference? For example, an indicator can we presented both in a national assessment and in a stand-alone peer-reviewd paper. Selecting 'Yes' or 'Partly' here will work to flag it as potentially redundant. The following remarks field will help the analyst in making this call later. If the indicator is clearly the same as another indiator describes elsewhere (i.e. same data set, same method, same temporal scope, everything), then you may chose to only register the indiator once, using the most appropriate publication (ideally an assessment) as the source.",  
+  tags$div(title = "Is the indicator described in another reference? For example, you are processing an indicator presented in an assessment of ecosystem condition, but it is also described in a seperate peer-reviewed paper cited in the assessment. Select 'Redundant' or 'Partly redundant' here to flag it as potentially redundant, and add the source reference that can be used to manually link these references later. Note that if you are processing the peer-reviewed paper, you will not be aware of this redundancy/duplicate issue and should not flag it as redundant.",  
            radioGroupButtons(
              inputId = "iRedundant",
              label = "Redundant?"
              ,
-             choices = c("Redundant", "Possibly redundant", "Unique")
-             #,
-             #selected = "Unique"
+             choices = c("Redundant", "Possibly redundant", "Unique"),
+             selected = "Unique"
            )),
 
   # 4 INPUT iRedundantRemarks ----
 conditionalPanel(condition =  "input.iRedundant != 'Unique'",
-  tags$div(title = "Use tis field to elaborate if you chose 'Partly or 'Yes' above",
+  tags$div(title = "Use this field to elaborate if you chose 'Partly or 'Yes' above",
            textInput("iRedundantRemarks", 
                      "Remarks to the above", 
-                     value = ""))),
+                     value = "")),
+  
+  # 4 INPUT iRedundantReferences
+  tags$div(title = "Enter a reference, preferrabluy a doi, to the duplicate resource. For example, if the paper you are reading reports an indicator that it borrows from another reference that they cite. All duplicates, with the exeption of pre-prints when published versione exist, should be processed in the app in the normal way.",
+           textInput("iRedundantReferences", 
+                     "Source reference", 
+                     value = "")),
+  
+  ),
 
  # 4 INPUT iContinent ----
 tags$div(title = "Select the continent(s) where the indicator has been applied, eiether as a test or as part of an assessment.",
@@ -680,7 +689,7 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
           If *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
            If the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)",
     pickerInput('dSpatialCoverage', 'Spatial Coverage of underlying dataset',
-      choices = c("NA",
+      choices = c("0 - NA",
                   "1 - complete",
                   "2 - area representative",
                   "3 - oppurtunistic or sporadic",
@@ -710,14 +719,25 @@ h4("Fields related to the indicator itself:", style="background-color:lightblue;
          pickerInput('iSpatialExtent', 'Spatial extent',
                      choices = scale1)),
 
+actionButton("iSpatialextentINFO", "",
+             icon = icon("info")),
 
   # 4 INPUT iSpatialResolution ----
-  tags$div(title = "What is the finest spatial scale that this indicator has been calcuated at. Note that if the indicator is used for saying something about a single ecosystem, but for an entire country, the iSpatialExtent is still 'country'. If, on the other hand, there are unique indicator values tied to polygons or grid cells that are smaller than the average political administrative unit, then the resolution is 'sub-local'.",
+  tags$div(title = "What is the finest spatial scale that this indicator has been calcuated at?",
          pickerInput('iSpatialResolution', 'Spatial resolution',
                      choices = scale1)),
 
+actionButton("iSpatialresolutionINFO", "",
+             icon = icon("info")),
+
+
   # 4 INPUT iTemporalCoverage ----
-  tags$div(title = "The length of the time series at the time of publication (years). Duration less than 1 year is reported an 1 year.",
+  tags$div(title = "The length of the time series at the time of publication (years). 
+           
+           \nDuration less than 1 year is reported as 1 year.
+           
+           \nIf unknown, enter 999.
+           ",
     numericInput("iTemporalCoverage", 
        "Temporal coverage (length of time series)",
        value = NA,
@@ -762,6 +782,10 @@ h4("Fields related to the indicator itself:", style="background-color:lightblue;
             )
           )),
 
+
+HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T'> definitions</a>.</p>"),
+
+
   # 4 INPUT iSubIndex ----
   tags$div(title = "Is the indicator a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species.",
          radioGroupButtons('iSubIndex', 'Is the indicator itself an index?',
@@ -797,7 +821,7 @@ B3: flood risk; NPP, biomass growth
 C1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
 Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))",
          pickerInput('iECTclass', 'SEEA Ecosystem Condition Typology Class',
-                     choices = c("NA",
+                     choices = c("Choose a category",
                        "A1 Physical state characteristics",
                        "A2 Chemical state characteristics",
                        "B1 Compositional state characteristics",
@@ -807,20 +831,15 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
                        "Other (e.g. pre-aggregated indices)")
          )),
 
+HTML("<p>Link to  <a href='https://oneecosystem.pensoft.net/article/58218/'> definitions</a>. (Scroll to Table 1).</p>"),
+
+
   # 4 INPUT iECTsnippet ----
   tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the ECT assignment. It may be the same text as what you use in 'Indicator description - snippet', but without the same technical details. Here it is more about the ecological significans of the indicator",
          textInput("iECTsnippet", 
                    "ECT snippet", 
                    value = "")),
 
-#  # 4 INPUT iEScategory ----
-#  tags$div(title = "What ecosystem service category(ies) is this indicator related to, if any? The reviewer must assign the #category regardless of what the publication itself claims. Weak or speculative links should not be reported, but empirical #relationships between the indicator and the ES category is not required. Biodiversity related indicators may fit into one or #several of the categories, depending on the species. For example, moose densities is related both to provisioning (meat) and #cultural services (hunting).",
-#         radioGroupButtons('iEScategory', 'Associated ecosystem service category',
-#                           choices = c(
-#                             "Supporting", 
-#                             "Provisioning", 
-#                             "Cultural",
-#                             "Regulating"))),
 
 
 tags$hr(),
@@ -847,28 +866,32 @@ h4("Fields related to the reference state:", style="background-color:lightblue;"
                    value = "")),
 
 # 4 INPUT rResolution ----
-tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. uique reference value for each grid cell), then rResolution equals iSpatialResolution.",
+tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
          pickerInput('rResolution', "Spatial resolution of the reference value(s)",
                      choices = scale1
          )),
 
 
   # 4 INPUT rRescalingMethod ----
-  tags$div(title = "Pick the category that fits the bets. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
+  tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
          radioGroupButtons('rRescalingMethod', "Rescaling method",
                      choices = rescalingMethod
          )),
 
   # 4 INPUT rMax ----
   tags$div(title = "A definition or description of the reference value, i.e. the maximum indicator value.
-           Example: 'A species composition and a CWM similar to a reference community'",
+           
+           \nExamples: 'A species composition similar to a reference community, or
+           
+           \nan air temperatur similar to the mean for the last climatic normal period.'",
            textInput("rMax", 
                      "Explanation of the reference value", 
                      value = "")),
   
   # 4 INPUT rMin ----
   tags$div(title = "A definition or description of the lower limit for the indicator (the porest condition).
-           Example: 'Species extinct'",
+  
+           \nExample: 'Species extinct'",
            textInput("rMin", 
                      "Explanation of the lower limit value", 
                      value = "")),
@@ -936,6 +959,8 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
 # '-------------             
 # **TAB More ----
     navbarMenu("More",
+               
+# 5 Instructions----
       tabPanel("Instructions",
                
                p("This app was developed by Anders L. Kolstad with the purpuse of aiding and standardising the data entrering for a systematic review nicknamed ", tags$a(href="https://github.com/anders-kolstad/theIndiMap/", "The IndiMap"), "This is a crowd sourced review, meaning that in principle anyone can contribute. The app is (or will be made) available online.",style = "width: 500px;"),
@@ -951,7 +976,8 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                p("When you have a poblication profile, you can go on to process the individual indicators that are described in it. Switch to the", tags$i("Register indicator"), "tab. Most of the workflow is similar as what you just did for the publication, except you also need to be careful to link the indicator to the correct publication.", style = "width: 500px;")
       ),
       
-# 5 Instructions----
+
+# 5 Contact ----
 
       tabPanel("Contact",
                
@@ -963,7 +989,6 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                
                )
 
-# 5 Contact ----
              )
   )
     
@@ -1211,7 +1236,7 @@ server <- function(input, output, session) ({
       }
     )
     
-    if(input$disp == "head") {
+    if(input$i_disp == "head") {
       return(head(df))
     }
     else {
@@ -1347,9 +1372,25 @@ server <- function(input, output, session) ({
   observeEvent(input$populate, {
     updateRadioGroupButtons(session = session,
                             'pEAAextent',
-                            choices = c("global", "continent", "country", "region", "local", "sub-local"),
+                            choices = scale1,
                             selected = pform()$value[pform()$parameter == "pEAAextent"])
   })
+  
+  observeEvent(input$pEAAextantINFO, {
+    shinyalert::shinyalert(
+      "The spatial extent of the ecosystem assessment/accounting area(s)
+           
+           Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+           
+           Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+           
+           Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+           
+           "
+    )
+  })
+  
+  
   
   ## pEAAarea ----
   observeEvent(input$populate, {
@@ -1371,6 +1412,21 @@ server <- function(input, output, session) ({
     updateNumericInput(session = session,
                             'pAggregation',
                             value = pform()$value[pform()$parameter == "pAggregation"])
+  })
+  
+  observeEvent(input$pAggregationINFO, {
+    shinyalert::shinyalert(
+      "-- 'Close' button at the bottom. If you cannot reach it, press Ctrl +/- to change resolution untill it becomes visible again. --
+      
+      \nThe highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
+                    \nExamples: 
+                    \n0 = indicators reported seperately with no aggregation
+                    \n1 = A species group or some level that does not span several SEEA ECT classes. 
+                    \n2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
+                    \n3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
+                    \n4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
+                    \n5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs"
+    )
   })
   
   ## pAggregationRemark ----
@@ -1407,10 +1463,13 @@ server <- function(input, output, session) ({
 # '-------------
   
   ## pID ----
+  # update the drop down list based on what you selected in 'localPub2', i.e. the csv's you uploaded
   observeEvent(input$localPub2, {
     updatePickerInput(session = session, inputId = "pubDrop2",
                       choices = unique(publicationList2()$pTitle))
   })
+  
+  # update the same drop down list with the publication name in the uploaded version
   observeEvent(input$i_populate, {
     updatePickerInput(session = session, inputId = "pubDrop2",
                       choices = iForm()$value[iForm()$parameter == "pID"])
@@ -1446,6 +1505,14 @@ observeEvent(input$i_populate, {
                    'iRedundantRemarks',
                    value = iForm()$value[iForm()$parameter == "iRedundantRemarks"])
  })
+  
+  
+  ## iRedundantReferences ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iRedundantReferences',
+                    value = iForm()$value[iForm()$parameter == "iRedundantReferences"])
+  })
  
  ## iContinent ----
  observeEvent(input$i_populate, {
@@ -1528,7 +1595,7 @@ observeEvent(input$i_populate, {
   observeEvent(input$i_populate, {
     updatePickerInput(session = session,
                       'dSpatialCoverage',
-                      choices = c("NA",
+                      choices = c("0 - NA",
                                   "1 - complete",
                                   "2 - area representative",
                                   "3 - oppurtunistic or sporadic",
@@ -1553,9 +1620,24 @@ observeEvent(input$i_populate, {
   ## iSpatialExtent ----
   observeEvent(input$i_populate, {
     updatePickerInput(session = session,
-                      'iSpatialExtent',
+                      'iSpatialextent',
                       choices = scale1,
                       selected = iForm()$value[iForm()$parameter == "iSpatialExtent"])
+    
+    observeEvent(input$iSpatialextentINFO, {
+      shinyalert::shinyalert(
+        "Spatial extent
+        
+        Example: If you have an indicator on forest canopy structure which is reported with unique estimates at regional levels across Norway, and which is based on area representaive monitoring data, then the spatial extent is country.
+        
+        Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+           
+        Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+           
+        Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+        "
+      )
+    })
   })
   ## iSpatialResolution ----
   observeEvent(input$i_populate, {
@@ -1564,6 +1646,23 @@ observeEvent(input$i_populate, {
                       choices = scale1,
                       selected = iForm()$value[iForm()$parameter == "iSpatialResolution"])
   })
+  
+  observeEvent(input$iSpatialresolutionINFO, {
+    shinyalert::shinyalert(
+      "Spatial resolution
+        
+       If the indicator is used for saying something about a single ecosystem, but for an entire country, the iSpatialResolution is 'country'. 
+       
+        Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+           
+        Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+           
+        Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. This scale is also suitable for raster data with grid cells < 0.5x0.5 km (approx.).  If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+        "
+    )
+  })
+  
+  
   ## iTemporalCoverage ----
   observeEvent(input$i_populate, {
     updateNumericInput(session = session,
@@ -1630,7 +1729,7 @@ observeEvent(input$i_populate, {
     observeEvent(input$i_populate, {
       updatePickerInput(session = session,
                         'iECTclass',
-                        choices = c("NA",
+                        choices = c("Choose a category",
                                     "A1 Physical state characteristics",
                                     "A2 Chemical state characteristics",
                                     "B1 Compositional state characteristics",
@@ -1699,6 +1798,22 @@ observeEvent(input$i_populate, {
  
   # '-------------
   
+
+  
+# B* showNotification: validate_p ----
+  
+  
+  
+  observeEvent(input$validate_p, {
+    showNotification(
+      paste(
+      if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3 | #) "MISSING: Publication title is not valid",
+         nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3 | #"MISSING: Please enter GitHub user name",
+         nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the full URL for the Zotero entry is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
+      type = "error",
+      duration = NA
+    )
+  })
   
 # B* OUTPUT: pExport   ----
   
@@ -1714,19 +1829,12 @@ observeEvent(input$i_populate, {
     dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
     
     dat$value[dat$parameter == "pID"] <- pUUID()
-      #ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
-      #  uuid::UUIDgenerate(),
-      #  pform()$value[pform()$parameter == "pID"])
-    
+      
     dat$value[dat$parameter == "pTitle"] <- input$ptitle
     
     dat$value[dat$parameter == "pBibliography"] <- input$pbibliography
 
     dat$value[dat$parameter == "githubUser"] <- input$githubuser
-    
-    # These are cut out and treated as inclusion criteria:
-    #dat$value[dat$parameter == "pRealm"] <- input$pRealm
-    #dat$value[dat$parameter == "pNormalised"] <- input$pNormalised
     
     dat$value[dat$parameter == "pRedundant"] <- input$pRedundant
 
@@ -1766,17 +1874,16 @@ observeEvent(input$i_populate, {
   iExport <- reactive({
     # shorten name
     dat <- iForm()
+    
     dat$value[dat$parameter == "iID"] <- iUUID()
-    dat$value[dat$parameter == "pID"] <- #ifelse(input$i_populate == T, 
-                                          #      iForm()$value[iForm()$parameter == "pID"]
-                                                input$pubDrop2
+    dat$value[dat$parameter == "pID"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
-    dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(
-      input$iRedundant == "Unique",
-        NA,
-        input$iRedundantRemarks)
+    dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(input$iRedundant == "Unique",
+        NA,input$iRedundantRemarks)
+    dat$value[dat$parameter == "iRedundantReferences"] <- ifelse(input$iRedundant == "Unique",
+        NA,input$iRedundantReferences)
     dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")
     dat$value[dat$parameter == "iCountry"] <- paste(input$iCountry, collapse = " | ")
     dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
