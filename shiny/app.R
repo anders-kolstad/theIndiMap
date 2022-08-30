@@ -1807,12 +1807,12 @@ observeEvent(input$i_populate, {
   observeEvent(input$validate_p, {
     showNotification(
       paste(
-      if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3) "MISSING: Publication title is not valid",
-      if(nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3) "MISSING: Please enter GitHub user name",
-      if(nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Enter the full URL for the Zotero entry",
+      if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3 | #) "MISSING: Publication title is not valid",
+         nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3 | #"MISSING: Please enter GitHub user name",
+         nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the full URL for the Zotero entry is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
       type = "error",
       duration = NA
-    ))
+    )
   })
   
 # B* OUTPUT: pExport   ----
