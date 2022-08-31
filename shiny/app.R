@@ -36,7 +36,7 @@ scale1 <- c(unknown = "0 - unknown",
             local = "5 - local",
             'project area' = "6 - project-area")
 
-refStates <- c("Undisturbed or minimally-disturbed condition" = "UND- Undisturbed or minimally-disturbed condition",
+refStates <- c("Undisturbed or minimally-disturbed condition" = "UND - Undisturbed or minimally-disturbed condition",
                "Historical condition" = "HIS - Historical condition",
                "Least-disturbed condition" = "LDI - Least-disturbed condition",
                "Contemporary condition" = "CON - Contemporary condition",
@@ -56,15 +56,15 @@ ui <-
   navbarPage(
     # add title and logos inside a div
     title = div(
-      #"indiMAP",
+      
       div(img(src='indimaplogo4.png',
               style="margin-top: -14px;
                                padding-right:15px;
                                padding-bottom:15px",
-              height = 60)),        
-                tags$script(HTML("var header = $('.navbar > .container-fluid');
-header.append('<div style=\"float:right\"><a href=\"https://www.nina.no/\"><img src=\"NINA_logo_sort_txt_engelsk_under.png\" alt=\"alt\" style=\"float:right;width:50px;padding-top:5px;padding-bottom:0px;\"> </a></div>');
-header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-kolstad/theIndiMap\"><img src=\"githublogo.png\" alt=\"alt\" style=\"float:right;width:50px;padding-top:5px;padding-bottom:0px;padding-right:15px;\"> </a></div>');
+              height = 60)),
+      tags$script(HTML("var header = $('.navbar > .container-fluid');
+header.append('<div style=\"float:right\"><a href=\"https://www.nina.no/\", target=\"_blank\"><img src=\"NINA_logo_sort_txt_engelsk_under.png\" alt=\"alt\" style=\"float:right;width:50px;padding-top:5px;padding-bottom:0px;\"> </a></div>');
+header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-kolstad/theIndiMap\", target=\"_blank\"><img src=\"githublogo.png\" alt=\"alt\" style=\"float:right;width:50px;padding-top:5px;padding-bottom:0px;padding-right:15px;\"> </a></div>');
     console.log(header)"))
                 ),
 
@@ -587,7 +587,7 @@ conditionalPanel(condition =  "input.iRedundant != 'Unique'",
                      "Remarks to the above", 
                      value = "")),
   
-  # 4 INPUT iRedundantReferences
+  # 4 INPUT iRedundantReferences ----
   tags$div(title = "Enter a reference, preferrabluy a doi, to the duplicate resource. For example, if the paper you are reading reports an indicator that it borrows from another reference that they cite. All duplicates, with the exeption of pre-prints when published versione exist, should be processed in the app in the normal way.",
            textInput("iRedundantReferences", 
                      "Source reference", 
@@ -684,10 +684,7 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                      ))),
 
   # 4 INPUT dSpatialCoverage ----
-  tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s). If *Complete*, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
-          If *Area representative*, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
-          If *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
-           If the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)",
+  tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s).",
     pickerInput('dSpatialCoverage', 'Spatial Coverage of underlying dataset',
       choices = c("0 - NA",
                   "1 - complete",
@@ -695,6 +692,8 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                   "3 - oppurtunistic or sporadic",
                   "4 - unknown"))),
 
+actionButton("dSpatialCoverageINFO", "",
+             icon = icon("info")),
 
 tags$hr(),
 h4("Fields related to the indicator itself:", style="background-color:lightblue;"),
@@ -783,7 +782,7 @@ actionButton("iSpatialresolutionINFO", "",
           )),
 
 
-HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T'> definitions</a>.</p>"),
+HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T', target='_blank'> definitions</a>.</p>"),
 
 
   # 4 INPUT iSubIndex ----
@@ -793,11 +792,12 @@ HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T'> defi
             "No", "Yes", "Unclear"))),
 
   # 4 INPUT iModelling ----
-  tags$div(title = "Does the indicator (or the reference value) require modeling outside of what is included in the underlying dataset (i.e. lots of mathemtical steps)? This typically means the indicator is derived from raw data, but it is not itself the raw data.
-           For example, any indicator that relies on other, preditcory variables, or which requires interpolation or extrapolation, is modelled. This includes most climate datasets which tend to be interpolated, but if this interpolated dataset is used as the raw data for the indicator, and reported 'as is', then you should still select 'No' here. If the indicator instead used this meterological or climate data to estimate/model drought risk (extrapolation) or something similar, then you should select 'Yes'.",
+  tags$div(title = "Does the indicator (or the reference value) require modeling outside of what is included in the underlying dataset (i.e. lots of mathemtical steps)? This typically means the indicator is derived from raw data, but it is not itself the raw data.",
          radioGroupButtons('iModelling', 'Is the indicator a result from a model?',
                            choices = c(
                              "No", "Yes", "Unclear"))),
+
+  actionButton("iModellingINFO", "", icon = icon("info")),
 
   # 4 INPUT iOriginalUnits ----
   tags$div(title = "Original unit for the variable. e.g. meters, hectares, kilograms",
@@ -811,15 +811,7 @@ h4("Fields related to SEEA EA:", style="background-color:lightblue;"),
 
 
   # 4 INPUT iECTclass ----
-  tags$div(title = "The class may not be reported, and in any case, it's is the reviewer that must assign the indicator to the correct or the most correct class.
-           Examples:
-A1: water quantity (e.g. hydrological flow, groundwater table)
-A2: air quality (pollutants concentrations); water quality (e.g. pollutant concentrations); soil quality (e.g. soil carbon stock)
-B1: birds, fish, habitats-based indices (red-list indices, LPI) 
-B2: vegetation cover (e.g. shrub cover); timber stock; litter; forest age
-B3: flood risk; NPP, biomass growth
-C1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
-Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))",
+  tags$div(title = "The class may not be reported, and in any case, it's is the reviewer that must assign the indicator to the correct or the most correct class.",
          pickerInput('iECTclass', 'SEEA Ecosystem Condition Typology Class',
                      choices = c("Choose a category",
                        "A1 Physical state characteristics",
@@ -831,8 +823,9 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
                        "Other (e.g. pre-aggregated indices)")
          )),
 
-HTML("<p>Link to  <a href='https://oneecosystem.pensoft.net/article/58218/'> definitions</a>. (Scroll to Table 1).</p>"),
+HTML("<p>Link to  <a href='https://oneecosystem.pensoft.net/article/58218/', target='_blank'> definitions</a>. (Scroll to Table 1).</p>"),
 
+actionButton("iECTclassINFO", "", icon = icon("info")),
 
   # 4 INPUT iECTsnippet ----
   tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the ECT assignment. It may be the same text as what you use in 'Indicator description - snippet', but without the same technical details. Here it is more about the ecological significans of the indicator",
@@ -1603,7 +1596,17 @@ observeEvent(input$i_populate, {
                       selected = iForm()$value[iForm()$parameter == "dSpatialCoverage"])
   })
   
-  
+  observeEvent(input$dSpatialCoverageINFO, {
+    shinyalert::shinyalert(
+      "Spatial coverage
+        
+        If *Complete*, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
+        \nIf *Area representative*, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
+        \nIf *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
+          \nIf the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)"
+    )
+  })
+    
   ## iDescriptionSnippet ----
   observeEvent(input$i_populate, {
     updateTextInput(session = session,
@@ -1717,6 +1720,16 @@ observeEvent(input$i_populate, {
                               choices = c("No", "Yes", "Unclear"),
                               selected = iForm()$value[iForm()$parameter == "iModelling"])    
     })
+  
+  
+  observeEvent(input$iModellingINFO, {
+    shinyalert::shinyalert(
+      "Modelling
+        
+       \nFor example, any indicator that relies on other, predictory variables, or which requires interpolation or extrapolation, is modelled. This includes most climate datasets which tend to be interpolated, but if this interpolated dataset is used as the raw data for the indicator, and reported 'as is', then you should still select 'No' here. If the indicator instead used this meterological or climate data to estimate/model drought risk (extrapolation) or something similar, then you should select 'Yes'."
+    )
+  })
+  
   ## iOriginalUnits  ----
       
     observeEvent(input$i_populate, {
@@ -1740,6 +1753,20 @@ observeEvent(input$i_populate, {
                         selected = iForm()$value[iForm()$parameter == "iECTclass"])
       })
     
+  observeEvent(input$iECTclassINFO, {
+    shinyalert::shinyalert(
+"Examples:
+\nA1: water quantity (e.g. hydrological flow, groundwater table)
+\nA2: air quality (pollutants concentrations); water quality (e.g. pollutant concentrations); soil quality (e.g. soil carbon \nstock)
+\nB1: birds, fish, habitats-based indices (red-list indices, LPI) 
+\nB2: vegetation cover (e.g. shrub cover); timber stock; litter; forest age
+\nB3: flood risk; NPP, biomass growth
+\nC1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
+\nOther: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))"
+    )})
+  
+  
+  
   ## iECTsnippet ----
     observeEvent(input$i_populate, {
       updateTextInput(session = session,
