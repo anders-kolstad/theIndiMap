@@ -36,6 +36,10 @@ scale1 <- c(unknown = "0 - unknown",
             local = "5 - local",
             'project area' = "6 - project-area")
 
+origin <- c("The original systematic search results" = "Systematic search",
+            "The SEEA EA maintaind list of ECAs"     = "SEEA EA list",
+            "Unsystematic search or the publications was previously known to me" = "Opportunistic")
+
 refStates <- c("Undisturbed or minimally-disturbed condition" = "UND - Undisturbed or minimally-disturbed condition",
                "Historical condition" = "HIS - Historical condition",
                "Least-disturbed condition" = "LDI - Least-disturbed condition",
@@ -73,8 +77,6 @@ header.append('<div style=\"float:right\"><a href=\"https://github.com/anders-ko
     position = "fixed-top", 
     # add padding to the navbar doesn't overlay content
     tags$style(type="text/css", "body {padding-top: 70px;}"), #.navbar { background: #9cbff7; }
-
-    useShinyalert(),
 
 
 # '-------------       
@@ -204,6 +206,16 @@ sidebarLayout(
                   "Enter the full URL for the Zotero entry", 
                   value = "")),
       h5(tags$i("This is the url for the zotero library: https://www.zotero.org/groups/4630169/the_indimap_review/library")),
+      
+      # 3 INPUT pOrigin ----
+      tags$div(title = "The original systematic search refersr to folder 1.4 in the Zotero library.
+               \nThe SEEA EA maintained list refers to this web page: https://seea.un.org/content/knowledge-base
+               \nIf you are entering a publication that is not identified either through the initial systematic search, or one that you found on the SEEA EA lst, then choose the third option.",
+               radioGroupButtons(
+                 inputId = "pOrigin", 
+                 label   = "Where did you get this reference from?",
+                 choices = origin)),
+      
       
       # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
@@ -956,10 +968,10 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
 # 5 Instructions----
       tabPanel("Instructions",
                
-               p("This app was developed by Anders L. Kolstad with the purpuse of aiding and standardising the data entrering for a systematic review nicknamed ", tags$a(href="https://github.com/anders-kolstad/theIndiMap/", "The IndiMap"), "This is a crowd sourced review, meaning that in principle anyone can contribute. The app is (or will be made) available online.",style = "width: 500px;"),
+               p("This app was developed by Anders L. Kolstad with the purpuse of aiding and standardising the data entrering for a systematic review nicknamed ", tags$a(href="https://github.com/anders-kolstad/theIndiMap/", target='_blank', "The IndiMap"), "This is a crowd sourced review, meaning that in principle anyone can contribute. The app is (or will be made) available online.",style = "width: 500px;"),
                
                p("The data entry is hierarchical, with a one-to-many relationship between selected publications and the indicators that are reported inside these. The", 
-                 tags$a(href="https://anders-kolstad.github.io/theIndiMap/", "review itself"), 
+                 tags$a(href="https://anders-kolstad.github.io/theIndiMap/", target='_blank', "review itself"), 
                  "will eventually explain in more detail how we selected the publications for the review, and what inclusion criteria we used, both for the publications and the indicators. Most importantly, all the indicators are rescaled (i.e. normalised according to a reference value) and developed for terrestrial ecosystems.",style = "width: 500px;"),
                
                p("Before you can start entering information about the indicators you first need to enter information about the publication. If you are starting from scratch, go to", tags$i("Register publication"), "and select", tags$i("Create new"), ". This will autogenerate a uniqe identifier. Continue filling out the form. You can alway see the updated preview of you data on the right. when done, select", tags$i("Create a new file"), "at the bottom, and then press the download botton in the lower right part of the screen, below the data preview.", tags$i("(Pro tip: you may want to read the publication before opening the app, and use your notes to quickly fill in the form all at once. This is because the app may shut down if you go for coffee!)."), "This file is a standalone cvs file, and we call this a publication profile. The file name is just a time stamp.",style = "width: 500px;"),
@@ -1262,6 +1274,15 @@ server <- function(input, output, session) ({
     updateTextInput(session = session,
                     'pzoteroid',
                     value = pform()$value[pform()$parameter == "pZoteroID"])
+  })
+  
+  ## pOrigin ----
+  observeEvent(input$populate, {
+    updateRadioGroupButtons(session = session,
+                            'pOrigin',
+                            choices = origin,
+                            selected = pform()$value[pform()$parameter == "pOrigin"])
+    
   })
   
   ## pID ----
@@ -1854,6 +1875,8 @@ observeEvent(input$i_populate, {
     
     #update value column based on input
     dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
+    
+    dat$value[dat$parameter == "pOrigin"] <- input$pOrigin
     
     dat$value[dat$parameter == "pID"] <- pUUID()
       
