@@ -54,6 +54,15 @@ rescalingMethod <- c(linear = "LIN - linear",
                      "two-sided" = "TSI - two-sided",
                      unclear = "UNC - unclear")
 
+refValMethod <- c("Choose one or more options from the list" = NA,
+                  "Reference sites" = "RS - Reference sites",
+                  "Modelled reference condition" = "MRC - Modelled reference condition",
+                  "Statistical approaches based on ambient distributions" = "SAAD - Statistical approaches based on ambient distributions",
+                  "Historical observations and paleo-environmental data" = "HOPED - Historical observations and paleo-environmental data",
+                  "Contemporary data" = "CD - Contemporary data",
+                  "Prescribed levels" = "PL - Prescribed levels",
+                  "Expert opinion" = "EO - Expert opinion",
+                "Others or unknown" = "OTH - Others or unknown")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -885,14 +894,23 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                      choices = rescalingMethod
          )),
 
+
+  # 4 INPUT rMethod ----
+  tags$div(title = "See definitions in the SEEA EA white paper A5.5 - A5.11 (page 116).",
+           pickerInput("rMethod", 
+                     "What method(s) was used for estimating the reference levels?  (multiple choice)", 
+                     choices = refValMethod,
+                     selected = refValMethod[1],
+                     multiple = TRUE)),
+  
   # 4 INPUT rMax ----
-  tags$div(title = "A definition or description of the reference value, i.e. the maximum indicator value.
+  tags$div(title = "A definition or description of the upper reference value, i.e. the maximum indicator value.
            
            \nExamples: 'A species composition similar to a reference community, or
            
            \nan air temperatur similar to the mean for the last climatic normal period.'",
            textInput("rMax", 
-                     "Explanation of the reference value", 
+                     "Explanation of the upper reference value", 
                      value = "")),
   
   # 4 INPUT rMin ----
@@ -1832,6 +1850,16 @@ observeEvent(input$i_populate, {
                               choices = rescalingMethod,
                               selected = iForm()$value[iForm()$parameter == "rRescalingMethod"])    
     })
+  
+  ## rMethod ----
+  
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'rMethod',
+                      choices = refValMethod,
+                      selected = iForm()$value[iForm()$parameter == "rMethod"])
+  })
+  
   ## rMax ----
     observeEvent(input$i_populate, {
       updateTextInput(session = session,
@@ -1963,6 +1991,7 @@ observeEvent(input$i_populate, {
     dat$value[dat$parameter == "rTypeRemarks"] <- input$rTypeRemarks
     dat$value[dat$parameter == "rResolution"] <- input$rResolution
     dat$value[dat$parameter == "rRescalingMethod"] <- input$rRescalingMethod
+    dat$value[dat$parameter == "rMethod"] <- paste(input$rMethod, collapse = " | ")
     dat$value[dat$parameter == "rMax"] <- input$rMax
     dat$value[dat$parameter == "rMin"] <- input$rMin
     
