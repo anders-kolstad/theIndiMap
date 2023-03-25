@@ -1,14 +1,15 @@
 
 # TOP ----
 library(shiny)
-#library(shinydashboard)
 library(ggplot2)
-library(dashboardthemes)
 library(shinyFiles)
 library(shinyWidgets)
 library(DT)
 library(uuid)
 library(shinyalert)
+
+#library(dashboardthemes)
+#library(shinydashboard)
 #library(tidyverse)
 #library(readxl)
 
@@ -31,10 +32,11 @@ ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 scale1 <- c(unknown = "0 - unknown",
             global  = "1 - global",
             continent = "2 - continent",
-            country = "3 - country",
-            region = "4 - region",
-            local = "5 - local",
-            'project area' = "6 - project-area")
+            'multi-national' = "3 - multi-national",
+            country = "4 - country",
+            region = "5 - region",
+            local = "6 - local",
+            'project area' = "7 - project-area")
 
 origin <- c("The original systematic search results" = "Systematic search",
             "The SEEA EA maintaind list of ECAs"     = "SEEA EA list",
