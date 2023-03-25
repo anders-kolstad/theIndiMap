@@ -1,14 +1,15 @@
 
 # TOP ----
 library(shiny)
-#library(shinydashboard)
 library(ggplot2)
-library(dashboardthemes)
 library(shinyFiles)
 library(shinyWidgets)
 library(DT)
 library(uuid)
 library(shinyalert)
+
+#library(dashboardthemes)
+#library(shinydashboard)
 #library(tidyverse)
 #library(readxl)
 
@@ -31,10 +32,11 @@ ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 scale1 <- c(unknown = "0 - unknown",
             global  = "1 - global",
             continent = "2 - continent",
-            country = "3 - country",
-            region = "4 - region",
-            local = "5 - local",
-            'project area' = "6 - project-area")
+            'multi-national' = "3 - multi-national",
+            country = "4 - country",
+            region = "5 - region",
+            local = "6 - local",
+            'project area' = "7 - project-area")
 
 origin <- c("The original systematic search results" = "Systematic search",
             "The SEEA EA maintaind list of ECAs"     = "SEEA EA list",
@@ -52,6 +54,15 @@ rescalingMethod <- c(linear = "LIN - linear",
                      "two-sided" = "TSI - two-sided",
                      unclear = "UNC - unclear")
 
+refValMethod <- c("Choose one or more options from the list" = NA,
+                  "Reference sites" = "RS - Reference sites",
+                  "Modelled reference condition" = "MRC - Modelled reference condition",
+                  "Statistical approaches based on ambient distributions" = "SAAD - Statistical approaches based on ambient distributions",
+                  "Historical observations and paleo-environmental data" = "HOPED - Historical observations and paleo-environmental data",
+                  "Contemporary data" = "CD - Contemporary data",
+                  "Prescribed levels" = "PL - Prescribed levels",
+                  "Expert opinion" = "EO - Expert opinion",
+                "Others or unknown" = "OTH - Others or unknown")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -848,27 +859,30 @@ actionButton("iECTclassINFO", "", icon = icon("info")),
 
 
 tags$hr(),
-h4("Fields related to the reference state:", style="background-color:lightblue;"),
+h4("Fields related to the reference condition:", style="background-color:lightblue;"),
 
   # 4 INPUT rType ----
-  tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'.",
-         pickerInput('rType', "Type of reference state.",
+  tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'. For definitions, see SEEA EA white paper table 5.8, page 115.",
+         pickerInput('rType', "Type of reference condition",
                      choices = refStates,
                      selected = "OTH - other"
          )),
 
   # 4 INPUT rTypeSnippet ----
-  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference state. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
+  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
          textInput("rTypeSnippet", 
-                   "Reference state - snippet", 
+                   "Reference condition - snippet", 
                    value = "")),
 
   # 4 INPUT rTypeRemarks ----
-  tags$div(title = "An optional field where yuo can comment on the choice of reference state. 
-           Example: Year 1850 was used to define the reference state.",
+  tags$div(title = "An optional field where you can comment on the choice of reference condition 
+           Example: Year 1850 was used to define the reference condition.",
          textInput("rTypeRemarks", 
-                   "Comments on choice of reference state", 
+                   "Comments on choice of reference condition", 
                    value = "")),
+
+tags$hr(),
+h4("Fields related to the reference values:", style="background-color:lightblue;"),
 
 # 4 INPUT rResolution ----
 tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
@@ -876,21 +890,29 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                      choices = scale1
          )),
 
-
   # 4 INPUT rRescalingMethod ----
   tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
          radioGroupButtons('rRescalingMethod', "Rescaling method",
                      choices = rescalingMethod
          )),
 
+
+  # 4 INPUT rMethod ----
+  tags$div(title = "See definitions in the SEEA EA white paper A5.5 - A5.11 (page 116).",
+           pickerInput("rMethod", 
+                     "What method(s) was used for estimating the reference levels?  (multiple choice)", 
+                     choices = refValMethod,
+                     selected = refValMethod[1],
+                     multiple = TRUE)),
+  
   # 4 INPUT rMax ----
-  tags$div(title = "A definition or description of the reference value, i.e. the maximum indicator value.
+  tags$div(title = "A definition or description of the upper reference value, i.e. the maximum indicator value.
            
            \nExamples: 'A species composition similar to a reference community, or
            
            \nan air temperatur similar to the mean for the last climatic normal period.'",
            textInput("rMax", 
-                     "Explanation of the reference value", 
+                     "Explanation of the upper reference value", 
                      value = "")),
   
   # 4 INPUT rMin ----
@@ -1830,6 +1852,16 @@ observeEvent(input$i_populate, {
                               choices = rescalingMethod,
                               selected = iForm()$value[iForm()$parameter == "rRescalingMethod"])    
     })
+  
+  ## rMethod ----
+  
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'rMethod',
+                      choices = refValMethod,
+                      selected = iForm()$value[iForm()$parameter == "rMethod"])
+  })
+  
   ## rMax ----
     observeEvent(input$i_populate, {
       updateTextInput(session = session,
@@ -1961,6 +1993,7 @@ observeEvent(input$i_populate, {
     dat$value[dat$parameter == "rTypeRemarks"] <- input$rTypeRemarks
     dat$value[dat$parameter == "rResolution"] <- input$rResolution
     dat$value[dat$parameter == "rRescalingMethod"] <- input$rRescalingMethod
+    dat$value[dat$parameter == "rMethod"] <- paste(input$rMethod, collapse = " | ")
     dat$value[dat$parameter == "rMax"] <- input$rMax
     dat$value[dat$parameter == "rMin"] <- input$rMin
     
