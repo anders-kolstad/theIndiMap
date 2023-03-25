@@ -859,34 +859,36 @@ actionButton("iECTclassINFO", "", icon = icon("info")),
 
 
 tags$hr(),
-h4("Fields related to the reference state:", style="background-color:lightblue;"),
+h4("Fields related to the reference condition:", style="background-color:lightblue;"),
 
   # 4 INPUT rType ----
-  tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'.",
-         pickerInput('rType', "Type of reference state.",
+  tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'. For definitions, see SEEA EA white paper table 5.8, page 115.",
+         pickerInput('rType', "Type of reference condition",
                      choices = refStates,
                      selected = "OTH - other"
          )),
 
   # 4 INPUT rTypeSnippet ----
-  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference state. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
+  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
          textInput("rTypeSnippet", 
-                   "Reference state - snippet", 
+                   "Reference condition - snippet", 
                    value = "")),
 
   # 4 INPUT rTypeRemarks ----
-  tags$div(title = "An optional field where yuo can comment on the choice of reference state. 
-           Example: Year 1850 was used to define the reference state.",
+  tags$div(title = "An optional field where you can comment on the choice of reference condition 
+           Example: Year 1850 was used to define the reference condition.",
          textInput("rTypeRemarks", 
-                   "Comments on choice of reference state", 
+                   "Comments on choice of reference condition", 
                    value = "")),
+
+tags$hr(),
+h4("Fields related to the reference values:", style="background-color:lightblue;"),
 
 # 4 INPUT rResolution ----
 tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
          pickerInput('rResolution', "Spatial resolution of the reference value(s)",
                      choices = scale1
          )),
-
 
   # 4 INPUT rRescalingMethod ----
   tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
