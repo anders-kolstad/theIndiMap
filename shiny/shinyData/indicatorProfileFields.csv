@@ -5,6 +5,7 @@ githubUser;NA
 iName;NA
 iRedundant;Unique
 iRedundantRemarks;NA
+iRedundantReferences;NA
 iContinent;NA
 iCountry;NA
 iLowerGeography;NA
@@ -32,5 +33,6 @@ rTypeSnippet;NA
 rTypeRemarks;NA
 rResolution;NA
 rRescalingMethod;NA
+rMethod;NA
 rMax;NA
 rMin;NA
