@@ -63,6 +63,16 @@ refValMethod <- c("Choose one or more options from the list" = NA,
                   "Prescribed levels" = "PL - Prescribed levels",
                   "Expert opinion" = "EO - Expert opinion",
                 "Others or unknown" = "OTH - Others or unknown")
+
+ETs <- c(
+  "1 - Settlements and other artificial areas",
+  "2 - Cropland",
+  "3 - Grassland",
+  "4 - Forest and woodland",
+  "5 - Heathland and shrub",
+  "6 - Sparsely vegetated ecosystems",
+  "7 - Inland wetlands"
+)
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -673,6 +683,20 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                      max = 90,
                      step = 0.1))
     ),
+
+    # 4 INPUT Ecosystem type ----
+  tags$div(title = "Ecosystem type (multiple choice",
+         pickerInput('iET', 'Ecosystem type',
+                     choices = ETs,
+                     multiple = T,
+                     options = list(
+                       `live-search` = TRUE,
+                       `actions-box` = TRUE,
+                       `deselect-all-text` = "Deselect all",
+                       `multiple-separator` = " | "
+                     ))),
+actionButton("iETINFO", "",
+             icon = icon("info")),
 
 
 
@@ -1604,6 +1628,28 @@ observeEvent(input$i_populate, {
                          value = iForm()$value[iForm()$parameter == "iLongitude"])
     })
   
+  ## iET ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'iET',
+                      choices = ETs,
+                      selected = stringr::str_split(
+                        iForm()$value[iForm()$parameter == "iET"],
+                        " \\| ", simplify = T))
+  })
+  
+  observeEvent(input$iETINFO, {
+    shinyalert::shinyalert(title="Ecosystem type",
+                           text="
+                           Taken from Eurostats level one types (terrestrial types only).
+                           Select one or more ecosystem types which is fully or partialy covered by the indicator.
+                           Alpine ecosystems are not treated uniquely, and indicators that refer to this whole ecosystem could be a combination of for example type 3, 5, 6 and 7.
+                           ",
+                           size="m",
+                           type="info"
+                           
+    )
+  })
   
   ## dName ----
   observeEvent(input$i_populate, {
@@ -1821,7 +1867,8 @@ And example of the second type can be the Norwegian Natur Index which is compris
                         choices = c("Choose a category",
                                     "A1 Physical state characteristics",
                                     "A2 Chemical state characteristics",
-                                    "B1 Compositional state characteristics",
+                                    "B1a Compositional state characteristics - abundance",
+                                    "B1b Compositional state characteristics - diversity",
                                     "B2 Structural state characteristics",
                                     "B3 Functional state characteristics",
                                     "C1 Landscape and seascape characteristics",
@@ -2013,6 +2060,7 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
     dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
     dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
+    dat$value[dat$parameter == "iET"] <- paste(input$iET, collapse = " | ")
     dat$value[dat$parameter == "dName"] <- input$dName
     dat$value[dat$parameter == "dReference"] <- input$dReference
     dat$value[dat$parameter == "dOrigin"] <- paste(input$dOrigin, collapse = " | ")
