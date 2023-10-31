@@ -62,6 +62,7 @@ refValMethod <- c("Choose one or more options from the list" = NA,
                   "Contemporary data"                                     = "CD - Contemporary data",
                   "Prescribed levels"                                     = "PL - Prescribed levels",
                   "Expert opinion"                                        = "EO - Expert opinion",
+                  "Natural scale limits"                                  = "NSL - Natural scale limits",
                   "Others or unknown"                                     = "OTH - Others or unknown")
 
 ETs <- c(
@@ -908,6 +909,8 @@ h4("Fields related to the reference condition:", style="background-color:lightbl
                      choices = refStates,
                      selected = "OTH - other"
          )),
+actionButton("rTypeINFO", "", icon = icon("info")),
+
 
   # 4 INPUT rTypeSnippet ----
   tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
@@ -945,6 +948,8 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                      choices = refValMethod,
                      selected = refValMethod[1],
                      multiple = TRUE)),
+actionButton("rMethodINFO", "", icon = icon("info")),
+
   
   # 4 INPUT rMax ----
   tags$div(title = "A definition or description of the upper reference value, i.e. the maximum indicator value.
@@ -1943,7 +1948,53 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
                            
     )})
   
+  observeEvent(input$rTypeINFO, {
+    shinyalert::shinyalert(title="Types of reference condition",
+                           text="Taken from SEEA EA white paper table 5.8
+                           
+                           Undisturbed or minimally-disturbed condition of an intact ecosystem. The condition of an ecosystem with maximal ecosystem integrity with no or minimal disturbance. 
+                           
+Historical condition: The condition of an ecosystem at some point or period in its history that is considered to represent the stable socio ecological state (e.g., the pre-industrial period or pre-intensive agriculture) 
+
+Least-disturbed condition: the currently best available condition of an ecosystem 
+
+Contemporary condition: The condition of an ecosystem at a certain point or period in its recent history for which comparable data are available. 
+
+                           Best-attainable condition: the expected condition of an ecosystem under best possible management practices and attaining a stable socio-ecological state.",
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
+    )})
   
+  observeEvent(input$rMethodINFO, {
+    shinyalert::shinyalert(title="Method for defining or setting reference values",
+                           text="Taken from SEEA EA white paper section A5.4 - A5.12.
+                           1. Reference sites: If pristine or minimally-disturbed sites are available, they can be used to determine a reliable measure of the mean and statistical distribution of condition variables. Reference sites can be identified using expert or traditional knowledge but also by using statistics and artificial intelligence if long-term time series with data describing ecosystem disturbance are available. Monitoring reference sites is probably the most straightforward method for establishing reference conditions and for determining the reference levels of condition variables. Seasonal or annual variability but also long term or irreversible ecosystem changes due to climate change or invasive alien species can be factored in when determining reference levels for ecosystem condition variables. Reference sites can thus by used to determine a dynamic reference condition (Hiers et al., 2012) that can be periodically updated. 
+
+                          2. Modelled reference conditions can be based on predictive empirical models or potential vegetation models. Models can be used to infer conditions in absence of human disturbance where representative reference sites are not available. Potential vegetation can be modelled globally and can incorporate scenarios of environmental change. A weakness is that models usually do not involve all the selected condition variables of the condition account, and often differ from measured variables. Models require assumptions to establish reference levels for condition variables, e.g., scientific debate on the role of megafauna and early humans on potential natural vegetation. 
+
+                          3. Statistical approaches based on ambient distributions. Least-disturbed conditions or best attainable conditions can be estimated by observing the range of values from current ecosystem monitoring and by selecting a reference condition, for instance based on the 5th percentile values as criterion or by assuming that the reference condition is equal to a state with the highest species richness. Statistical approaches are data-driven and therefore pragmatic, familiar for accountants, and applicable if no reference sites are available. Methods can be applied consistently across variables, e.g., normalizing with the maximum 117 values of available data. Possible drawbacks are the arbitrary nature of the reference condition, spatial inconsistencies caused by using current datasets, a strongly shifting baseline, or a false sense of consistency. Solutions need to be proposed to scale condition variables at levels outside the range of the available data. Variables moving out of their established range (e.g., improving beyond the previous upper reference level) can cause serious complications. 
+
+                          4. Historical observations and paleo-environmental data. This method uses historical observations or paleontological data to describe a historical reference condition (typically before 1970 when routine environmental monitoring programmes started). Historical observations refer to a description of a reference condition based on species collections in natural history museums, historical manuscripts and books that describe fauna and flora, photo archives, paintings, or other material that can be used to make inferences about the presence of species or the prevalence of certain conditions during a certain period in time. Paleo-environmental data can be used to reconstruct the physical-chemical environment, climate, vegetation and fauna of certain period in time using material that is buried in the soil. These data are often collected during archaeological studies. Examples of relevant data collections to define a historical ecosystem condition include seedbanks to reconstruct flora or remains of fish catches nearby medieval settlements to reconstruct the fish fauna or determine the presence of specific species. This method can deliver a common baseline for climate and biodiversity science, which is relevant to support more integrated climate biodiversity policies. This method can also show the magnitude of loss of biodiversity. A weakness is that not all ecosystem condition variables can be easily inferred from historical data. 
+
+                          5. Contemporary data. This method uses contemporary data to describe a contemporary reference condition (typically after 1970 when routine environmental monitoring programmes started). For instance, the Kyoto protocol used the global atmospheric CO2 emissions recorded in 1990 as a reference against which the changes in future greenhouse gas emissions were assessed. The Living Planet Index uses species data collected in 1970 as a reference to assess changes. Similar to statistical approaches that use ambient data distributions, this is a straightforward approach to set a reference condition provided data are available. However, there are several disadvantages. The choice of year may be considered arbitrary. The reliance on contemporary data in evaluating changes can result in a shifting baseline. Appropriate dates differ for different indicators and ecosystem types. If different baseline dates are used in different regions this creates inconsistencies. Difficulties arise for scaling condition variables at levels which are higher than their reference level, e.g., when variables move out of their established range. The method is subject policy influence and contemporary baselines may diverge greatly from pre-industrial era baselines. 
+
+                          6. Prescribed levels of a set of ecosystem condition variables can be used to construct a bottom-up reference condition. Examples of these reference levels include zero values for emissions or pollutants, a specific number of species, established sustainability or threshold levels such as critical loads for eutrophication and acidification, and target levels in terms of legislated quality measures (air and water quality). Prescribed levels of variables can have clear and straightforward management applications and provides a basis for direct policy response. This method can reflect preferences for a particular use of an ecosystem accounting for social, economic and environmental considerations. They can also describe a level quantifying an undesirable state required to define the zero end of the normalized scale, for example, where the ecosystem is no longer present or functioning. Prescribed levels are, however, not available for all variables, may be subject to policy influence and changing over time, and may not be consistently developed for all ecosystem types, variables or countries. 
+
+                          7. Expert opinion usually consists of a narrative statement of expected reference condition. Although an expert´s opinion may be expressed semi-quantitatively, qualitative articulation is probably most common (European Commission, 2003). Several weaknesses are inherently associated with this approach. Therefore, caution should be exercised when using this approach as the sole means of establishing reference condition. 
+
+                          8. Natural scale limits, such as absolute biophysical limits. For example, the amount of mire trenching under the reference condition is 0%, or the lower (worst case) limit for the abundance of alien species is 100%.
+
+
+Combination of any of the above methods? Many of the above approaches may be used either singly or in concert for establishing and/or cross-validating reference condition. In practice, it may not be possible to use a single method to describe or quantify reference levels of ecosystem condition variables under a reference condition. For instance, the reference values of variables that describe a historical condition (for instance a pre-industrial state of an ecosystem) can be determined by combining modelling potential vegetation (method 2) based on paleo-climatic data (obtained through method 4). Statistical models and tools exist to combine methods (e.g., Bayesian networks can combine statistical distributions (method 3) and expert opinion (method 7)). Recent advancements in artificial intelligence will further improve the above mentioned methods to infer and describe a reference condition.
+
+                           ",
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
+    )})
   
   ## iECTsnippet ----
     observeEvent(input$i_populate, {
