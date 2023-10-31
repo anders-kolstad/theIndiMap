@@ -73,6 +73,12 @@ ETs <- c(
   "6 - Sparsely vegetated ecosystems",
   "7 - Inland wetlands"
 )
+ETlink <- c("1- cc",
+            "2 - fo",
+            "3 - so",
+            "4 - lm",
+            "5 - na",
+            "0 - unknown")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -685,7 +691,7 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
     ),
 
     # 4 INPUT Ecosystem type ----
-  tags$div(title = "Ecosystem type (multiple choice",
+  tags$div(title = "Ecosystem type (multiple choice)",
          pickerInput('iET', 'Ecosystem type',
                      choices = ETs,
                      multiple = T,
@@ -696,6 +702,14 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                        `multiple-separator` = " | "
                      ))),
 actionButton("iETINFO", "",
+             icon = icon("info")),
+# 4 INPUT Ecosystem type link  ----
+tags$div(title = "Conceptual connection between the variable and the ET",
+         pickerInput('iETlink', 'Connection to ecosystem type',
+                     choices = ETlink,
+                     multiple = F
+                     )),
+actionButton("iETlinkINFO", "",
              icon = icon("info")),
 
 
@@ -770,7 +784,7 @@ actionButton("iSpatialextentINFO", "",
 
   # 4 INPUT iSpatialResolution ----
   tags$div(title = "What is the finest spatial scale that this indicator has been calcuated at?",
-         pickerInput('iSpatialResolution', 'Spatial resolution',
+         pickerInput('iSpatialResolution', 'Spatial resolution or grain',
                      choices = scale1)),
 
 actionButton("iSpatialresolutionINFO", "",
@@ -1651,6 +1665,38 @@ observeEvent(input$i_populate, {
     )
   })
   
+  ## iETlink ----
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'iETlink',
+                      choices = ETlink,
+                      selected = stringr::str_split(
+                        iForm()$value[iForm()$parameter == "iETlink"],
+                        " \\| ", simplify = T))
+  })
+  
+  observeEvent(input$iETlinkINFO, {
+    shinyalert::shinyalert(title="Conceptual connection between the variable and the ET",
+                           text="
+There are different ways in which a variable can be connected to an ET, and the type of this connection has a great practical significance: it greatly influences the spatial scalability of the variable. Please classify the variable into one of the following types:
+
+cc: variables with a Conseptual Connection to the target ET: (no matter where and how you measure them, they will give information about the target ET, e.g. farmland bird index)
+
+fo: variables linked to an ET with Field Observations: (typical for ecological variables that are based on field observations
+
+so: variables linked to ETs via Spatial Overlay with an ET map (typical for variables based on remote sensing or modelling, e.g. NDVI and modeled climate indicators)
+
+lm: variables that are themsleves quantified from an ET map: (e.g. connectivity and fragmentation indices)
+
+na (not applicable): for an aggregated index where the different components (sub-indices) have different types of connection.
+                           ",
+                           size="l",
+                           type="info"
+                           
+    )
+  })
+  
+  
   ## dName ----
   observeEvent(input$i_populate, {
     updateTextInput(session = session,
@@ -2061,6 +2107,7 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
     dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
     dat$value[dat$parameter == "iET"] <- paste(input$iET, collapse = " | ")
+    dat$value[dat$parameter == "iETlink"] <- input$iETlink
     dat$value[dat$parameter == "dName"] <- input$dName
     dat$value[dat$parameter == "dReference"] <- input$dReference
     dat$value[dat$parameter == "dOrigin"] <- paste(input$dOrigin, collapse = " | ")
