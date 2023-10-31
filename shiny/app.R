@@ -814,6 +814,9 @@ HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T', targ
           choices = c(
             "No", "Yes", "Unclear"))),
 
+actionButton("iSubIndexINFO", "",
+             icon = icon("info")),
+
   # 4 INPUT iModelling ----
   tags$div(title = "Does the indicator (or the reference value) require modeling outside of what is included in the underlying dataset (i.e. lots of mathemtical steps)? This typically means the indicator is derived from raw data, but it is not itself the raw data.",
          radioGroupButtons('iModelling', 'Is the indicator a result from a model?',
@@ -1413,16 +1416,15 @@ server <- function(input, output, session) ({
   })
   
   observeEvent(input$pEAAextantINFO, {
-    shinyalert::shinyalert(
-      "The spatial extent of the ecosystem assessment/accounting area(s)
-           
-           Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+    shinyalert::shinyalert(title="The spatial extent of the ecosystem assessment/accounting area(s)",
+                           text=
+                             "Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
            
            Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
            
-           Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
-           
-           "
+           Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve.",
+                           size="l",
+                           type="info"
     )
   })
   
@@ -1451,17 +1453,21 @@ server <- function(input, output, session) ({
   })
   
   observeEvent(input$pAggregationINFO, {
-    shinyalert::shinyalert(
-      "-- 'Close' button at the bottom. If you cannot reach it, press Ctrl +/- to change resolution untill it becomes visible again. --
-      
-      \nThe highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
-                    \nExamples: 
-                    \n0 = indicators reported seperately with no aggregation
-                    \n1 = A species group or some level that does not span several SEEA ECT classes. 
-                    \n2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
-                    \n3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
-                    \n4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
-                    \n5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs"
+    shinyalert::shinyalert(title="Level of indicator aggregation",
+                           text="
+      The highest level of spatial aggregation of the condition estimate(s) reported in the publication. Only relevant for normalised indicator sets.
+                    Examples: 
+                    0 = indicators reported seperately with no aggregation
+                    1 = A species group or some level that does not span several SEEA ECT classes. 
+                    2 = Basic Spatial Unit. The finest spatial scale where data is available. E.g. a grid cell or a municipality
+                    3 = Ecosystem Asset. The finest spatial scale where indicators can be aggregated. E..g a county. If EA = BSU, then pick BSU
+                    4 = Ecosystem type. Chose this is indicators are aggregtaed to produce one condition value for an entire ecosystem type with the EAA 
+                    5 = Ecosystem Accounting Area. Chose this option if the publication has aggregated condition estimates accross ETs"
+                           ,
+                           size="l",
+                           type="info",
+                           inputType = "text"
+                           
     )
   })
   
@@ -1640,13 +1646,18 @@ observeEvent(input$i_populate, {
   })
   
   observeEvent(input$dSpatialCoverageINFO, {
-    shinyalert::shinyalert(
-      "Spatial coverage
-        
-        If *Complete*, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
-        \nIf *Area representative*, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
-        \nIf *Oppurtunistic or sporadic*, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
-          \nIf the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)"
+    shinyalert::shinyalert(title="Spatial coverage",
+                           text=
+                             "If <strong> Complete </strong>, then the value assigned to an area is thought to be representative for that entire area. Most remotely sensed data falls in this category, but very little else. 
+</br>
+If <strong>Area representative</strong>, the data sampling is not complete, but is arranged in such a way that they can be aggregated and become an inbiased representation of a larger area. Both random and systematic sampling designs may be eligable here. For example: climate data interpolated from meterological stations, or data from national nature monitoring programs like national forest inventories.
+</br>
+If <strong>Oppurtunistic or sporadic</strong>, the dataset lacks a coordinated samling design, adding an unknown level of bias. For example, citizen science or crouwd sourced data, or a smaller dataset from a field study.  
+</br>
+If the dataset is a combination of datasets, with a combination of categories, use the least good one (highest number)",
+                           size="l",
+                           type="info",
+                           html=T
     )
   })
     
@@ -1671,20 +1682,23 @@ observeEvent(input$i_populate, {
                       selected = iForm()$value[iForm()$parameter == "iSpatialExtent"])
     
     observeEvent(input$iSpatialextentINFO, {
-      shinyalert::shinyalert(
-        "Spatial extent
+      shinyalert::shinyalert(title="Spatial extent",
+                             text="Example: 
+                             
+If you have an indicator on forest canopy structure which is reported with unique estimates at regional levels across Norway, and which is based on area representaive monitoring data, then the spatial extent is country.
         
-        Example: If you have an indicator on forest canopy structure which is reported with unique estimates at regional levels across Norway, and which is based on area representaive monitoring data, then the spatial extent is country.
-        
-        Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
            
-        Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
            
-        Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
-        "
+Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+        ",
+                             size="l",
+                             type="info"
       )
     })
   })
+  
   ## iSpatialResolution ----
   observeEvent(input$i_populate, {
     updatePickerInput(session = session,
@@ -1694,17 +1708,20 @@ observeEvent(input$i_populate, {
   })
   
   observeEvent(input$iSpatialresolutionINFO, {
-    shinyalert::shinyalert(
-      "Spatial resolution
-        
-       If the indicator is used for saying something about a single ecosystem, but for an entire country, the iSpatialResolution is 'country'. 
+    shinyalert::shinyalert(title="Spatial resolution",
+                           text=
+                             
+                             "If the indicator is used for saying something about a single ecosystem, but for an entire country, the iSpatialResolution is 'country'. 
        
-        Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
+Regional scale: A regional scale implies the area consists of several management units (i.e. multiple governance levels). For example: Southern Norway, Agder Fylke, New York State, Australian National Parks.
            
-        Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
+Local scale (= sub-regional scale): A local scale contains a singel management unit, where decitions about land use can be made and directly put to action. For example: Trondheim kommune (a municipality), New York City, a national park.
            
-        Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. This scale is also suitable for raster data with grid cells < 0.5x0.5 km (approx.).  If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
-        "
+Project scale: a scale lower than the typical administrative unit. Typically a more transient project area or a single property. This scale is also suitable for raster data with grid cells < 0.5x0.5 km (approx.).  If in doubt whether to use local or sub-local, think about whether this scale is likely to have it own full-time government, in which case it should be assigned local scale. If the extent is so little that the area could not be considered self-contained, or that landscape effects are of little importance for ecosystem condition, or that remotely sensed data are not generally suitable for describing ecosystem condition, then all these things should point to this being a case of Project scale. Finaly, generally chose local scale unless it is clearly sub-local. Examples: a cattle farm, a housing developement area, a small nature reserve. 
+        ",
+                           size="l",
+                           type="info"
+                           
     )
   })
   
@@ -1755,7 +1772,21 @@ observeEvent(input$i_populate, {
                               choices = c("No", "Yes", "Unclear"),
                               selected = iForm()$value[iForm()$parameter == "iSubIndex"])    
       })
-    
+  observeEvent(input$iSubIndexINFO, {
+    shinyalert::shinyalert(title = "Sub Index", 
+                           text=
+                             "A sub index is defined here as being some form of aggregated metric across potentially uniqe indicators that either 
+ 1) span several ECTclass (i.e. the sub index cannot be attributed to an ECT class because it an aggregation across several ECT classes) 
+ 2) contain indicators from the same ECT class but where each indicator has a unique reference level.
+
+\nAn exampel of the first can be a hypothetical forest integrity metric comprised of indicators on both biodiversity and forest structure components. 
+And example of the second type can be the Norwegian Natur Index which is comprised of several indicators where most or all of the indicators corresponds to a species and its population trends. These indicators can be said to belong to the same ECT class B1, but each indicator has a unique, species specific reference value.
+\nContrastingly, the red-list index also is comprised of data on several species, but they all have the same reference value (i.e. not to be on the red list) and so this is not a sub index.",
+                           size="l",
+                           type="info"
+    )
+  })  
+  
   ## iModelling ----
     observeEvent(input$i_populate, {
       updateRadioGroupButtons(session = session,
@@ -1766,10 +1797,12 @@ observeEvent(input$i_populate, {
   
   
   observeEvent(input$iModellingINFO, {
-    shinyalert::shinyalert(
-      "Modelling
-        
-       \nFor example, any indicator that relies on other, predictory variables, or which requires interpolation or extrapolation, is modelled. This includes most climate datasets which tend to be interpolated, but if this interpolated dataset is used as the raw data for the indicator, and reported 'as is', then you should still select 'No' here. If the indicator instead used this meterological or climate data to estimate/model drought risk (extrapolation) or something similar, then you should select 'Yes'."
+    shinyalert::shinyalert(title="Modelling",
+                           text=
+                             "
+       Any indicator that relies on other, predictory variables, or which requires interpolation or extrapolation, is modelled. This includes most climate datasets which tend to be interpolated, but if this interpolated dataset is used as the raw data for the indicator, and reported 'as is', then you should still select 'No' here. If the indicator instead used this meterological or climate data to estimate/model drought risk (extrapolation) or something similar, then you should select 'Yes'.",
+                           size="l",
+                           type="info"
     )
   })
   
@@ -1797,15 +1830,24 @@ observeEvent(input$i_populate, {
       })
     
   observeEvent(input$iECTclassINFO, {
-    shinyalert::shinyalert(
-"Examples:
-\nA1: water quantity (e.g. hydrological flow, groundwater table)
-\nA2: air quality (pollutants concentrations); water quality (e.g. pollutant concentrations); soil quality (e.g. soil carbon \nstock)
-\nB1: birds, fish, habitats-based indices (red-list indices, LPI) 
-\nB2: vegetation cover (e.g. shrub cover); timber stock; litter; forest age
-\nB3: flood risk; NPP, biomass growth
-\nC1: connectivity/fragmentation (e.g. barrier density); the presence/abundance of specific habitat (sub)types
-\nOther: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))"
+    shinyalert::shinyalert(title="ECT classes",
+                           text="based on the SEEA EA Ecosystem Condition Typology (ECT)
+
+The primary Ecosystem Condition Typology (ECT) for the variable, defined as the ECT class connected to the main “intended purpose” of the variable, corresponding to the underlying ecosystem characteristic (Czucz et al. 2021).
+
+A1: Physical state characteristics: physical descriptors of the abiotic components of the ecosystem(e.g. soil structure, water availability)
+A2: Chemical state characteristics: chemical composition of abiotic ecosystem compartments (e.g. soil nutrient levels, water quality, air pollutant concentrations)
+B1a: Compositional state characteristics - addressing the abundance of key species & species groups at a given location and time
+B1b: Compositional state characteristics - addressing the diversity of relevant species groups
+B2: Structural state characteristics: aggregate properties (e.g. mass, density) of the whole ecosystem or its main biotic components (e.g. total biomass, canopy coverage, chlorophyll content, annual maximum NDVI)
+B3: Functional state characteristics: summary statistics (e.g. frequency, intensity) of the biological, chemical, and physical interactions between the main ecosystem compartments (e.g. primary productivity, community age, disturbance frequency)
+C1: Landscape characteristics: metrics describing mosaics of ecosystem types at coarse (landscape, seascape) spatial scales (e.g. landscape diversity, connectivity, fragmentation) or the density of fragments of other ETs in an embedding ET (e.g. hedgerows in agricultural land)
+Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibility (distance to population centres, length of trails); protected areas; raw pressures (e.g. #pollutant loads, habitat loss); management intensity (e.g. grazing); abiotic / climatic characteristics (e.g. annual rainfall); certificates (e.g. blue flag (EU beaches))",
+                           
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
     )})
   
   
