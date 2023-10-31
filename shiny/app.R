@@ -74,12 +74,12 @@ ETs <- c(
   "6 - Sparsely vegetated ecosystems",
   "7 - Inland wetlands"
 )
-ETlink <- c("Conseptual connection" = "cc - Conseptual connection",
+ETlink <- c("unknown"               = "un - unknown",
+            "Conseptual connection" = "cc - Conseptual connection",
             "Field observations"    = "fo - Field observations",
             "Spatial overlay"       = "so - Spatial overlay",
             "Derived from maps"     = "dm - Derived from maps",
-            "Not applicable"        = "na - not applicable",
-            "unknown"               = "un - unknown")
+            "Not applicable"        = "na - not applicable")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -705,11 +705,13 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
 actionButton("iETINFO", "",
              icon = icon("info")),
 # 4 INPUT Ecosystem type link  ----
+
 tags$div(title = "Conceptual connection between the variable and the ET",
-         pickerInput('iETlink', 'Connection to ecosystem type',
+         radioGroupButtons('iETlink', 'Connection to ecosystem type',
                      choices = ETlink,
-                     multiple = F
+                     selected=NULL
                      )),
+
 actionButton("iETlinkINFO", "",
              icon = icon("info")),
 
@@ -1672,12 +1674,10 @@ observeEvent(input$i_populate, {
   
   ## iETlink ----
   observeEvent(input$i_populate, {
-    updatePickerInput(session = session,
+    updateRadioGroupButtons(session = session,
                       'iETlink',
                       choices = ETlink,
-                      selected = stringr::str_split(
-                        iForm()$value[iForm()$parameter == "iETlink"],
-                        " \\| ", simplify = T))
+                      selected = iForm()$value[iForm()$parameter == "iETlink"])
   })
   
   observeEvent(input$iETlinkINFO, {
@@ -2077,7 +2077,7 @@ Combination of any of the above methods? Many of the above approaches may be use
          nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3 | #"MISSING: Please enter GitHub user name",
          nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the full URL for the Zotero entry is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
       type = "error",
-      duration = NA
+      duration = 10
     )
   })
   
