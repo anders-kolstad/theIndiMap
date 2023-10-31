@@ -1,5 +1,6 @@
 ---
 title: "The Re-scalable Indicator Review"
+date: null  # Defaults to date generated, but can specify like '2022-10-31'.
 keywords:
   - markdown
   - publishing
@@ -24,3 +25,4 @@ authors:
     affiliations:
       - Department of Something, University of Whatever
       - Department of Whatever, University of Something
+    corresponding: true
