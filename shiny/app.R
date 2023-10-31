@@ -29,40 +29,40 @@ ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
 # Named lists
-scale1 <- c(unknown = "0 - unknown",
-            global  = "1 - global",
-            continent = "2 - continent",
+scale1 <- c(unknown          = "0 - unknown",
+            global           = "1 - global",
+            continent        = "2 - continent",
             'multi-national' = "3 - multi-national",
-            country = "4 - country",
-            region = "5 - region",
-            local = "6 - local",
-            'project area' = "7 - project-area")
+            country          = "4 - country",
+            region           = "5 - region",
+            local            = "6 - local",
+            'project area'   = "7 - project-area")
 
-origin <- c("The original systematic search results" = "Systematic search",
-            "The SEEA EA maintaind list of ECAs"     = "SEEA EA list",
+origin <- c("The original systematic search results"                             = "Systematic search",
+            "The SEEA EA maintaind list of ECAs"                                 = "SEEA EA list",
             "Unsystematic search or the publications was previously known to me" = "Opportunistic")
 
 refStates <- c("Undisturbed or minimally-disturbed condition" = "UND - Undisturbed or minimally-disturbed condition",
-               "Historical condition" = "HIS - Historical condition",
-               "Least-disturbed condition" = "LDI - Least-disturbed condition",
-               "Contemporary condition" = "CON - Contemporary condition",
-               "Best-attainable condition" =  "BAT - Best-attainable condition",
-               "other" = "OTH - other")
+               "Historical condition"                         = "HIS - Historical condition",
+               "Least-disturbed condition"                    = "LDI - Least-disturbed condition",
+               "Contemporary condition"                       = "CON - Contemporary condition",
+               "Best-attainable condition"                    = "BAT - Best-attainable condition",
+               "other"                                        = "OTH - other")
 
-rescalingMethod <- c(linear = "LIN - linear",
+rescalingMethod <- c(linear       = "LIN - linear",
                      "non-linear" = "NLI - non-linear",
-                     "two-sided" = "TSI - two-sided",
-                     unclear = "UNC - unclear")
+                     "two-sided"  = "TSI - two-sided",
+                     unclear      = "UNC - unclear")
 
 refValMethod <- c("Choose one or more options from the list" = NA,
-                  "Reference sites" = "RS - Reference sites",
-                  "Modelled reference condition" = "MRC - Modelled reference condition",
+                  "Reference sites"                                       = "RS - Reference sites",
+                  "Modelled reference condition"                          = "MRC - Modelled reference condition",
                   "Statistical approaches based on ambient distributions" = "SAAD - Statistical approaches based on ambient distributions",
-                  "Historical observations and paleo-environmental data" = "HOPED - Historical observations and paleo-environmental data",
-                  "Contemporary data" = "CD - Contemporary data",
-                  "Prescribed levels" = "PL - Prescribed levels",
-                  "Expert opinion" = "EO - Expert opinion",
-                "Others or unknown" = "OTH - Others or unknown")
+                  "Historical observations and paleo-environmental data"  = "HOPED - Historical observations and paleo-environmental data",
+                  "Contemporary data"                                     = "CD - Contemporary data",
+                  "Prescribed levels"                                     = "PL - Prescribed levels",
+                  "Expert opinion"                                        = "EO - Expert opinion",
+                  "Others or unknown"                                     = "OTH - Others or unknown")
 
 ETs <- c(
   "1 - Settlements and other artificial areas",
@@ -73,12 +73,12 @@ ETs <- c(
   "6 - Sparsely vegetated ecosystems",
   "7 - Inland wetlands"
 )
-ETlink <- c("1- cc",
-            "2 - fo",
-            "3 - so",
-            "4 - lm",
-            "5 - na",
-            "0 - unknown")
+ETlink <- c("Conseptual connection" = "cc - Conseptual connection",
+            "Field observations"    = "fo - Field observations",
+            "Spatial overlay"       = "so - Spatial overlay",
+            "Derived from maps"     = "dm - Derived from maps",
+            "Not applicable"        = "na - not applicable",
+            "unknown"               = "un - unknown")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -1686,7 +1686,7 @@ fo: variables linked to an ET with Field Observations: (typical for ecological v
 
 so: variables linked to ETs via Spatial Overlay with an ET map (typical for variables based on remote sensing or modelling, e.g. NDVI and modeled climate indicators)
 
-lm: variables that are themsleves quantified from an ET map: (e.g. connectivity and fragmentation indices)
+dm: variables that are themsleves Derived from an ET map: (e.g. connectivity and fragmentation indices)
 
 na (not applicable): for an aggregated index where the different components (sub-indices) have different types of connection.
                            ",
