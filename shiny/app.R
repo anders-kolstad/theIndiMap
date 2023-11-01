@@ -1337,12 +1337,6 @@ server <- function(input, output, session) ({
     
   })
   
-  ## pID ----
-    #UUID <- reactive({
-    # ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
-    #        uuid::UUIDgenerate(), 
-    #        pform()$value[pform()$parameter == "pID"])
-    #})
   
   pUUID <- eventReactive(input$puuid_new, {
       uuid::UUIDgenerate()
@@ -1380,23 +1374,6 @@ server <- function(input, output, session) ({
   })
   
   
-#  ## pRealm ----
-#  observeEvent(input$populate, {
-#    updateCheckboxGroupButtons(session = session,
-#                    'pRealm',
-#                    choices = "Terrestrial",
-#                    selected = pform()$value[pform()$parameter == "pRealm"])
-#    
-#  })
-#
-#  ## pNormalised ----
-#  observeEvent(input$populate, {
-#    updateCheckboxGroupButtons(session = session,
-#                               'pNormalised',
-#                               choices = c("Yes", "No"),
-#                               selected = pform()$value[pform()$parameter == "pNormalised"])
-#    
-#  })
   
   ## pRedundant ----
   observeEvent(input$populate, {
@@ -1542,7 +1519,7 @@ server <- function(input, output, session) ({
   # update the drop down list based on what you selected in 'localPub2', i.e. the csv's you uploaded
   observeEvent(input$localPub2, {
     updatePickerInput(session = session, inputId = "pubDrop2",
-                      choices = unique(publicationList2()$pTitle))
+                      choices = publicationList2()$pTitle)
   })
   
   # update the same drop down list with the publication name in the uploaded version
@@ -2128,8 +2105,8 @@ Combination of any of the above methods? Many of the above approaches may be use
     # shorten name
     dat <- iForm()
     
-    if(input$pNew != "Edit") dat$value[dat$parameter == "iID"] <- iUUID() 
-    dat$value[dat$parameter == "pID"] <- input$pubDrop2
+    if(input$iNew != "Edit") dat$value[dat$parameter == "iID"] <- iUUID() 
+    dat$value[dat$parameter == "pTitle"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
