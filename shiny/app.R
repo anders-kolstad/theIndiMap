@@ -247,15 +247,14 @@ sidebarLayout(
                 "Enter publication title", 
                 value = "")),
       
-      # 3 INPUT pZoteroID ----
-        tags$div(title = "Example: https://www.zotero.org/groups/4630169/the_rescalable_indicator_review/collections/KDCY6DCS/items/8GALH26U/collection",
-        textInput("pzoteroid", 
-                  "Enter the full URL for the Zotero entry", 
+      # 3 INPUT pRayyanID ----
+        tags$div(title = "The Rayyan ID is called System ID inside Rayyan itself. See it by first clicking a row with a publication and read it from the blue screen below. Example: 534633005",
+        textInput("pRayyanID", 
+                  "Enter the Rayyan ID", 
                   value = "")),
-      h5(tags$i("This is the url for the zotero library: https://www.zotero.org/groups/4630169/the_indimap_review/library")),
       
       # 3 INPUT pOrigin ----
-      tags$div(title = "The original systematic search refersr to folder 1.4 in the Zotero library.
+      tags$div(title = "The original systematic search refers to papers stored in Rayyan under 'Search methods: Uploaded References [The IndiMap Review.bib]'.
                \nThe SEEA EA maintained list refers to this web page: https://seea.un.org/content/knowledge-base
                \nIf you are entering a publication that is not identified either through the initial systematic search, or one that you found on the SEEA EA lst, then choose the third option.",
                pickerInput(
@@ -305,6 +304,15 @@ sidebarLayout(
            textInput("pJournal", 
                      "Enter the journal name, without abbreviations", 
                      value = ""))),
+  
+  # 3 INPUT pComments ----
+  tags$div(title = "Optional. Add a short description for the publication. 
+           Example: 'Paper suggestion new indicator for biodiversity', 
+           or 'National ECA with many indicators.'", 
+                            textInput("pComment", 
+                                      "Comments on the publication", 
+                                      value = "")),
+  
   
   # 3 INPUT pDirective ----
   tags$div(title = "Tick of the boxes that the publication explicitly states that it is reporting to",
@@ -1372,11 +1380,11 @@ server <- function(input, output, session) ({
   
   # B* UPDATEs: ----
   
-  ## pZoteroID ----
+  ## pRayyanID ----
   observeEvent(input$populate, {
     updateTextInput(session = session,
-                    'pzoteroid',
-                    value = pform()$value[pform()$parameter == "pZoteroID"])
+                    'pRayyanID',
+                    value = pform()$value[pform()$parameter == "pRayyanID"])
   })
   
   ## pOrigin ----
@@ -1468,6 +1476,14 @@ server <- function(input, output, session) ({
     updateTextInput(session = session,
                     'pJournal',
                     value = pform()$value[pform()$parameter == "pJournal"])
+    
+  })
+  
+  ## pComment ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'pComment',
+                    value = pform()$value[pform()$parameter == "pComment"])
     
   })
   
@@ -2097,7 +2113,7 @@ Combination of any of the above methods? Many of the above approaches may be use
       paste(
       if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3 | #) "MISSING: Publication title is not valid",
          nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3 | #"MISSING: Please enter GitHub user name",
-         nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the full URL for the Zotero entry is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
+         nchar(pExport()$value[pExport()$parameter == "pRayyanID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the pRayyanID is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
       type = "error",
       duration = 10
     )
@@ -2114,7 +2130,7 @@ Combination of any of the above methods? Many of the above approaches may be use
     dat <- pform()
     
     #update value column based on input
-    dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
+    dat$value[dat$parameter == "pRayyanID"] <- input$pRayyanID
     
     dat$value[dat$parameter == "pOrigin"] <- input$pOrigin
     
@@ -2131,6 +2147,8 @@ Combination of any of the above methods? Many of the above approaches may be use
     dat$value[dat$parameter == "pType"] <- input$pType
 
     dat$value[dat$parameter == "pJournal"] <- ifelse(input$pType == "Peer-reviewed article", input$pJournal, NA)
+    
+    dat$value[dat$parameter == "pComment"] <- input$pComment
     
     dat$value[dat$parameter == "pAssessment"] <- input$pAssessment
     
