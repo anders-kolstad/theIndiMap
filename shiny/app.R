@@ -80,6 +80,25 @@ ETlink <- c("unknown"               = "un - unknown",
             "Spatial overlay"       = "so - Spatial overlay",
             "Derived from maps"     = "dm - Derived from maps",
             "Not applicable"        = "na - not applicable")
+
+ECTs <- c(
+  "A1 - Physical state characteristics",
+  "A2 - Chemical state characteristics",
+  "B1a - Compositional state characteristics - abundance",
+  "B1b - Compositional state characteristics - diversity",
+  "B2 - Structural state characteristics",
+  "B3 - Functional state characteristics",
+  "C1 - Landscape and seascape characteristics",
+  "OT - Other (e.g. pre-aggregated indices)")
+
+publicationTypes <- c("Peer-reviewed article", 
+                      "Book", 
+                      "Book chapter",
+                      "Rapport",
+                      "Web resource",
+                      "Unpublished")
+
+maps <- c("No", "Yes", "Not by itself, but as part of an aggregated index")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -239,10 +258,12 @@ sidebarLayout(
       tags$div(title = "The original systematic search refersr to folder 1.4 in the Zotero library.
                \nThe SEEA EA maintained list refers to this web page: https://seea.un.org/content/knowledge-base
                \nIf you are entering a publication that is not identified either through the initial systematic search, or one that you found on the SEEA EA lst, then choose the third option.",
-               radioGroupButtons(
+               pickerInput(
                  inputId = "pOrigin", 
                  label   = "Where did you get this reference from?",
-                 choices = origin)),
+                 choices = origin,
+                 options = list(
+                   title = "Nothing selected"))),
       
       
       # 3 INPUT pBibliography ----
@@ -268,16 +289,12 @@ sidebarLayout(
   # 3 INPUT pType ----
   tags$div(title = "Chose the relevant publication type from the list.\n\n
                'Unpublished' in this case means it is not publically available.",  
-           radioGroupButtons(
+           pickerInput(
              inputId = "pType",
              label = "Type of publication",
-             choices = c("Peer-reviewed article", 
-                         "Book", 
-                         "Book chapter",
-                         "Rapport",
-                         "Web resource",
-                         "Unpublished"),
-             selected = NULL
+             choices = publicationTypes,
+             options = list(
+               title = "Nothing selected")
            )),
   
   
@@ -315,11 +332,12 @@ sidebarLayout(
   # 3 INPUT pEAAextent ----
   conditionalPanel("input.pAssessment == 'Assessment'",
   tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)",
-           radioGroupButtons(
+           pickerInput(
              inputId = "pEAAextent",
              label = "The extent of the Ecosystem Accounting Area",
              choices = scale1,
-             selected = NULL
+             options = list(
+               title = "Nothing selected")
            )
           ),
   
@@ -707,9 +725,11 @@ actionButton("iETINFO", "",
 # 4 INPUT Ecosystem type link  ----
 
 tags$div(title = "Conceptual connection between the variable and the ET",
-         radioGroupButtons('iETlink', 'Connection to ecosystem type',
+         pickerInput('iETlink', 
+                     'Connection to ecosystem type',
                      choices = ETlink,
-                     selected=NULL
+                     options = list(
+                       title = "Noting selected")
                      )),
 
 actionButton("iETlinkINFO", "",
@@ -754,7 +774,9 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                   "1 - complete",
                   "2 - area representative",
                   "3 - oppurtunistic or sporadic",
-                  "4 - unknown"))),
+                  "4 - unknown"),
+      options = list(
+        title = "Noting selected"))),
 
 actionButton("dSpatialCoverageINFO", "",
              icon = icon("info")),
@@ -787,8 +809,11 @@ actionButton("iSpatialextentINFO", "",
 
   # 4 INPUT iSpatialResolution ----
   tags$div(title = "What is the finest spatial scale that this indicator has been calcuated at?",
-         pickerInput('iSpatialResolution', 'Spatial resolution or grain',
-                     choices = scale1)),
+         pickerInput('iSpatialResolution', 
+                     'Spatial resolution or grain',
+                     choices = scale1,
+                     options = list(
+                       title = "Nothing selected"))),
 
 actionButton("iSpatialresolutionINFO", "",
              icon = icon("info")),
@@ -810,11 +835,12 @@ actionButton("iSpatialresolutionINFO", "",
 
   # 4 INPUT iMap ----
   tags$div(title = "Is the indicator presented as a map? This map may be included in the printable publication or simply linked to or made available on a digital platform.",
-    radioGroupButtons(
+    pickerInput(
      inputId = "iMap",
      label = "Presented as map?",
-     choices = c("No", "Yes", "Not by itself, but as part of an aggregated index"),
-     selected = "No"
+     choices = maps,
+     options = list(
+       title = "This is a placeholder")
     )),
 
   # 4 INPUT iYear ----
@@ -851,18 +877,22 @@ HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T', targ
 
   # 4 INPUT iSubIndex ----
   tags$div(title = "Is the indicator a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species.",
-         radioGroupButtons('iSubIndex', 'Is the indicator itself an index?',
-          choices = c(
-            "No", "Yes", "Unclear"))),
+         pickerInput('iSubIndex', 
+                     'Is the indicator itself an index?',
+                     choices = c("No", "Yes", "Unclear"),
+                     options = list(
+                       title = "Nothing selected"))),
 
 actionButton("iSubIndexINFO", "",
              icon = icon("info")),
 
   # 4 INPUT iModelling ----
   tags$div(title = "Does the indicator (or the reference value) require modeling outside of what is included in the underlying dataset (i.e. lots of mathemtical steps)? This typically means the indicator is derived from raw data, but it is not itself the raw data.",
-         radioGroupButtons('iModelling', 'Is the indicator a result from a model?',
-                           choices = c(
-                             "No", "Yes", "Unclear"))),
+         pickerInput('iModelling', 
+                     'Is the indicator a result from a model?',
+                     choices = c("No", "Yes", "Unclear"),
+                     options = list(
+                       title = "Nothing selected"))),
 
   actionButton("iModellingINFO", "", icon = icon("info")),
 
@@ -880,14 +910,9 @@ h4("Fields related to SEEA EA:", style="background-color:lightblue;"),
   # 4 INPUT iECTclass ----
   tags$div(title = "The class may not be reported, and in any case, it's is the reviewer that must assign the indicator to the correct or the most correct class.",
          pickerInput('iECTclass', 'SEEA Ecosystem Condition Typology Class',
-                     choices = c("Choose a category",
-                       "A1 Physical state characteristics",
-                       "A2 Chemical state characteristics",
-                       "B1 Compositional state characteristics",
-                       "B2 Structural state characteristics",
-                       "B3 Functional state characteristics",
-                       "C1 Landscape and seascape characteristics",
-                       "Other (e.g. pre-aggregated indices)")
+                     choices = ECTs,
+                     options = list(
+                       title = "Nothing selected")
          )),
 
 HTML("<p>Link to  <a href='https://oneecosystem.pensoft.net/article/58218/', target='_blank'> definitions</a>. (Scroll to Table 1).</p>"),
@@ -907,9 +932,11 @@ h4("Fields related to the reference condition:", style="background-color:lightbl
 
   # 4 INPUT rType ----
   tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'. For definitions, see SEEA EA white paper table 5.8, page 115.",
-         pickerInput('rType', "Type of reference condition",
+         pickerInput('rType', 
+                     "Type of reference condition",
                      choices = refStates,
-                     selected = "OTH - other"
+                     options = list(
+                       title = "Nothing selected")
          )),
 actionButton("rTypeINFO", "", icon = icon("info")),
 
@@ -932,14 +959,20 @@ h4("Fields related to the reference values:", style="background-color:lightblue;
 
 # 4 INPUT rResolution ----
 tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
-         pickerInput('rResolution', "Spatial resolution of the reference value(s)",
-                     choices = scale1
+         pickerInput('rResolution', 
+                     "Spatial resolution of the reference value(s)",
+                     choices = scale1,
+                     options = list(
+                       title = "Nothing selected")
          )),
 
   # 4 INPUT rRescalingMethod ----
   tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
-         radioGroupButtons('rRescalingMethod', "Rescaling method",
-                     choices = rescalingMethod
+         pickerInput('rRescalingMethod', 
+                     "Rescaling method",
+                     choices = rescalingMethod,
+                     options = list(
+                       title = "Nothing selected")
          )),
 
 
@@ -1348,7 +1381,7 @@ server <- function(input, output, session) ({
   
   ## pOrigin ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                             'pOrigin',
                             choices = origin,
                             selected = pform()$value[pform()$parameter == "pOrigin"])
@@ -1423,14 +1456,9 @@ server <- function(input, output, session) ({
   
   ## pType ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                             'pType',
-                            choices = c("Peer-reviewed article", 
-                                        "Book", 
-                                        "Book chapter",
-                                        "Rapport",
-                                        "Web resource",
-                                        "Unpublished"),
+                            choices = publicationTypes,
                             selected = pform()$value[pform()$parameter == "pType"])
     
   })
@@ -1454,7 +1482,7 @@ server <- function(input, output, session) ({
   
   ## pEAAextent ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                             'pEAAextent',
                             choices = scale1,
                             selected = pform()$value[pform()$parameter == "pEAAextent"])
@@ -1674,10 +1702,12 @@ observeEvent(input$i_populate, {
   
   ## iETlink ----
   observeEvent(input$i_populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                       'iETlink',
                       choices = ETlink,
-                      selected = iForm()$value[iForm()$parameter == "iETlink"])
+                      selected = iForm()$value[iForm()$parameter == "iETlink"],
+                      options = list(
+                        title = "Nothing selected"))
   })
   
   observeEvent(input$iETlinkINFO, {
@@ -1831,9 +1861,9 @@ Project scale: a scale lower than the typical administrative unit. Typically a m
   })
   ## iMap ----
   observeEvent(input$i_populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                        'iMap',
-                       choices = c("No", "Yes", "Not by itself, but as part of an aggregated index"),
+                       choices = maps,
                        selected = iForm()$value[iForm()$parameter == "iMap"])
   })
   ## iYear ----
@@ -1864,7 +1894,7 @@ Project scale: a scale lower than the typical administrative unit. Typically a m
   ## iSubIndex ----
     
     observeEvent(input$i_populate, {
-      updateRadioGroupButtons(session = session,
+      updatePickerInput(session = session,
                               'iSubIndex',
                               choices = c("No", "Yes", "Unclear"),
                               selected = iForm()$value[iForm()$parameter == "iSubIndex"])    
@@ -1886,7 +1916,7 @@ And example of the second type can be the Norwegian Natur Index which is compris
   
   ## iModelling ----
     observeEvent(input$i_populate, {
-      updateRadioGroupButtons(session = session,
+      updatePickerInput(session = session,
                               'iModelling',
                               choices = c("No", "Yes", "Unclear"),
                               selected = iForm()$value[iForm()$parameter == "iModelling"])    
@@ -1915,15 +1945,7 @@ And example of the second type can be the Norwegian Natur Index which is compris
     observeEvent(input$i_populate, {
       updatePickerInput(session = session,
                         'iECTclass',
-                        choices = c("Choose a category",
-                                    "A1 Physical state characteristics",
-                                    "A2 Chemical state characteristics",
-                                    "B1a Compositional state characteristics - abundance",
-                                    "B1b Compositional state characteristics - diversity",
-                                    "B2 Structural state characteristics",
-                                    "B3 Functional state characteristics",
-                                    "C1 Landscape and seascape characteristics",
-                                    "Other (e.g. pre-aggregated indices)"),
+                        choices = ECTs,
                         selected = iForm()$value[iForm()$parameter == "iECTclass"])
       })
     
@@ -2033,7 +2055,7 @@ Combination of any of the above methods? Many of the above approaches may be use
     })
   ## rRescalingMethod ----
       observeEvent(input$i_populate, {
-      updateRadioGroupButtons(session = session,
+        updatePickerInput(session = session,
                               'rRescalingMethod',
                               choices = rescalingMethod,
                               selected = iForm()$value[iForm()$parameter == "rRescalingMethod"])    
