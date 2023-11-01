@@ -1,12 +1,13 @@
 parameter;value
 githubUser;NA
 pTitle;NA
-pZoteroID;NA
+pRayyanID;NA
 pOrigin;NA
 pID;NA
 pBibliography;NA
 pRedundant;Unique
 pType;NA
+pComment; NA
 pJournal;NA
 pDirective;Not relevant
 pAssessment;NA

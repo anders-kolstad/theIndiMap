@@ -8,11 +8,7 @@ library(DT)
 library(uuid)
 library(shinyalert)
 
-#library(dashboardthemes)
-#library(shinydashboard)
-#library(tidyverse)
-#library(readxl)
-
+source("shinyData/lookup.R")
 
 publicationParameters <- 
   read.csv("shinyData/publicationProfileFields.csv", sep=";")
@@ -28,77 +24,7 @@ ISO3166 <- read.csv("shinyData/ISO3166.csv", sep=";")
 ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
-# Named lists
-scale1 <- c(unknown          = "0 - unknown",
-            global           = "1 - global",
-            continent        = "2 - continent",
-            'multi-national' = "3 - multi-national",
-            country          = "4 - country",
-            region           = "5 - region",
-            local            = "6 - local",
-            'project area'   = "7 - project-area")
 
-origin <- c("The original systematic search results"                             = "Systematic search",
-            "The SEEA EA maintaind list of ECAs"                                 = "SEEA EA list",
-            "Unsystematic search or the publications was previously known to me" = "Opportunistic")
-
-refStates <- c("Undisturbed or minimally-disturbed condition" = "UND - Undisturbed or minimally-disturbed condition",
-               "Historical condition"                         = "HIS - Historical condition",
-               "Least-disturbed condition"                    = "LDI - Least-disturbed condition",
-               "Contemporary condition"                       = "CON - Contemporary condition",
-               "Best-attainable condition"                    = "BAT - Best-attainable condition",
-               "other"                                        = "OTH - other")
-
-rescalingMethod <- c(linear       = "LIN - linear",
-                     "non-linear" = "NLI - non-linear",
-                     "two-sided"  = "TSI - two-sided",
-                     unclear      = "UNC - unclear")
-
-refValMethod <- c("Choose one or more options from the list" = NA,
-                  "Reference sites"                                       = "RS - Reference sites",
-                  "Modelled reference condition"                          = "MRC - Modelled reference condition",
-                  "Statistical approaches based on ambient distributions" = "SAAD - Statistical approaches based on ambient distributions",
-                  "Historical observations and paleo-environmental data"  = "HOPED - Historical observations and paleo-environmental data",
-                  "Contemporary data"                                     = "CD - Contemporary data",
-                  "Prescribed levels"                                     = "PL - Prescribed levels",
-                  "Expert opinion"                                        = "EO - Expert opinion",
-                  "Natural scale limits"                                  = "NSL - Natural scale limits",
-                  "Others or unknown"                                     = "OTH - Others or unknown")
-
-ETs <- c(
-  "1 - Settlements and other artificial areas",
-  "2 - Cropland",
-  "3 - Grassland",
-  "4 - Forest and woodland",
-  "5 - Heathland and shrub",
-  "6 - Sparsely vegetated ecosystems",
-  "7 - Inland wetlands"
-)
-ETlink <- c("unknown"               = "un - unknown",
-            "Conseptual connection" = "cc - Conseptual connection",
-            "Field observations"    = "fo - Field observations",
-            "Spatial overlay"       = "so - Spatial overlay",
-            "Derived from maps"     = "dm - Derived from maps",
-            "Not applicable"        = "na - not applicable")
-
-ECTs <- c(
-  "A1 - Physical state characteristics",
-  "A2 - Chemical state characteristics",
-  "B1a - Compositional state characteristics - abundance",
-  "B1b - Compositional state characteristics - diversity",
-  "B2 - Structural state characteristics",
-  "B3 - Functional state characteristics",
-  "C1 - Landscape and seascape characteristics",
-  "OT - Other (e.g. pre-aggregated indices)")
-
-publicationTypes <- c("Peer-reviewed article", 
-                      "Book", 
-                      "Book chapter",
-                      "Rapport",
-                      "Web resource",
-                      "Unpublished")
-
-maps <- c("No", "Yes", "Not by itself, but as part of an aggregated index")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -264,6 +190,15 @@ sidebarLayout(
                  options = list(
                    title = "Nothing selected"))),
       
+      br(),
+      
+      
+      # 3 INPUT UUID ----
+      conditionalPanel("input.pNew == 'Create new'",
+        actionButton("puuid_new", "Regenerate UUID"
+                   )),
+      
+      br(),
       
       # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
@@ -305,7 +240,7 @@ sidebarLayout(
                      "Enter the journal name, without abbreviations", 
                      value = ""))),
   
-  # 3 INPUT pComments ----
+  # 3 INPUT pComment ----
   tags$div(title = "Optional. Add a short description for the publication. 
            Example: 'Paper suggestion new indicator for biodiversity', 
            or 'National ECA with many indicators.'", 
@@ -414,7 +349,7 @@ sidebarLayout(
              label = "Number of (aggregated) indicators",
              value = NA,
              min = 0
-           ))),
+           )))
                    
   ),
   
@@ -627,6 +562,12 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
                    "Enter your GitHub user name", 
                    value = "")),
 
+br(),
+# 4 INPUT UUID ----
+conditionalPanel("input.pNew == 'Create new'",
+                 actionButton("iuuid_new", "Regenerate UUID"
+                 )),
+br(),
 # 4 INPUT iName ----
   tags$div(title = "Type a human readable name for the indicator. Preferably unique. For example: Tree cover Netherlands.",
          textInput("iName", 
@@ -657,7 +598,7 @@ conditionalPanel(condition =  "input.iRedundant != 'Unique'",
   tags$div(title = "Enter a reference, preferrabluy a doi, to the duplicate resource. For example, if the paper you are reading reports an indicator that it borrows from another reference that they cite. All duplicates, with the exeption of pre-prints when published versione exist, should be processed in the app in the normal way.",
            textInput("iRedundantReferences", 
                      "Source reference", 
-                     value = "")),
+                     value = ""))
   
   ),
 
@@ -1397,17 +1338,21 @@ server <- function(input, output, session) ({
   })
   
   ## pID ----
-  pUUID <- reactive({
-    ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
-           uuid::UUIDgenerate(),
-           pform()$value[pform()$parameter == "pID"])
-  })
+    #UUID <- reactive({
+    # ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
+    #        uuid::UUIDgenerate(), 
+    #        pform()$value[pform()$parameter == "pID"])
+    #})
+  
+  pUUID <- eventReactive(input$puuid_new, {
+      uuid::UUIDgenerate()
+  }, ignoreNULL=FALSE)
+  
   ## iID ----
-  iUUID <- reactive({
-    ifelse(is.na(iForm()$value[iForm()$parameter == "iID"]), 
-           uuid::UUIDgenerate(),
-           iForm()$value[iForm()$parameter == "iID"])
-  })
+  iUUID <- eventReactive(input$iuuid_new, {
+          uuid::UUIDgenerate()
+      }, ignoreNULL=FALSE)
+  
   
   
   ## pTitle ----
@@ -2134,7 +2079,7 @@ Combination of any of the above methods? Many of the above approaches may be use
     
     dat$value[dat$parameter == "pOrigin"] <- input$pOrigin
     
-    dat$value[dat$parameter == "pID"] <- pUUID()
+    if(input$pNew != "Edit") dat$value[dat$parameter == "pID"] <- pUUID() 
       
     dat$value[dat$parameter == "pTitle"] <- input$ptitle
     
@@ -2183,7 +2128,7 @@ Combination of any of the above methods? Many of the above approaches may be use
     # shorten name
     dat <- iForm()
     
-    dat$value[dat$parameter == "iID"] <- iUUID()
+    if(input$pNew != "Edit") dat$value[dat$parameter == "iID"] <- iUUID() 
     dat$value[dat$parameter == "pID"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
