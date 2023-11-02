@@ -551,7 +551,9 @@ tags$div(title = "Use this functionality to locate the already existing publicat
            pickerInput('pubDrop2', 'Select the associated publication by its title',
                        choices = NA,
                        options = list(
-                         `live-search` = TRUE))),
+                         `live-search` = TRUE,
+                          title = "Noting selected"
+                       ))),
 
 tags$hr(),
 h4("General fields:", style="background-color:lightblue;"),
@@ -622,7 +624,7 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
          )),
 
   # 4 INPUT iCountry ----
-  tags$div(title = "Search and select the country(ies) where the indicator has been applied, eiether as a test or as part of an assessment.",
+  tags$div(title = "Search and select the country(ies) where the indicator has been applied, eiether as a test or as part of an assessment. Only use this is its two or three countries. Don't list all the countries in EU for example. ",
      pickerInput('iCountry', 'Country',
           choices = ISO3166_v2,
           multiple = T,
