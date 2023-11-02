@@ -102,3 +102,7 @@ publicationTypes <- c("Peer-reviewed article",
                       "Unpublished")
 
 maps <- c("No", "Yes", "Not by itself, but as part of an aggregated index")
+
+deliberate <- c("Deliberate",
+           "Accidental",
+           "Unclear or unsure")

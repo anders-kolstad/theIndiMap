@@ -579,7 +579,12 @@ br(),
                    "Indicator name", 
                    value = "ENTER INDICATOR NAME")),
 
-  
+# 4 INPUT iComment ----
+tags$div(title = "Here you can for example ellaborate on possible uncertanties if the indicator should be included in the review or not.",
+         textInput("iComment", 
+                   "Comments on the indicator", 
+                   value = "")),
+
   
 
   # 4 INPUT iRedundant ----
@@ -756,7 +761,9 @@ h4("Fields related to the indicator itself:", style="background-color:lightblue;
   tags$div(title = "What is the extent (size of the total area) for which the indicator has been calculated? Do not consider parts of the same dataset or indicator which is not reported in this exact publication. 
            Example: If you have an indicator on forest canopy structure which is reported with unique estimates at regional levels across Norway, and which is based on area representaive monitoring data, then the spatial extent is country",
          pickerInput('iSpatialExtent', 'Spatial extent',
-                     choices = scale1)),
+                     choices = scale1,
+                     options = list(
+                       title = "Nothing selected"))),
 
 actionButton("iSpatialextentINFO", "",
              icon = icon("info")),
@@ -911,6 +918,35 @@ actionButton("rTypeINFO", "", icon = icon("info")),
 tags$hr(),
 h4("Fields related to the reference values:", style="background-color:lightblue;"),
 
+  # 4 INPUT rDeliberate ----
+tags$div(title = "Was the choice of reference values the result of a deliberate process, or are they 'accidental'.",
+         pickerInput("rDeliberate", 
+                     "Deliberate and stated choice", 
+                     choices = deliberate,
+                     options = list(
+                       title = "Nothing selected"))),
+actionButton("rDeliberateINFO", "", icon = icon("info")),
+
+
+# 4 INPUT rMethod ----
+  tags$div(title = "See definitions in the SEEA EA white paper A5.5 - A5.11 (page 116).",
+           pickerInput("rMethod", 
+                     "What method(s) was used for estimating the reference levels?  (multiple choice)", 
+                     choices = refValMethod,
+                     multiple = TRUE)),
+actionButton("rMethodINFO", "", icon = icon("info")),
+
+
+
+  # 4 INPUT rRescalingMethod ----
+  tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
+         pickerInput('rRescalingMethod', 
+                     "Rescaling method",
+                     choices = rescalingMethod,
+                     options = list(
+                       title = "Nothing selected")
+         )),
+
 # 4 INPUT rResolution ----
 tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value is often somewhere between that of iSpatialExtent and iSpatialResolution. 
         If the reference value is the same across the EAA, then rResolution equals iSpatialExtent.
@@ -922,24 +958,6 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
                        title = "Nothing selected")
          )),
 
-  # 4 INPUT rRescalingMethod ----
-  tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
-         pickerInput('rRescalingMethod', 
-                     "Rescaling method",
-                     choices = rescalingMethod,
-                     options = list(
-                       title = "Nothing selected")
-         )),
-
-
-  # 4 INPUT rMethod ----
-  tags$div(title = "See definitions in the SEEA EA white paper A5.5 - A5.11 (page 116).",
-           pickerInput("rMethod", 
-                     "What method(s) was used for estimating the reference levels?  (multiple choice)", 
-                     choices = refValMethod,
-                     #selected = refValMethod[1],
-                     multiple = TRUE)),
-actionButton("rMethodINFO", "", icon = icon("info")),
 
   
   # 4 INPUT rMax ----
@@ -1544,6 +1562,13 @@ server <- function(input, output, session) ({
                    value = iForm()$value[iForm()$parameter == "iName"])
   })
  
+  ## iComment ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iComment',
+                    value = iForm()$value[iForm()$parameter == "iComment"])
+  })
+  
 ## githubUser2 ----
  observeEvent(input$i_populate, {
    updateTextInput(session = session,
@@ -1964,6 +1989,22 @@ Combination of any of the above methods? Many of the above approaches may be use
                            
     )})
   
+  observeEvent(input$rDeliberateINFO, {
+    shinyalert::shinyalert(title="What do we mean, deliberate?",
+                           text="
+                           Some eliable variables may be naturally bound on a range where there is a clear normative interpretation and direction 
+                           (e.g. that 0 or 0% is bad and 1 or 100% is good),
+                           yet these reference values may not be actively chosen. 
+                           For example, a variable called Percentage of forest covered by Natura 2000 (%)
+                           is naturally bound between 0 and 100% and it has a clear normative directionality. 
+                           But this is just an artefact, or accident, of how the variable is calculated. 
+                           The effect being that the reference values may be unrealistic and the indicator values 
+                           are not easiliy comparrable to other indicators.",
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
+    )})
   ## iECTsnippet ----
     observeEvent(input$i_populate, {
       updateTextInput(session = session,
@@ -2014,6 +2055,15 @@ Combination of any of the above methods? Many of the above approaches may be use
                       'rMethod',
                       choices = refValMethod,
                       selected = iForm()$value[iForm()$parameter == "rMethod"])
+  })
+  
+  ## rDeliberate ----
+  
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'rDeliberate',
+                      choices = deliberate,
+                      selected = iForm()$value[iForm()$parameter == "rDeliberate"])
   })
   
   ## rMax ----
@@ -2116,6 +2166,7 @@ Combination of any of the above methods? Many of the above approaches may be use
     if(input$iNew != "Edit") dat$value[dat$parameter == "iID"] <- iUUID() 
     dat$value[dat$parameter == "pTitle"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
+    dat$value[dat$parameter == "iComment"] <- input$iComment
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
     dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(input$iRedundant == "Unique",
@@ -2151,6 +2202,7 @@ Combination of any of the above methods? Many of the above approaches may be use
     dat$value[dat$parameter == "rTypeRemarks"] <- input$rTypeRemarks
     dat$value[dat$parameter == "rResolution"] <- input$rResolution
     dat$value[dat$parameter == "rRescalingMethod"] <- input$rRescalingMethod
+    dat$value[dat$parameter == "rDeliberate"] <- input$rDeliberate
     dat$value[dat$parameter == "rMethod"] <- paste(input$rMethod, collapse = " | ")
     dat$value[dat$parameter == "rMax"] <- input$rMax
     dat$value[dat$parameter == "rMin"] <- input$rMin
