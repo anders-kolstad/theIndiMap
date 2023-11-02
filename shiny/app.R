@@ -235,10 +235,13 @@ sidebarLayout(
   # 3 INPUT pJournal ----
   # This could perhaps be standardised with a drop down menu later
   conditionalPanel("input.pType == 'Peer-reviewed article'",
-  tags$div(title = "Example: 'Ecological Indicators", 
-           textInput("pJournal", 
-                     "Enter the journal name, without abbreviations", 
-                     value = ""))),
+  tags$div(title = "The list is taken from Rayyan and should be complete, but if you have a jounral not listed here you can chose 'Other' and notify Anders Kolstad who will add it to the list.", 
+           pickerInput("pJournal", 
+                     "Enter the journal name",
+                     choices = sort(journals),
+                     options = list(
+                       title = "Nothing selected")
+                     ))),
   
   # 3 INPUT pComment ----
   tags$div(title = "Optional. Add a short description for the publication. 
@@ -320,7 +323,7 @@ sidebarLayout(
              min = 0,
              max=5
            )),
-    h5("0 - None (i.e. metric level)"),
+    h5("0 - None"),
     h5("1 - Thematic level"),
     h5("2 - BSU level"),
     h5("3 - EA level"),
@@ -348,7 +351,7 @@ sidebarLayout(
              inputId = "pTotalNumberOfIndicators",
              label = "Number of (aggregated) indicators",
              value = NA,
-             min = 0
+             min = 2
            )))
                    
   ),
@@ -1399,9 +1402,10 @@ server <- function(input, output, session) ({
   
   ## pJournal ----
   observeEvent(input$populate, {
-    updateTextInput(session = session,
+    updatePickerInput(session = session,
                     'pJournal',
-                    value = pform()$value[pform()$parameter == "pJournal"])
+                    choices = sort(journals),
+                    selected = pform()$value[pform()$parameter == "pJournal"])
     
   })
   
