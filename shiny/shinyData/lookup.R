@@ -56,7 +56,7 @@ rescalingMethod <- c(linear       = "LIN - linear",
                      "two-sided"  = "TSI - two-sided",
                      unclear      = "UNC - unclear")
 
-refValMethod <- c("Choose one or more options from the list" = NA,
+refValMethod <- c(
                   "Reference sites"                                       = "RS - Reference sites",
                   "Modelled reference condition"                          = "MRC - Modelled reference condition",
                   "Statistical approaches based on ambient distributions" = "SAAD - Statistical approaches based on ambient distributions",

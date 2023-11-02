@@ -644,14 +644,14 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
 
   # 4 INPUT iLatitude ----
   conditionalPanel("input.iLowerGeography != ''",
-    tags$div(title = "Enter the Latitude of the Lower Geography in decimal degrees WGS84",
+    tags$div(title = "Optional. Enter the Latitude of the Lower Geography in decimal degrees WGS84",
         numericInput("iLatitude", 
                   "Latitude",
                   value = NA,
                   min = -90,
                   max = 90,
                   step = 0.1)),
-    tags$div(title = "Enter the Longitude of the Lower Geography in decimal degrees WGS84",
+    tags$div(title = "Optional. Enter the Longitude of the Lower Geography in decimal degrees WGS84",
         numericInput("iLongitude", 
                      "Longitude",
                      value = NA,
@@ -705,7 +705,7 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                    value = "")),
 
   # 4 INPUT dOrigin ----
-  tags$div(title = "The origin of the munderlying dataset. If the indicator requires modelling, this question asks about the data that goes into the model, not the model output. If the indicator is designed around several datasets, consider if one dataset is more important than the rest, and report only for that. Otherwise, yuo may also check multiple boxes here to account for multiple datasets with different origins.",
+  tags$div(title = "The origin of the underlying dataset. If the indicator requires modelling, this question asks about the data that goes into the model, not the model output. If the indicator is designed around several datasets, consider if one dataset is more important than the rest, and report only for that. Otherwise, yuo may also check multiple boxes here to account for multiple datasets with different origins.",
       pickerInput('dOrigin', 'Dataset origin',
                      choices = c("RS - remotely sensed",
                                  "MP - established monitoring program",
@@ -827,9 +827,9 @@ HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T', targ
 
 
   # 4 INPUT iSubIndex ----
-  tags$div(title = "Is the indicator a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species.",
+  tags$div(title = "Is the indicator a composite indicator, like a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species. On the other hand, the Shannon index is not a composite indicator (but it is an index).",
          pickerInput('iSubIndex', 
-                     'Is the indicator itself an index?',
+                     'Composite indicator?',
                      choices = c("No", "Yes", "Unclear"),
                      options = list(
                        title = "Nothing selected"))),
@@ -848,7 +848,7 @@ actionButton("iSubIndexINFO", "",
   actionButton("iModellingINFO", "", icon = icon("info")),
 
   # 4 INPUT iOriginalUnits ----
-  tags$div(title = "Original unit for the variable. e.g. meters, hectares, kilograms",
+  tags$div(title = "Original unit for the variable. e.g. meters, hectares, kilograms. For unitless indicators, write 'unitless'.",
          textInput("iOriginalUnits", 
                    "Original units", 
                    value = "")),
@@ -893,7 +893,7 @@ actionButton("rTypeINFO", "", icon = icon("info")),
 
 
   # 4 INPUT rTypeSnippet ----
-  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
+  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text. Note that we are NOT asking about REFERENCE VALUES here.",
          textInput("rTypeSnippet", 
                    "Reference condition - snippet", 
                    value = "")),
@@ -909,7 +909,9 @@ tags$hr(),
 h4("Fields related to the reference values:", style="background-color:lightblue;"),
 
 # 4 INPUT rResolution ----
-tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
+tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value is often somewhere between that of iSpatialExtent and iSpatialResolution. 
+        If the reference value is the same across the EAA, then rResolution equals iSpatialExtent.
+         If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
          pickerInput('rResolution', 
                      "Spatial resolution of the reference value(s)",
                      choices = scale1,
@@ -932,7 +934,7 @@ tags$div(title = "The finest geographical resolution of the reference value(s). 
            pickerInput("rMethod", 
                      "What method(s) was used for estimating the reference levels?  (multiple choice)", 
                      choices = refValMethod,
-                     selected = refValMethod[1],
+                     #selected = refValMethod[1],
                      multiple = TRUE)),
 actionButton("rMethodINFO", "", icon = icon("info")),
 
