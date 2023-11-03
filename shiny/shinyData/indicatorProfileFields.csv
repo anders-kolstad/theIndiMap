@@ -1,8 +1,9 @@
 parameter;value
 iID;NA
-pID;NA
+pTitle;NA
 githubUser;NA
 iName;NA
+iComment;NA
 iRedundant;Unique
 iRedundantRemarks;NA
 iRedundantReferences;NA
@@ -30,6 +31,7 @@ iModelling;NA
 iOriginalUnits;NA
 iECTclass;NA
 iECTsnippet;NA
+rDeliberate;NA
 rType;NA
 rTypeSnippet;NA
 rTypeRemarks;NA

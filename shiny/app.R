@@ -8,11 +8,7 @@ library(DT)
 library(uuid)
 library(shinyalert)
 
-#library(dashboardthemes)
-#library(shinydashboard)
-#library(tidyverse)
-#library(readxl)
-
+source("shinyData/lookup.R")
 
 publicationParameters <- 
   read.csv("shinyData/publicationProfileFields.csv", sep=";")
@@ -28,57 +24,7 @@ ISO3166 <- read.csv("shinyData/ISO3166.csv", sep=";")
 ISO3166_v2 <- setNames(ISO3166$Alpha.2.code, ISO3166$English.short.name)
 
 
-# Named lists
-scale1 <- c(unknown          = "0 - unknown",
-            global           = "1 - global",
-            continent        = "2 - continent",
-            'multi-national' = "3 - multi-national",
-            country          = "4 - country",
-            region           = "5 - region",
-            local            = "6 - local",
-            'project area'   = "7 - project-area")
 
-origin <- c("The original systematic search results"                             = "Systematic search",
-            "The SEEA EA maintaind list of ECAs"                                 = "SEEA EA list",
-            "Unsystematic search or the publications was previously known to me" = "Opportunistic")
-
-refStates <- c("Undisturbed or minimally-disturbed condition" = "UND - Undisturbed or minimally-disturbed condition",
-               "Historical condition"                         = "HIS - Historical condition",
-               "Least-disturbed condition"                    = "LDI - Least-disturbed condition",
-               "Contemporary condition"                       = "CON - Contemporary condition",
-               "Best-attainable condition"                    = "BAT - Best-attainable condition",
-               "other"                                        = "OTH - other")
-
-rescalingMethod <- c(linear       = "LIN - linear",
-                     "non-linear" = "NLI - non-linear",
-                     "two-sided"  = "TSI - two-sided",
-                     unclear      = "UNC - unclear")
-
-refValMethod <- c("Choose one or more options from the list" = NA,
-                  "Reference sites"                                       = "RS - Reference sites",
-                  "Modelled reference condition"                          = "MRC - Modelled reference condition",
-                  "Statistical approaches based on ambient distributions" = "SAAD - Statistical approaches based on ambient distributions",
-                  "Historical observations and paleo-environmental data"  = "HOPED - Historical observations and paleo-environmental data",
-                  "Contemporary data"                                     = "CD - Contemporary data",
-                  "Prescribed levels"                                     = "PL - Prescribed levels",
-                  "Expert opinion"                                        = "EO - Expert opinion",
-                  "Others or unknown"                                     = "OTH - Others or unknown")
-
-ETs <- c(
-  "1 - Settlements and other artificial areas",
-  "2 - Cropland",
-  "3 - Grassland",
-  "4 - Forest and woodland",
-  "5 - Heathland and shrub",
-  "6 - Sparsely vegetated ecosystems",
-  "7 - Inland wetlands"
-)
-ETlink <- c("Conseptual connection" = "cc - Conseptual connection",
-            "Field observations"    = "fo - Field observations",
-            "Spatial overlay"       = "so - Spatial overlay",
-            "Derived from maps"     = "dm - Derived from maps",
-            "Not applicable"        = "na - not applicable",
-            "unknown"               = "un - unknown")
 # UI ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤----------------------------------------------------------------------
 
 
@@ -227,22 +173,32 @@ sidebarLayout(
                 "Enter publication title", 
                 value = "")),
       
-      # 3 INPUT pZoteroID ----
-        tags$div(title = "Example: https://www.zotero.org/groups/4630169/the_rescalable_indicator_review/collections/KDCY6DCS/items/8GALH26U/collection",
-        textInput("pzoteroid", 
-                  "Enter the full URL for the Zotero entry", 
+      # 3 INPUT pRayyanID ----
+        tags$div(title = "The Rayyan ID is called System ID inside Rayyan itself. See it by first clicking a row with a publication and read it from the blue screen below. Example: 534633005",
+        textInput("pRayyanID", 
+                  "Enter the Rayyan ID", 
                   value = "")),
-      h5(tags$i("This is the url for the zotero library: https://www.zotero.org/groups/4630169/the_indimap_review/library")),
       
       # 3 INPUT pOrigin ----
-      tags$div(title = "The original systematic search refersr to folder 1.4 in the Zotero library.
+      tags$div(title = "The original systematic search refers to papers stored in Rayyan under 'Search methods: Uploaded References [The IndiMap Review.bib]'.
                \nThe SEEA EA maintained list refers to this web page: https://seea.un.org/content/knowledge-base
                \nIf you are entering a publication that is not identified either through the initial systematic search, or one that you found on the SEEA EA lst, then choose the third option.",
-               radioGroupButtons(
+               pickerInput(
                  inputId = "pOrigin", 
                  label   = "Where did you get this reference from?",
-                 choices = origin)),
+                 choices = origin,
+                 options = list(
+                   title = "Nothing selected"))),
       
+      br(),
+      
+      
+      # 3 INPUT UUID ----
+      conditionalPanel("input.pNew == 'Create new'",
+        actionButton("puuid_new", "Regenerate UUID"
+                   )),
+      
+      br(),
       
       # 3 INPUT pBibliography ----
         tags$div(title = "Example: Jepsen, Jane Uhd; Speed, James David Mervyn; Austrheim, Gunnar; Rusch, Graciela; Petersen, Tanja Kofod; Asplund, Johan;, Bjerke, Jarle W.; et al. “Panel-Based Assessment of Ecosystem Condition – a Methodological Pilot for Four Terrestrial Ecosystems in Trøndelag.” NINA Rapport. Vol. 2094, 2022.",
@@ -267,26 +223,34 @@ sidebarLayout(
   # 3 INPUT pType ----
   tags$div(title = "Chose the relevant publication type from the list.\n\n
                'Unpublished' in this case means it is not publically available.",  
-           radioGroupButtons(
+           pickerInput(
              inputId = "pType",
              label = "Type of publication",
-             choices = c("Peer-reviewed article", 
-                         "Book", 
-                         "Book chapter",
-                         "Rapport",
-                         "Web resource",
-                         "Unpublished"),
-             selected = NULL
+             choices = publicationTypes,
+             options = list(
+               title = "Nothing selected")
            )),
   
   
   # 3 INPUT pJournal ----
   # This could perhaps be standardised with a drop down menu later
   conditionalPanel("input.pType == 'Peer-reviewed article'",
-  tags$div(title = "Example: 'Ecological Indicators", 
-           textInput("pJournal", 
-                     "Enter the journal name, without abbreviations", 
-                     value = ""))),
+  tags$div(title = "The list is taken from Rayyan and should be complete, but if you have a jounral not listed here you can chose 'Other' and notify Anders Kolstad who will add it to the list.", 
+           pickerInput("pJournal", 
+                     "Enter the journal name",
+                     choices = sort(journals),
+                     options = list(
+                       title = "Nothing selected")
+                     ))),
+  
+  # 3 INPUT pComment ----
+  tags$div(title = "Optional. Add a short description for the publication. 
+           Example: 'Paper suggestion new indicator for biodiversity', 
+           or 'National ECA with many indicators.'", 
+                            textInput("pComment", 
+                                      "Comments on the publication", 
+                                      value = "")),
+  
   
   # 3 INPUT pDirective ----
   tags$div(title = "Tick of the boxes that the publication explicitly states that it is reporting to",
@@ -314,11 +278,12 @@ sidebarLayout(
   # 3 INPUT pEAAextent ----
   conditionalPanel("input.pAssessment == 'Assessment'",
   tags$div(title = "The spatial extent of the ecosystem assessment/accounting area(s)",
-           radioGroupButtons(
+           pickerInput(
              inputId = "pEAAextent",
              label = "The extent of the Ecosystem Accounting Area",
              choices = scale1,
-             selected = NULL
+             options = list(
+               title = "Nothing selected")
            )
           ),
   
@@ -358,7 +323,7 @@ sidebarLayout(
              min = 0,
              max=5
            )),
-    h5("0 - None (i.e. metric level)"),
+    h5("0 - None"),
     h5("1 - Thematic level"),
     h5("2 - BSU level"),
     h5("3 - EA level"),
@@ -386,8 +351,8 @@ sidebarLayout(
              inputId = "pTotalNumberOfIndicators",
              label = "Number of (aggregated) indicators",
              value = NA,
-             min = 0
-           ))),
+             min = 2
+           )))
                    
   ),
   
@@ -589,7 +554,9 @@ tags$div(title = "Use this functionality to locate the already existing publicat
            pickerInput('pubDrop2', 'Select the associated publication by its title',
                        choices = NA,
                        options = list(
-                         `live-search` = TRUE))),
+                         `live-search` = TRUE,
+                          title = "Noting selected"
+                       ))),
 
 tags$hr(),
 h4("General fields:", style="background-color:lightblue;"),
@@ -600,13 +567,24 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
                    "Enter your GitHub user name", 
                    value = "")),
 
+br(),
+# 4 INPUT UUID ----
+conditionalPanel("input.iNew == 'Create new'",
+                 actionButton("iuuid_new", "Regenerate UUID"
+                 )),
+br(),
 # 4 INPUT iName ----
   tags$div(title = "Type a human readable name for the indicator. Preferably unique. For example: Tree cover Netherlands.",
          textInput("iName", 
                    "Indicator name", 
                    value = "ENTER INDICATOR NAME")),
 
-  
+# 4 INPUT iComment ----
+tags$div(title = "Here you can for example ellaborate on possible uncertanties if the indicator should be included in the review or not.",
+         textInput("iComment", 
+                   "Comments on the indicator", 
+                   value = "")),
+
   
 
   # 4 INPUT iRedundant ----
@@ -623,14 +601,14 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
 conditionalPanel(condition =  "input.iRedundant != 'Unique'",
   tags$div(title = "Use this field to elaborate if you chose 'Partly or 'Yes' above",
            textInput("iRedundantRemarks", 
-                     "Remarks to the above", 
+                     "Comments on why it may be redundant", 
                      value = "")),
   
   # 4 INPUT iRedundantReferences ----
   tags$div(title = "Enter a reference, preferrabluy a doi, to the duplicate resource. For example, if the paper you are reading reports an indicator that it borrows from another reference that they cite. All duplicates, with the exeption of pre-prints when published versione exist, should be processed in the app in the normal way.",
            textInput("iRedundantReferences", 
                      "Source reference", 
-                     value = "")),
+                     value = ""))
   
   ),
 
@@ -654,7 +632,7 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
          )),
 
   # 4 INPUT iCountry ----
-  tags$div(title = "Search and select the country(ies) where the indicator has been applied, eiether as a test or as part of an assessment.",
+  tags$div(title = "Search and select the country(ies) where the indicator has been applied, eiether as a test or as part of an assessment. Only use this is its two or three countries. Don't list all the countries in EU for example. ",
      pickerInput('iCountry', 'Country',
           choices = ISO3166_v2,
           multiple = T,
@@ -673,42 +651,43 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                    value = "")),
 
   # 4 INPUT iLatitude ----
-  conditionalPanel("input.iLowerGeography != ''",
-    tags$div(title = "Enter the Latitude of the Lower Geography in decimal degrees WGS84",
-        numericInput("iLatitude", 
-                  "Latitude",
-                  value = NA,
-                  min = -90,
-                  max = 90,
-                  step = 0.1)),
-    tags$div(title = "Enter the Longitude of the Lower Geography in decimal degrees WGS84",
-        numericInput("iLongitude", 
-                     "Longitude",
-                     value = NA,
-                     min = -90,
-                     max = 90,
-                     step = 0.1))
-    ),
+  #conditionalPanel("input.iLowerGeography != ''",
+  #  tags$div(title = "Optional. Enter the Latitude of the Lower Geography in decimal degrees WGS84",
+  #      numericInput("iLatitude", 
+  #                "Latitude",
+  #                value = NA,
+  #                min = -90,
+  #                max = 90,
+  #                step = 0.1)),
+  #  tags$div(title = "Optional. Enter the Longitude of the Lower Geography in decimal degrees WGS84",
+  #      numericInput("iLongitude", 
+  #                   "Longitude",
+  #                   value = NA,
+  #                   min = -90,
+  #                   max = 90,
+  #                   step = 0.1))
+  #  ),
 
-    # 4 INPUT Ecosystem type ----
+    # 4 INPUT iET ----
   tags$div(title = "Ecosystem type (multiple choice)",
          pickerInput('iET', 'Ecosystem type',
                      choices = ETs,
                      multiple = T,
                      options = list(
-                       `live-search` = TRUE,
-                       `actions-box` = TRUE,
-                       `deselect-all-text` = "Deselect all",
                        `multiple-separator` = " | "
                      ))),
 actionButton("iETINFO", "",
              icon = icon("info")),
-# 4 INPUT Ecosystem type link  ----
+# 4 INPUT iETlink  ----
+
 tags$div(title = "Conceptual connection between the variable and the ET",
-         pickerInput('iETlink', 'Connection to ecosystem type',
+         pickerInput('iETlink', 
+                     'Connection to ecosystem type',
                      choices = ETlink,
-                     multiple = F
+                     options = list(
+                       title = "Noting selected")
                      )),
+
 actionButton("iETlinkINFO", "",
              icon = icon("info")),
 
@@ -725,13 +704,13 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                    value = "")),
 
   # 4 INPUT dReference ----
-  tags$div(title = "If possible, enter a reference (e.g. url, doi) to the dataset(s) (comma seperated) metioned above",
+  tags$div(title = "If possible, enter a reference (e.g. url, doi) to the dataset(s) (comma seperated) mentioned above",
          textInput("dReference", 
                    "Dataset reference(s)", 
                    value = "")),
 
   # 4 INPUT dOrigin ----
-  tags$div(title = "The origin of the munderlying dataset. If the indicator requires modelling, this question asks about the data that goes into the model, not the model output. If the indicator is designed around several datasets, consider if one dataset is more important than the rest, and report only for that. Otherwise, yuo may also check multiple boxes here to account for multiple datasets with different origins.",
+  tags$div(title = "The origin of the underlying dataset. If the indicator requires modelling, this question asks about the data that goes into the model, not the model output. If the indicator is designed around several datasets, consider if one dataset is more important than the rest, and report only for that. Otherwise, yuo may also check multiple boxes here to account for multiple datasets with different origins.",
       pickerInput('dOrigin', 'Dataset origin',
                      choices = c("RS - remotely sensed",
                                  "MP - established monitoring program",
@@ -747,11 +726,9 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
   # 4 INPUT dSpatialCoverage ----
   tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s).",
     pickerInput('dSpatialCoverage', 'Spatial Coverage of underlying dataset',
-      choices = c("0 - NA",
-                  "1 - complete",
-                  "2 - area representative",
-                  "3 - oppurtunistic or sporadic",
-                  "4 - unknown"))),
+      choices = coverage,
+      options = list(
+        title = "Noting selected"))),
 
 actionButton("dSpatialCoverageINFO", "",
              icon = icon("info")),
@@ -777,19 +754,33 @@ h4("Fields related to the indicator itself:", style="background-color:lightblue;
   tags$div(title = "What is the extent (size of the total area) for which the indicator has been calculated? Do not consider parts of the same dataset or indicator which is not reported in this exact publication. 
            Example: If you have an indicator on forest canopy structure which is reported with unique estimates at regional levels across Norway, and which is based on area representaive monitoring data, then the spatial extent is country",
          pickerInput('iSpatialExtent', 'Spatial extent',
-                     choices = scale1)),
+                     choices = scale1,
+                     options = list(
+                       title = "Nothing selected"))),
 
 actionButton("iSpatialextentINFO", "",
              icon = icon("info")),
 
   # 4 INPUT iSpatialResolution ----
   tags$div(title = "What is the finest spatial scale that this indicator has been calcuated at?",
-         pickerInput('iSpatialResolution', 'Spatial resolution or grain',
-                     choices = scale1)),
+         pickerInput('iSpatialResolution', 
+                     'Spatial resolution or grain',
+                     choices = scale1,
+                     options = list(
+                       title = "Nothing selected"))),
 
 actionButton("iSpatialresolutionINFO", "",
              icon = icon("info")),
 
+  # 4 INPUT iYear ----
+  tags$div(title = "The latest year for which the indicator value has been caluculated and reported",
+         numericInput("iYear", 
+                      "Year",
+                      value = NA,
+                      min = 1900,
+                      max = 2100,
+                      step = 1,
+                      width = '30%')),
 
   # 4 INPUT iTemporalCoverage ----
   tags$div(title = "The length of the time series at the time of publication (years). 
@@ -807,22 +798,14 @@ actionButton("iSpatialresolutionINFO", "",
 
   # 4 INPUT iMap ----
   tags$div(title = "Is the indicator presented as a map? This map may be included in the printable publication or simply linked to or made available on a digital platform.",
-    radioGroupButtons(
+    pickerInput(
      inputId = "iMap",
      label = "Presented as map?",
-     choices = c("No", "Yes", "Not by itself, but as part of an aggregated index"),
-     selected = "No"
+     choices = maps,
+     options = list(
+       title = "Nothing selected")
     )),
 
-  # 4 INPUT iYear ----
-  tags$div(title = "The latest year for which the indicator value has been caluculated and reported",
-         numericInput("iYear", 
-                      "Year",
-                      value = NA,
-                      min = 1900,
-                      max = 2100,
-                      step = 1,
-                      width = '30%')),
 
   # 4 INPUT iBiome ----
   tags$div(title = "IUCN Global Ecosystem Typology 2.0, level 2.",
@@ -847,24 +830,28 @@ HTML("<p>Link to  <a href='https://global-ecosystems.org/explore/realms/T', targ
 
 
   # 4 INPUT iSubIndex ----
-  tags$div(title = "Is the indicator a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species.",
-         radioGroupButtons('iSubIndex', 'Is the indicator itself an index?',
-          choices = c(
-            "No", "Yes", "Unclear"))),
+  tags$div(title = "Is the indicator a composite indicator, like a sub-index, made op of several variables/criteria. For example, the red-list index is composed of data on multiple species. On the other hand, the Shannon index is not a composite indicator (but it is an index).",
+         pickerInput('iSubIndex', 
+                     'Composite indicator?',
+                     choices = c("No", "Yes", "Unclear"),
+                     options = list(
+                       title = "Nothing selected"))),
 
 actionButton("iSubIndexINFO", "",
              icon = icon("info")),
 
   # 4 INPUT iModelling ----
   tags$div(title = "Does the indicator (or the reference value) require modeling outside of what is included in the underlying dataset (i.e. lots of mathemtical steps)? This typically means the indicator is derived from raw data, but it is not itself the raw data.",
-         radioGroupButtons('iModelling', 'Is the indicator a result from a model?',
-                           choices = c(
-                             "No", "Yes", "Unclear"))),
+         pickerInput('iModelling', 
+                     'Is the indicator a result from a model?',
+                     choices = c("No", "Yes", "Unclear"),
+                     options = list(
+                       title = "Nothing selected"))),
 
   actionButton("iModellingINFO", "", icon = icon("info")),
 
   # 4 INPUT iOriginalUnits ----
-  tags$div(title = "Original unit for the variable. e.g. meters, hectares, kilograms",
+  tags$div(title = "Original unit for the variable. e.g. meters, hectares, kilograms. For unitless indicators, write 'unitless'.",
          textInput("iOriginalUnits", 
                    "Original units", 
                    value = "")),
@@ -877,14 +864,9 @@ h4("Fields related to SEEA EA:", style="background-color:lightblue;"),
   # 4 INPUT iECTclass ----
   tags$div(title = "The class may not be reported, and in any case, it's is the reviewer that must assign the indicator to the correct or the most correct class.",
          pickerInput('iECTclass', 'SEEA Ecosystem Condition Typology Class',
-                     choices = c("Choose a category",
-                       "A1 Physical state characteristics",
-                       "A2 Chemical state characteristics",
-                       "B1 Compositional state characteristics",
-                       "B2 Structural state characteristics",
-                       "B3 Functional state characteristics",
-                       "C1 Landscape and seascape characteristics",
-                       "Other (e.g. pre-aggregated indices)")
+                     choices = ECTs,
+                     options = list(
+                       title = "Nothing selected")
          )),
 
 HTML("<p>Link to  <a href='https://oneecosystem.pensoft.net/article/58218/', target='_blank'> definitions</a>. (Scroll to Table 1).</p>"),
@@ -904,13 +886,17 @@ h4("Fields related to the reference condition:", style="background-color:lightbl
 
   # 4 INPUT rType ----
   tags$div(title = "The list of options is non-exhaustive, but chose the one you think fits best. Otherwise select 'other'. For definitions, see SEEA EA white paper table 5.8, page 115.",
-         pickerInput('rType', "Type of reference condition",
+         pickerInput('rType', 
+                     "Type of reference condition",
                      choices = refStates,
-                     selected = "OTH - other"
+                     options = list(
+                       title = "Nothing selected")
          )),
+actionButton("rTypeINFO", "", icon = icon("info")),
+
 
   # 4 INPUT rTypeSnippet ----
-  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text.",
+  tags$div(title = "A short excerpt from the publication (1-10 sentences) that justifies the assignment of reference condition. The text must be directly copied, but may consist of sentences that are not next to each other in the original text. Note that we are NOT asking about REFERENCE VALUES here.",
          textInput("rTypeSnippet", 
                    "Reference condition - snippet", 
                    value = "")),
@@ -925,26 +911,47 @@ h4("Fields related to the reference condition:", style="background-color:lightbl
 tags$hr(),
 h4("Fields related to the reference values:", style="background-color:lightblue;"),
 
-# 4 INPUT rResolution ----
-tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value should be somewhere between that of iSpatialExtent and iSpatialResolution. Is the reference value is the same across the EAA, then rResolution equals iSpatialExtent. If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
-         pickerInput('rResolution', "Spatial resolution of the reference value(s)",
-                     choices = scale1
-         )),
-
-  # 4 INPUT rRescalingMethod ----
-  tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
-         radioGroupButtons('rRescalingMethod', "Rescaling method",
-                     choices = rescalingMethod
-         )),
+  # 4 INPUT rDeliberate ----
+tags$div(title = "Was the choice of reference values the result of a deliberate process, or are they 'accidental'.",
+         pickerInput("rDeliberate", 
+                     "Deliberate and stated choice", 
+                     choices = deliberate,
+                     options = list(
+                       title = "Nothing selected"))),
+actionButton("rDeliberateINFO", "", icon = icon("info")),
 
 
-  # 4 INPUT rMethod ----
+# 4 INPUT rMethod ----
   tags$div(title = "See definitions in the SEEA EA white paper A5.5 - A5.11 (page 116).",
            pickerInput("rMethod", 
                      "What method(s) was used for estimating the reference levels?  (multiple choice)", 
                      choices = refValMethod,
-                     selected = refValMethod[1],
                      multiple = TRUE)),
+actionButton("rMethodINFO", "", icon = icon("info")),
+
+
+
+  # 4 INPUT rRescalingMethod ----
+  tags$div(title = "Pick the category that fits the best. If a two-sided rescaling has been done (i.e. both values that are higher and those that are lower than the reference value is scaled to become indicator values lower than the maximum possible value), this should always be chosen. If the variable is normalised between two extremes (a best and worst possible condition for example), this implies a linear rescaling method.",
+         pickerInput('rRescalingMethod', 
+                     "Rescaling method",
+                     choices = rescalingMethod,
+                     options = list(
+                       title = "Nothing selected")
+         )),
+
+# 4 INPUT rResolution ----
+tags$div(title = "The finest geographical resolution of the reference value(s). The scale for the reference value is often somewhere between that of iSpatialExtent and iSpatialResolution. 
+        If the reference value is the same across the EAA, then rResolution equals iSpatialExtent.
+         If the reference values are unique to each indicator value (i.e. unique reference value for each grid cell), then rResolution equals iSpatialResolution.",
+         pickerInput('rResolution', 
+                     "Spatial resolution of the reference value(s)",
+                     choices = scale1,
+                     options = list(
+                       title = "Nothing selected")
+         )),
+
+
   
   # 4 INPUT rMax ----
   tags$div(title = "A definition or description of the upper reference value, i.e. the maximum indicator value.
@@ -1215,7 +1222,7 @@ server <- function(input, output, session) ({
   # reactive list of publications titles
   observeEvent(input$localPub, {
     updatePickerInput(session = session, inputId = "pubDrop",
-                      choices = unique(publicationList()$pTitle))
+                      choices = sort(publicationList()$pTitle))
   })
   
   # A* UPDATE indDrop ----
@@ -1332,34 +1339,32 @@ server <- function(input, output, session) ({
   
   # B* UPDATEs: ----
   
-  ## pZoteroID ----
+  ## pRayyanID ----
   observeEvent(input$populate, {
     updateTextInput(session = session,
-                    'pzoteroid',
-                    value = pform()$value[pform()$parameter == "pZoteroID"])
+                    'pRayyanID',
+                    value = pform()$value[pform()$parameter == "pRayyanID"])
   })
   
   ## pOrigin ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                             'pOrigin',
                             choices = origin,
                             selected = pform()$value[pform()$parameter == "pOrigin"])
     
   })
   
-  ## pID ----
-  pUUID <- reactive({
-    ifelse(is.na(pform()$value[pform()$parameter == "pID"]), 
-           uuid::UUIDgenerate(),
-           pform()$value[pform()$parameter == "pID"])
-  })
+  
+  pUUID <- eventReactive(input$puuid_new, {
+      uuid::UUIDgenerate()
+  }, ignoreNULL=FALSE)
+  
   ## iID ----
-  iUUID <- reactive({
-    ifelse(is.na(iForm()$value[iForm()$parameter == "iID"]), 
-           uuid::UUIDgenerate(),
-           iForm()$value[iForm()$parameter == "iID"])
-  })
+  iUUID <- eventReactive(input$iuuid_new, {
+          uuid::UUIDgenerate()
+      }, ignoreNULL=FALSE)
+  
   
   
   ## pTitle ----
@@ -1387,23 +1392,6 @@ server <- function(input, output, session) ({
   })
   
   
-#  ## pRealm ----
-#  observeEvent(input$populate, {
-#    updateCheckboxGroupButtons(session = session,
-#                    'pRealm',
-#                    choices = "Terrestrial",
-#                    selected = pform()$value[pform()$parameter == "pRealm"])
-#    
-#  })
-#
-#  ## pNormalised ----
-#  observeEvent(input$populate, {
-#    updateCheckboxGroupButtons(session = session,
-#                               'pNormalised',
-#                               choices = c("Yes", "No"),
-#                               selected = pform()$value[pform()$parameter == "pNormalised"])
-#    
-#  })
   
   ## pRedundant ----
   observeEvent(input$populate, {
@@ -1416,23 +1404,27 @@ server <- function(input, output, session) ({
   
   ## pType ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                             'pType',
-                            choices = c("Peer-reviewed article", 
-                                        "Book", 
-                                        "Book chapter",
-                                        "Rapport",
-                                        "Web resource",
-                                        "Unpublished"),
+                            choices = publicationTypes,
                             selected = pform()$value[pform()$parameter == "pType"])
     
   })
   
   ## pJournal ----
   observeEvent(input$populate, {
-    updateTextInput(session = session,
+    updatePickerInput(session = session,
                     'pJournal',
-                    value = pform()$value[pform()$parameter == "pJournal"])
+                    choices = sort(journals),
+                    selected = pform()$value[pform()$parameter == "pJournal"])
+    
+  })
+  
+  ## pComment ----
+  observeEvent(input$populate, {
+    updateTextInput(session = session,
+                    'pComment',
+                    value = pform()$value[pform()$parameter == "pComment"])
     
   })
   
@@ -1447,7 +1439,7 @@ server <- function(input, output, session) ({
   
   ## pEAAextent ----
   observeEvent(input$populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                             'pEAAextent',
                             choices = scale1,
                             selected = pform()$value[pform()$parameter == "pEAAextent"])
@@ -1546,7 +1538,7 @@ server <- function(input, output, session) ({
   # update the drop down list based on what you selected in 'localPub2', i.e. the csv's you uploaded
   observeEvent(input$localPub2, {
     updatePickerInput(session = session, inputId = "pubDrop2",
-                      choices = unique(publicationList2()$pTitle))
+                      choices = sort(publicationList2()$pTitle))
   })
   
   # update the same drop down list with the publication name in the uploaded version
@@ -1563,6 +1555,13 @@ server <- function(input, output, session) ({
                    value = iForm()$value[iForm()$parameter == "iName"])
   })
  
+  ## iComment ----
+  observeEvent(input$i_populate, {
+    updateTextInput(session = session,
+                    'iComment',
+                    value = iForm()$value[iForm()$parameter == "iComment"])
+  })
+  
 ## githubUser2 ----
  observeEvent(input$i_populate, {
    updateTextInput(session = session,
@@ -1628,19 +1627,19 @@ observeEvent(input$i_populate, {
                    value = iForm()$value[iForm()$parameter == "iLowerGeography"])
  })
   
-  ## iLatitude ----
-  observeEvent(input$i_populate, {
-    updateNumericInput(session = session,
-                       'iLatitude',
-                       value = iForm()$value[iForm()$parameter == "iLatitude"])
-  })
-  
-  ## iLongitude ----
-    observeEvent(input$i_populate, {
-      updateNumericInput(session = session,
-                         'iLongitude',
-                         value = iForm()$value[iForm()$parameter == "iLongitude"])
-    })
+ # ## iLatitude ----
+ # observeEvent(input$i_populate, {
+ #   updateNumericInput(session = session,
+ #                      'iLatitude',
+ #                      value = iForm()$value[iForm()$parameter == "iLatitude"])
+ # })
+ # 
+ # ## iLongitude ----
+ #   observeEvent(input$i_populate, {
+ #     updateNumericInput(session = session,
+ #                        'iLongitude',
+ #                        value = iForm()$value[iForm()$parameter == "iLongitude"])
+ #   })
   
   ## iET ----
   observeEvent(input$i_populate, {
@@ -1670,9 +1669,9 @@ observeEvent(input$i_populate, {
     updatePickerInput(session = session,
                       'iETlink',
                       choices = ETlink,
-                      selected = stringr::str_split(
-                        iForm()$value[iForm()$parameter == "iETlink"],
-                        " \\| ", simplify = T))
+                      selected = iForm()$value[iForm()$parameter == "iETlink"],
+                      options = list(
+                        title = "Nothing selected"))
   })
   
   observeEvent(input$iETlinkINFO, {
@@ -1729,11 +1728,7 @@ na (not applicable): for an aggregated index where the different components (sub
   observeEvent(input$i_populate, {
     updatePickerInput(session = session,
                       'dSpatialCoverage',
-                      choices = c("0 - NA",
-                                  "1 - complete",
-                                  "2 - area representative",
-                                  "3 - oppurtunistic or sporadic",
-                                  "4 - unknown"),
+                      choices = coverage,
                       selected = iForm()$value[iForm()$parameter == "dSpatialCoverage"])
   })
   
@@ -1826,9 +1821,9 @@ Project scale: a scale lower than the typical administrative unit. Typically a m
   })
   ## iMap ----
   observeEvent(input$i_populate, {
-    updateRadioGroupButtons(session = session,
+    updatePickerInput(session = session,
                        'iMap',
-                       choices = c("No", "Yes", "Not by itself, but as part of an aggregated index"),
+                       choices = maps,
                        selected = iForm()$value[iForm()$parameter == "iMap"])
   })
   ## iYear ----
@@ -1859,7 +1854,7 @@ Project scale: a scale lower than the typical administrative unit. Typically a m
   ## iSubIndex ----
     
     observeEvent(input$i_populate, {
-      updateRadioGroupButtons(session = session,
+      updatePickerInput(session = session,
                               'iSubIndex',
                               choices = c("No", "Yes", "Unclear"),
                               selected = iForm()$value[iForm()$parameter == "iSubIndex"])    
@@ -1881,7 +1876,7 @@ And example of the second type can be the Norwegian Natur Index which is compris
   
   ## iModelling ----
     observeEvent(input$i_populate, {
-      updateRadioGroupButtons(session = session,
+      updatePickerInput(session = session,
                               'iModelling',
                               choices = c("No", "Yes", "Unclear"),
                               selected = iForm()$value[iForm()$parameter == "iModelling"])    
@@ -1910,15 +1905,7 @@ And example of the second type can be the Norwegian Natur Index which is compris
     observeEvent(input$i_populate, {
       updatePickerInput(session = session,
                         'iECTclass',
-                        choices = c("Choose a category",
-                                    "A1 Physical state characteristics",
-                                    "A2 Chemical state characteristics",
-                                    "B1a Compositional state characteristics - abundance",
-                                    "B1b Compositional state characteristics - diversity",
-                                    "B2 Structural state characteristics",
-                                    "B3 Functional state characteristics",
-                                    "C1 Landscape and seascape characteristics",
-                                    "Other (e.g. pre-aggregated indices)"),
+                        choices = ECTs,
                         selected = iForm()$value[iForm()$parameter == "iECTclass"])
       })
     
@@ -1943,8 +1930,70 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
                            
     )})
   
+  observeEvent(input$rTypeINFO, {
+    shinyalert::shinyalert(title="Types of reference condition",
+                           text="Taken from SEEA EA white paper table 5.8
+                           
+                           Undisturbed or minimally-disturbed condition of an intact ecosystem. The condition of an ecosystem with maximal ecosystem integrity with no or minimal disturbance. 
+                           
+Historical condition: The condition of an ecosystem at some point or period in its history that is considered to represent the stable socio ecological state (e.g., the pre-industrial period or pre-intensive agriculture) 
+
+Least-disturbed condition: the currently best available condition of an ecosystem 
+
+Contemporary condition: The condition of an ecosystem at a certain point or period in its recent history for which comparable data are available. 
+
+                           Best-attainable condition: the expected condition of an ecosystem under best possible management practices and attaining a stable socio-ecological state.",
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
+    )})
   
+  observeEvent(input$rMethodINFO, {
+    shinyalert::shinyalert(title="Method for defining or setting reference values",
+                           text="Taken from SEEA EA white paper section A5.4 - A5.12.
+                           1. Reference sites: If pristine or minimally-disturbed sites are available, they can be used to determine a reliable measure of the mean and statistical distribution of condition variables. Reference sites can be identified using expert or traditional knowledge but also by using statistics and artificial intelligence if long-term time series with data describing ecosystem disturbance are available. Monitoring reference sites is probably the most straightforward method for establishing reference conditions and for determining the reference levels of condition variables. Seasonal or annual variability but also long term or irreversible ecosystem changes due to climate change or invasive alien species can be factored in when determining reference levels for ecosystem condition variables. Reference sites can thus by used to determine a dynamic reference condition (Hiers et al., 2012) that can be periodically updated. 
+
+                          2. Modelled reference conditions can be based on predictive empirical models or potential vegetation models. Models can be used to infer conditions in absence of human disturbance where representative reference sites are not available. Potential vegetation can be modelled globally and can incorporate scenarios of environmental change. A weakness is that models usually do not involve all the selected condition variables of the condition account, and often differ from measured variables. Models require assumptions to establish reference levels for condition variables, e.g., scientific debate on the role of megafauna and early humans on potential natural vegetation. 
+
+                          3. Statistical approaches based on ambient distributions. Least-disturbed conditions or best attainable conditions can be estimated by observing the range of values from current ecosystem monitoring and by selecting a reference condition, for instance based on the 5th percentile values as criterion or by assuming that the reference condition is equal to a state with the highest species richness. Statistical approaches are data-driven and therefore pragmatic, familiar for accountants, and applicable if no reference sites are available. Methods can be applied consistently across variables, e.g., normalizing with the maximum 117 values of available data. Possible drawbacks are the arbitrary nature of the reference condition, spatial inconsistencies caused by using current datasets, a strongly shifting baseline, or a false sense of consistency. Solutions need to be proposed to scale condition variables at levels outside the range of the available data. Variables moving out of their established range (e.g., improving beyond the previous upper reference level) can cause serious complications. 
+
+                          4. Historical observations and paleo-environmental data. This method uses historical observations or paleontological data to describe a historical reference condition (typically before 1970 when routine environmental monitoring programmes started). Historical observations refer to a description of a reference condition based on species collections in natural history museums, historical manuscripts and books that describe fauna and flora, photo archives, paintings, or other material that can be used to make inferences about the presence of species or the prevalence of certain conditions during a certain period in time. Paleo-environmental data can be used to reconstruct the physical-chemical environment, climate, vegetation and fauna of certain period in time using material that is buried in the soil. These data are often collected during archaeological studies. Examples of relevant data collections to define a historical ecosystem condition include seedbanks to reconstruct flora or remains of fish catches nearby medieval settlements to reconstruct the fish fauna or determine the presence of specific species. This method can deliver a common baseline for climate and biodiversity science, which is relevant to support more integrated climate biodiversity policies. This method can also show the magnitude of loss of biodiversity. A weakness is that not all ecosystem condition variables can be easily inferred from historical data. 
+
+                          5. Contemporary data. This method uses contemporary data to describe a contemporary reference condition (typically after 1970 when routine environmental monitoring programmes started). For instance, the Kyoto protocol used the global atmospheric CO2 emissions recorded in 1990 as a reference against which the changes in future greenhouse gas emissions were assessed. The Living Planet Index uses species data collected in 1970 as a reference to assess changes. Similar to statistical approaches that use ambient data distributions, this is a straightforward approach to set a reference condition provided data are available. However, there are several disadvantages. The choice of year may be considered arbitrary. The reliance on contemporary data in evaluating changes can result in a shifting baseline. Appropriate dates differ for different indicators and ecosystem types. If different baseline dates are used in different regions this creates inconsistencies. Difficulties arise for scaling condition variables at levels which are higher than their reference level, e.g., when variables move out of their established range. The method is subject policy influence and contemporary baselines may diverge greatly from pre-industrial era baselines. 
+
+                          6. Prescribed levels of a set of ecosystem condition variables can be used to construct a bottom-up reference condition. Examples of these reference levels include zero values for emissions or pollutants, a specific number of species, established sustainability or threshold levels such as critical loads for eutrophication and acidification, and target levels in terms of legislated quality measures (air and water quality). Prescribed levels of variables can have clear and straightforward management applications and provides a basis for direct policy response. This method can reflect preferences for a particular use of an ecosystem accounting for social, economic and environmental considerations. They can also describe a level quantifying an undesirable state required to define the zero end of the normalized scale, for example, where the ecosystem is no longer present or functioning. Prescribed levels are, however, not available for all variables, may be subject to policy influence and changing over time, and may not be consistently developed for all ecosystem types, variables or countries. 
+
+                          7. Expert opinion usually consists of a narrative statement of expected reference condition. Although an expert´s opinion may be expressed semi-quantitatively, qualitative articulation is probably most common (European Commission, 2003). Several weaknesses are inherently associated with this approach. Therefore, caution should be exercised when using this approach as the sole means of establishing reference condition. 
+
+                          8. Natural scale limits, such as absolute biophysical limits. For example, the amount of mire trenching under the reference condition is 0%, or the lower (worst case) limit for the abundance of alien species is 100%.
+
+
+Combination of any of the above methods? Many of the above approaches may be used either singly or in concert for establishing and/or cross-validating reference condition. In practice, it may not be possible to use a single method to describe or quantify reference levels of ecosystem condition variables under a reference condition. For instance, the reference values of variables that describe a historical condition (for instance a pre-industrial state of an ecosystem) can be determined by combining modelling potential vegetation (method 2) based on paleo-climatic data (obtained through method 4). Statistical models and tools exist to combine methods (e.g., Bayesian networks can combine statistical distributions (method 3) and expert opinion (method 7)). Recent advancements in artificial intelligence will further improve the above mentioned methods to infer and describe a reference condition.
+
+                           ",
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
+    )})
   
+  observeEvent(input$rDeliberateINFO, {
+    shinyalert::shinyalert(title="What do we mean, deliberate?",
+                           text="
+                           Some eliable variables may be naturally bound on a range where there is a clear normative interpretation and direction 
+                           (e.g. that 0 or 0% is bad and 1 or 100% is good),
+                           yet these reference values may not be actively chosen. 
+                           For example, a variable called Percentage of forest covered by Natura 2000 (%)
+                           is naturally bound between 0 and 100% and it has a clear normative directionality. 
+                           But this is just an artefact, or accident, of how the variable is calculated. 
+                           The effect being that the reference values may be unrealistic and the indicator values 
+                           are not easiliy comparrable to other indicators.",
+                           size="l",
+                           type="info",
+                           closeOnClickOutside = TRUE
+                           
+    )})
   ## iECTsnippet ----
     observeEvent(input$i_populate, {
       updateTextInput(session = session,
@@ -1982,7 +2031,7 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     })
   ## rRescalingMethod ----
       observeEvent(input$i_populate, {
-      updateRadioGroupButtons(session = session,
+        updatePickerInput(session = session,
                               'rRescalingMethod',
                               choices = rescalingMethod,
                               selected = iForm()$value[iForm()$parameter == "rRescalingMethod"])    
@@ -1995,6 +2044,15 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
                       'rMethod',
                       choices = refValMethod,
                       selected = iForm()$value[iForm()$parameter == "rMethod"])
+  })
+  
+  ## rDeliberate ----
+  
+  observeEvent(input$i_populate, {
+    updatePickerInput(session = session,
+                      'rDeliberate',
+                      choices = deliberate,
+                      selected = iForm()$value[iForm()$parameter == "rDeliberate"])
   })
   
   ## rMax ----
@@ -2024,9 +2082,9 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
       paste(
       if(nchar(pExport()$value[pExport()$parameter == "pTitle"]) < 3 | #) "MISSING: Publication title is not valid",
          nchar(pExport()$value[pExport()$parameter == "githubUser"]) < 3 | #"MISSING: Please enter GitHub user name",
-         nchar(pExport()$value[pExport()$parameter == "pZoteroID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the full URL for the Zotero entry is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
+         nchar(pExport()$value[pExport()$parameter == "pRayyanID"]) < 3) "MISSING: Either the Publication title, the GitHub user or the pRayyanID is missing!" else "Seems fine, but look through the preview for missing fields. Everything need to be filled out before you download the data."),
       type = "error",
-      duration = NA
+      duration = 10
     )
   })
   
@@ -2041,11 +2099,11 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     dat <- pform()
     
     #update value column based on input
-    dat$value[dat$parameter == "pZoteroID"] <- input$pzoteroid
+    dat$value[dat$parameter == "pRayyanID"] <- input$pRayyanID
     
     dat$value[dat$parameter == "pOrigin"] <- input$pOrigin
     
-    dat$value[dat$parameter == "pID"] <- pUUID()
+    if(input$pNew != "Edit") dat$value[dat$parameter == "pID"] <- pUUID() 
       
     dat$value[dat$parameter == "pTitle"] <- input$ptitle
     
@@ -2058,6 +2116,8 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     dat$value[dat$parameter == "pType"] <- input$pType
 
     dat$value[dat$parameter == "pJournal"] <- ifelse(input$pType == "Peer-reviewed article", input$pJournal, NA)
+    
+    dat$value[dat$parameter == "pComment"] <- input$pComment
     
     dat$value[dat$parameter == "pAssessment"] <- input$pAssessment
     
@@ -2092,9 +2152,10 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     # shorten name
     dat <- iForm()
     
-    dat$value[dat$parameter == "iID"] <- iUUID()
-    dat$value[dat$parameter == "pID"] <- input$pubDrop2
+    if(input$iNew != "Edit") dat$value[dat$parameter == "iID"] <- iUUID() 
+    dat$value[dat$parameter == "pTitle"] <- input$pubDrop2
     dat$value[dat$parameter == "iName"] <- input$iName
+    dat$value[dat$parameter == "iComment"] <- input$iComment
     dat$value[dat$parameter == "githubUser"] <- input$githubuser2
     dat$value[dat$parameter == "iRedundant"] <- input$iRedundant
     dat$value[dat$parameter == "iRedundantRemarks"] <- ifelse(input$iRedundant == "Unique",
@@ -2104,8 +2165,8 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")
     dat$value[dat$parameter == "iCountry"] <- paste(input$iCountry, collapse = " | ")
     dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
-    dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
-    dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
+    #dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
+    #dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
     dat$value[dat$parameter == "iET"] <- paste(input$iET, collapse = " | ")
     dat$value[dat$parameter == "iETlink"] <- input$iETlink
     dat$value[dat$parameter == "dName"] <- input$dName
@@ -2130,6 +2191,7 @@ Other: pre-aggregated indices (e.g. ecosystem integrity, naturalness); accessibi
     dat$value[dat$parameter == "rTypeRemarks"] <- input$rTypeRemarks
     dat$value[dat$parameter == "rResolution"] <- input$rResolution
     dat$value[dat$parameter == "rRescalingMethod"] <- input$rRescalingMethod
+    dat$value[dat$parameter == "rDeliberate"] <- input$rDeliberate
     dat$value[dat$parameter == "rMethod"] <- paste(input$rMethod, collapse = " | ")
     dat$value[dat$parameter == "rMax"] <- input$rMax
     dat$value[dat$parameter == "rMin"] <- input$rMin
