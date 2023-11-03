@@ -569,7 +569,7 @@ tags$div(title = "Example: 'anders-kolstad'. \n\nNote: please update the contact
 
 br(),
 # 4 INPUT UUID ----
-conditionalPanel("input.pNew == 'Create new'",
+conditionalPanel("input.iNew == 'Create new'",
                  actionButton("iuuid_new", "Regenerate UUID"
                  )),
 br(),
@@ -601,7 +601,7 @@ tags$div(title = "Here you can for example ellaborate on possible uncertanties i
 conditionalPanel(condition =  "input.iRedundant != 'Unique'",
   tags$div(title = "Use this field to elaborate if you chose 'Partly or 'Yes' above",
            textInput("iRedundantRemarks", 
-                     "Remarks to the above", 
+                     "Comments on why it may be redundant", 
                      value = "")),
   
   # 4 INPUT iRedundantReferences ----
@@ -650,23 +650,23 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                    "Lower geography (if relevant)", 
                    value = "")),
 
-  # 4 INPUT iLatitude ----
-  conditionalPanel("input.iLowerGeography != ''",
-    tags$div(title = "Optional. Enter the Latitude of the Lower Geography in decimal degrees WGS84",
-        numericInput("iLatitude", 
-                  "Latitude",
-                  value = NA,
-                  min = -90,
-                  max = 90,
-                  step = 0.1)),
-    tags$div(title = "Optional. Enter the Longitude of the Lower Geography in decimal degrees WGS84",
-        numericInput("iLongitude", 
-                     "Longitude",
-                     value = NA,
-                     min = -90,
-                     max = 90,
-                     step = 0.1))
-    ),
+  ## 4 INPUT iLatitude ----
+  #conditionalPanel("input.iLowerGeography != ''",
+  #  tags$div(title = "Optional. Enter the Latitude of the Lower Geography in decimal degrees WGS84",
+  #      numericInput("iLatitude", 
+  #                "Latitude",
+  #                value = NA,
+  #                min = -90,
+  #                max = 90,
+  #                step = 0.1)),
+  #  tags$div(title = "Optional. Enter the Longitude of the Lower Geography in decimal degrees WGS84",
+  #      numericInput("iLongitude", 
+  #                   "Longitude",
+  #                   value = NA,
+  #                   min = -90,
+  #                   max = 90,
+  #                   step = 0.1))
+  #  ),
 
     # 4 INPUT Ecosystem type ----
   tags$div(title = "Ecosystem type (multiple choice)",
@@ -707,7 +707,7 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
                    value = "")),
 
   # 4 INPUT dReference ----
-  tags$div(title = "If possible, enter a reference (e.g. url, doi) to the dataset(s) (comma seperated) metioned above",
+  tags$div(title = "If possible, enter a reference (e.g. url, doi) to the dataset(s) (comma seperated) mentioned above",
          textInput("dReference", 
                    "Dataset reference(s)", 
                    value = "")),
@@ -1634,19 +1634,19 @@ observeEvent(input$i_populate, {
                    value = iForm()$value[iForm()$parameter == "iLowerGeography"])
  })
   
-  ## iLatitude ----
-  observeEvent(input$i_populate, {
-    updateNumericInput(session = session,
-                       'iLatitude',
-                       value = iForm()$value[iForm()$parameter == "iLatitude"])
-  })
-  
-  ## iLongitude ----
-    observeEvent(input$i_populate, {
-      updateNumericInput(session = session,
-                         'iLongitude',
-                         value = iForm()$value[iForm()$parameter == "iLongitude"])
-    })
+ # ## iLatitude ----
+ # observeEvent(input$i_populate, {
+ #   updateNumericInput(session = session,
+ #                      'iLatitude',
+ #                      value = iForm()$value[iForm()$parameter == "iLatitude"])
+ # })
+ # 
+ # ## iLongitude ----
+ #   observeEvent(input$i_populate, {
+ #     updateNumericInput(session = session,
+ #                        'iLongitude',
+ #                        value = iForm()$value[iForm()$parameter == "iLongitude"])
+ #   })
   
   ## iET ----
   observeEvent(input$i_populate, {
@@ -2176,8 +2176,8 @@ Combination of any of the above methods? Many of the above approaches may be use
     dat$value[dat$parameter == "iContinent"] <- paste(input$iContinent, collapse = " | ")
     dat$value[dat$parameter == "iCountry"] <- paste(input$iCountry, collapse = " | ")
     dat$value[dat$parameter == "iLowerGeography"] <- input$iLowerGeography
-    dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
-    dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
+    #dat$value[dat$parameter == "iLatitude"] <- input$iLatitude
+    #dat$value[dat$parameter == "iLongitude"] <- input$iLongitude
     dat$value[dat$parameter == "iET"] <- paste(input$iET, collapse = " | ")
     dat$value[dat$parameter == "iETlink"] <- input$iETlink
     dat$value[dat$parameter == "dName"] <- input$dName
