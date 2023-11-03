@@ -106,3 +106,9 @@ maps <- c("No", "Yes", "Not by itself, but as part of an aggregated index")
 deliberate <- c("Deliberate",
            "Accidental",
            "Unclear or unsure")
+
+coverage <- c(#"0 - NA",
+              "1 - complete",
+              "2 - area representative",
+              "3 - oppurtunistic or sporadic",
+              "4 - unknown")

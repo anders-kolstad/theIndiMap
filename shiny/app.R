@@ -650,7 +650,7 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
                    "Lower geography (if relevant)", 
                    value = "")),
 
-  ## 4 INPUT iLatitude ----
+  # 4 INPUT iLatitude ----
   #conditionalPanel("input.iLowerGeography != ''",
   #  tags$div(title = "Optional. Enter the Latitude of the Lower Geography in decimal degrees WGS84",
   #      numericInput("iLatitude", 
@@ -668,20 +668,17 @@ tags$div(title = "Select the continent(s) where the indicator has been applied, 
   #                   step = 0.1))
   #  ),
 
-    # 4 INPUT Ecosystem type ----
+    # 4 INPUT iET ----
   tags$div(title = "Ecosystem type (multiple choice)",
          pickerInput('iET', 'Ecosystem type',
                      choices = ETs,
                      multiple = T,
                      options = list(
-                       `live-search` = TRUE,
-                       `actions-box` = TRUE,
-                       `deselect-all-text` = "Deselect all",
                        `multiple-separator` = " | "
                      ))),
 actionButton("iETINFO", "",
              icon = icon("info")),
-# 4 INPUT Ecosystem type link  ----
+# 4 INPUT iETlink  ----
 
 tags$div(title = "Conceptual connection between the variable and the ET",
          pickerInput('iETlink', 
@@ -729,11 +726,7 @@ h4("Fields related to the underlying dataset(s):", style="background-color:light
   # 4 INPUT dSpatialCoverage ----
   tags$div(title = "Saying something about the level of area representativeness in the underlying dataset(s).",
     pickerInput('dSpatialCoverage', 'Spatial Coverage of underlying dataset',
-      choices = c("0 - NA",
-                  "1 - complete",
-                  "2 - area representative",
-                  "3 - oppurtunistic or sporadic",
-                  "4 - unknown"),
+      choices = coverage,
       options = list(
         title = "Noting selected"))),
 
@@ -779,6 +772,15 @@ actionButton("iSpatialextentINFO", "",
 actionButton("iSpatialresolutionINFO", "",
              icon = icon("info")),
 
+  # 4 INPUT iYear ----
+  tags$div(title = "The latest year for which the indicator value has been caluculated and reported",
+         numericInput("iYear", 
+                      "Year",
+                      value = NA,
+                      min = 1900,
+                      max = 2100,
+                      step = 1,
+                      width = '30%')),
 
   # 4 INPUT iTemporalCoverage ----
   tags$div(title = "The length of the time series at the time of publication (years). 
@@ -801,18 +803,9 @@ actionButton("iSpatialresolutionINFO", "",
      label = "Presented as map?",
      choices = maps,
      options = list(
-       title = "This is a placeholder")
+       title = "Nothing selected")
     )),
 
-  # 4 INPUT iYear ----
-  tags$div(title = "The latest year for which the indicator value has been caluculated and reported",
-         numericInput("iYear", 
-                      "Year",
-                      value = NA,
-                      min = 1900,
-                      max = 2100,
-                      step = 1,
-                      width = '30%')),
 
   # 4 INPUT iBiome ----
   tags$div(title = "IUCN Global Ecosystem Typology 2.0, level 2.",
@@ -1229,7 +1222,7 @@ server <- function(input, output, session) ({
   # reactive list of publications titles
   observeEvent(input$localPub, {
     updatePickerInput(session = session, inputId = "pubDrop",
-                      choices = unique(publicationList()$pTitle))
+                      choices = sort(publicationList()$pTitle))
   })
   
   # A* UPDATE indDrop ----
@@ -1545,7 +1538,7 @@ server <- function(input, output, session) ({
   # update the drop down list based on what you selected in 'localPub2', i.e. the csv's you uploaded
   observeEvent(input$localPub2, {
     updatePickerInput(session = session, inputId = "pubDrop2",
-                      choices = publicationList2()$pTitle)
+                      choices = sort(publicationList2()$pTitle))
   })
   
   # update the same drop down list with the publication name in the uploaded version
@@ -1735,11 +1728,7 @@ na (not applicable): for an aggregated index where the different components (sub
   observeEvent(input$i_populate, {
     updatePickerInput(session = session,
                       'dSpatialCoverage',
-                      choices = c("0 - NA",
-                                  "1 - complete",
-                                  "2 - area representative",
-                                  "3 - oppurtunistic or sporadic",
-                                  "4 - unknown"),
+                      choices = coverage,
                       selected = iForm()$value[iForm()$parameter == "dSpatialCoverage"])
   })
   
