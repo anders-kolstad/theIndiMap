@@ -1,5 +1,5 @@
 ---
-title: "Target Markdown"
+title: "IndiMap plots and analyses"
 output: html_document
 ---
 
@@ -7,39 +7,49 @@ output: html_document
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option.
+This report will
+
+- compile indicator profiles `"/data/indicatorProfiles/"` and publication profiles `"/data/pulicationProfiles/"` into long format
+- Perform resampling to craete dummy data
+- Create plots and summary statistics
+
+
+<!-- Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option. -->
 
 # Packages
 
-The example requires several R packages, and `targets` must be version 0.5.0.9000 or above. 
-
+Here are the required packages
 ```{r, eval = FALSE}
-install.packages(c("biglm", "dplyr", "ggplot2", "readr", "targets", "tidyr"))
+install.packages(c("tidyverse"))
+```
+```{r, echo=T, warning=F, message=F}
+library(targets)
+library(tidyverse)
+```
+
+
+```{targets setup-targets}
+tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr"))
+options(tidyverse.quiet = TRUE)
 ```
 
 # Setup
 
-If you are using old versions of `targets` (<= 0.7.0) and/or `knitr` (<= 1.33), you will need to load the `targets` package in the R Markdown document in order for Target Markdown code chunks to work.
 
-```{r}
-library(targets)
-```
-
-Near the top of the document, you may also wish to remove the `_targets_r` directory previously written by non-interactive runs of the report. Otherwise, your pipeline may contain superfluous targets.
-
-```{r}
-library(targets)
+```{r, echo=F}
+#Remove R scripts from previous non-interactive runs
 tar_unscript()
 ```
+
 
 # Globals
 
 We first define some global options/functions common to all targets. The function below plots a histogram of ozone concentrations, and our histogram target will need it.
 
 ```{targets example-globals, tar_globals = TRUE}
-options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("biglm", "dplyr", "ggplot2", "readr", "tidyr"))
-create_plot <- function(data) {
+#| tar_interactive: FALSE
+
+create_hist <- function(data) {
   ggplot(data) +
     geom_histogram(aes(x = Ozone), bins = 12) +
     theme_gray(24)
@@ -48,26 +58,36 @@ create_plot <- function(data) {
 
 # Targets
 
-Our first target borrows the `airquality` dataset built into base R.
+Our first target reads in all the file names in `data/publicationProfiles` and stores them in a single object, which we can then monitor for updates.
 
-```{targets raw-data}
-tar_target(raw_data, airquality)
+```{targets pp-ls}
+#| tar_interactive: FALSE
+tar_target(ppls, 
+           list.files("data/publicationProfiles", full.names = T), 
+           cue = tar_cue(mode = "thorough"), 
+           format="file")
 ```
 
-Our next targets preprocess the data, make a histogram, and fit a model.
+Then we import these files
 
-```{targets downstream-targets}
-list(
-  tar_target(data, raw_data %>% filter(!is.na(Ozone))),
-  tar_target(hist, create_plot(data))
-)
+```{targets pp-import}
+#| tar_interactive: FALSE
+tar_target(import_profiles, purrr::map_df(ppls, 
+                                     function(x)
+                                       read.csv(x,
+                                                header=T) %>%
+                                       pivot_wider(names_from = parameter, values_from = value)
+                                   ),
+           packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr"))
+
 ```
 
-Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`).
 
-```{targets fit, tar_simple = TRUE}
-biglm(Ozone ~ Wind + Temp, data)
-```
+<!-- Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`). -->
+
+<!-- ```{targets fit, tar_simple = TRUE} -->
+<!-- biglm(Ozone ~ Wind + Temp, data) -->
+<!-- ``` -->
 
 # Pipeline
 
@@ -79,16 +99,7 @@ tar_make()
 
 # Output
 
-You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`.
-
-```{r, message = FALSE}
-library(biglm)
-tar_read(fit)
-```
-
-```{r}
-tar_read(hist)
-```
+<!-- You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`. -->
 
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
 
@@ -96,4 +107,4 @@ The `targets` dependency graph helps your readers understand the steps of your p
 tar_visnetwork()
 ```
 
-At this point, you can go back and run `{targets}` chunks in interactive mode without interfering with the code or data of the non-interactive pipeline.
+
