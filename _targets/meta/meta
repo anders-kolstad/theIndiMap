@@ -1,0 +1,6 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+create_plot|function|9a9f266c80d6a25e|||||||||||||||
+data|stem|1aba322368894fd0|173ca52d67e263fa|7e1535ee8c1980e4|1588979285||t19695.4659944332s|4bd2df2f3e23065a|1079|rds|local|vector|||0.01||
+fit|stem|5ddc268e7ea45398|adde9736c1e10981|2a15d62942972ac1|1780184594||t19695.4659946453s|a6d8051a64448cf1|2271|rds|local|vector|||0||
+hist|stem|1d1220e61603eda9|68877181ab74e51e|10a89003d6daa6f7|-1026346201||t19695.4659952306s|52888bc6d6650503|50518|rds|local|vector|||0.01||
+raw_data|stem|dbe490613fe87e32|81e4f6e420278630|ef46db3751d8e999|-979620141||t19695.4659939599s|e28f169d68df9326|1261|rds|local|vector|||1.03|package biglm was built under R version 4.3.2. package DBI was built under R version 4.3.1. package dplyr was built under R version 4.3.1. package ggplot2 was built under R version 4.3.1. package readr was built under R version 4.3.1. package tidyr was built under R version 4.3.1|
