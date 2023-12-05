@@ -41,6 +41,8 @@ options(tidyverse.quiet = TRUE)
 ```{r, echo=F}
 #Remove R scripts from previous non-interactive runs
 tar_unscript()
+tar_destroy()
+
 ```
 
 
@@ -76,7 +78,7 @@ compile_profiles <- function(files) {
 Our first target reads in all the file names in `data/publicationProfiles` and stores them in a single object (`ppls`), which we can then monitor for updates.
 
 ```{targets pp-ls}
-#| tar_interactive: FALSE
+##| tar_interactive: FALSE
 tar_target(ppls, 
            list.files("data/publicationProfiles", full.names = T), 
            cue = tar_cue(mode = "thorough"), 
@@ -88,7 +90,7 @@ Then we import these files and compile them into long format using `compile_prof
 
 
 ```{targets pp-import}
-#| tar_interactive: FALSE
+##| tar_interactive: FALSE
 tar_target(publications_imported, compile_profiles(ppls),
            packages = "tidyverse")
 ```
@@ -117,61 +119,66 @@ tar_target(indicators_imported, compile_profiles(ipls),
 ## Resample and create dummy data
 Let's take `import_indicators` and resample it to populate a dummy data set which we can use to write generic code with.
 
-<!-- ```{targets scramble, tar_globals=T} -->
-<!-- ##| tar_interactive: FALSE -->
-<!-- scramble_rows <- function(data) { -->
-<!--   data[sample(1:nrow(data), 150, replace = T),]  -->
-<!-- } -->
+```{targets scramble, tar_globals=T}
+##| tar_interactive: FALSE
+scramble_rows <- function(data) {
+  data[sample(1:nrow(data), 150, replace = T),]
+}
 
-<!-- ``` -->
+```
 
-<!-- ```{r} -->
-<!-- indicators_scrambled <- scramble_rows(indicators_imported) -->
-<!-- ``` -->
-
-
-<!-- There are some columns that have multiple-choice fields separated with `|`.  -->
-<!-- For the publication profiles it's only pDirective, but this one is not so interesting, so I will ignore this for now. -->
-<!-- In the indicator profiles we have: -->
-
-<!-- ```{r} -->
-<!-- mc <- c("iContinent", "iCountry") -->
-<!-- ``` -->
-
-<!-- To scramble these we need a separate approach compared to just re-sampling rows. -->
-<!-- Let's create a vector of distinct values from these multiple-choice fields and them sample from that to re-populate the columns in our dummy data. -->
-
-<!-- ```{targets splitMS, tar_globals=T} -->
-<!-- splitMS <- function(x) { -->
+```{r}
+indicators_scrambled <- scramble_rows(indicators_imported)
+```
 
 
-<!--   splitDF <- data.frame(NULL) -->
-<!--   temp <- x %>% -->
-<!--     filter(mc) -->
-<!--   temp2 <-  -->
+There are some columns that have multiple-choice fields separated with `|`.
+For the publication profiles it's only pDirective, but this one is not so interesting, so I will ignore this for now.
+In the indicator profiles we have:
 
-<!-- } -->
+```{r}
+mc <- c("iContinent", "iCountry")
+```
 
-<!-- #%>% -->
-<!-- #    mutate(across(mc, ~str_split(., pattern = " | "))) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- test <- for(i in mc) { -->
-<!--   #print(i) -->
-<!--   #print(indicators_scrambled[1:15,i]) -->
-<!--   vect <- str_split(indicators_scrambled[,i], " | ") -->
-<!-- } -->
-<!-- ``` -->
+To scramble these we need a separate approach compared to just re-sampling rows.
+Let us melt the data and scramble the relevnat fields, and cast it again.
+```{r}
+test <- indicators_imported |> 
+  select(any_of(c("fileName", "iContinent", "iCountry"))) |>
+  pivot_longer(cols = -fileName) |>
+  separate_longer_delim(cols = value, delim=" | ") |>
+  pivot_wider(id_cols = any_of("fileName"), id_expand = T)
+  
+```
 
 
 
-<!-- Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`). -->
+```{targets splitMS, tar_globals=T}
+splitMS <- function(x) {
+  x |>
+    pivot_longer()
+}
 
-<!-- ```{targets fit, tar_simple = TRUE} -->
-<!-- biglm(Ozone ~ Wind + Temp, data) -->
-<!-- ``` -->
+#%>%
+#    mutate(across(mc, ~str_split(., pattern = " | ")))
+```
+
+```{r}
+
+test <- for(i in mc) {
+  #print(i)
+  #print(indicators_scrambled[1:15,i])
+  vect <- str_split(indicators_scrambled[,i], " | ")
+}
+```
+
+
+
+Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`).
+
+```{targets fit, tar_simple = TRUE}
+biglm(Ozone ~ Wind + Temp, data)
+```
 
 # Pipeline
 
