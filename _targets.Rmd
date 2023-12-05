@@ -19,23 +19,23 @@ This report will
 # Packages
 
 Here are the required packages
+
 ```{r, eval = FALSE}
 install.packages(c("tidyverse", "DT"))
 ```
+
+
 ```{r, echo=T, warning=F, message=F}
 library(targets)
 library(tidyverse)
 library(DT)
-library(kableExtra)
 ```
 
 
 ```{targets setup-targets, tar_globals=TRUE }
-tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr"))
+tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr")) # I had to mention dplyr, purrr ect even though they are included in tidyverse.
 options(tidyverse.quiet = TRUE)
 ```
-
-# Setup
 
 
 ```{r, echo=F}
@@ -49,7 +49,7 @@ tar_unscript()
 We first define some global options/functions common to all targets. The function below plots a histogram of ozone concentrations, and our histogram target will need it.
 
 ```{targets example-globals, tar_globals = TRUE}
-# #| tar_interactive: FALSE
+#| tar_interactive: FALSE
 
 create_hist <- function(data) {
   ggplot(data) +
@@ -57,15 +57,18 @@ create_hist <- function(data) {
     theme_gray(24)
 }
 ```
-Here's a function to read all the csv's and compile them in a long format
+
+Here's a function to read all the CSV's and compile them in a long format.
+We also take the file name and add that to the data set.
+
 ```{targets compile, tar_globals = TRUE}
 ##| tar_interactive: FALSE
-compile_profiles <- function(list) {
-  purrr::map_df(list, function(x)
-                             read.csv(x,
-                                header=T) %>%
-                             pivot_wider(names_from = parameter, values_from = value))
-}
+compile_profiles <- function(files) {
+  files |>
+    set_names(basename) |>
+    map(read.csv) %>%
+  list_rbind(names_to = "fileName") |>
+  tidyr::pivot_wider(names_from = parameter, values_from = value)}
 ```
 
 # Targets
@@ -73,43 +76,95 @@ compile_profiles <- function(list) {
 Our first target reads in all the file names in `data/publicationProfiles` and stores them in a single object (`ppls`), which we can then monitor for updates.
 
 ```{targets pp-ls}
-##| tar_interactive: FALSE
+#| tar_interactive: FALSE
 tar_target(ppls, 
            list.files("data/publicationProfiles", full.names = T), 
            cue = tar_cue(mode = "thorough"), 
-           format="file")
+           format="file",
+           packages = "tidyverse")
 ```
 
-Then we import these files
+Then we import these files and compile them into long format using `compile_profiles()`.
+
 
 ```{targets pp-import}
-##| tar_interactive: FALSE
-tar_target(import_publications, compile_profiles(ppls),
-           packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr"))
-
+#| tar_interactive: FALSE
+tar_target(publications_imported, compile_profiles(ppls),
+           packages = "tidyverse")
 ```
 
 Then the same for `data/indicatorProfiles`.
 
 ```{targets ip-ls}
-#| tar_interactive: FALSE
+##| tar_interactive: FALSE
 tar_target(ipls, 
            list.files("data/indicatorProfiles", full.names = T), 
            cue = tar_cue(mode = "thorough"), 
-           format="file")
+           format="file",
+           packages = "tidyverse")
 ```
 
 Then we import these files
 
 ```{targets ip-import}
-#| tar_interactive: FALSE
-tar_target(import_indicators, compile_profiles(ipls),
-           packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr"))
-
+##| tar_interactive: FALSE
+tar_target(indicators_imported, compile_profiles(ipls),
+           packages = "tidyverse")
 ```
 
+
+
 ## Resample and create dummy data
-Let's take ìmport_indicators
+Let's take `import_indicators` and resample it to populate a dummy data set which we can use to write generic code with.
+
+<!-- ```{targets scramble, tar_globals=T} -->
+<!-- ##| tar_interactive: FALSE -->
+<!-- scramble_rows <- function(data) { -->
+<!--   data[sample(1:nrow(data), 150, replace = T),]  -->
+<!-- } -->
+
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- indicators_scrambled <- scramble_rows(indicators_imported) -->
+<!-- ``` -->
+
+
+<!-- There are some columns that have multiple-choice fields separated with `|`.  -->
+<!-- For the publication profiles it's only pDirective, but this one is not so interesting, so I will ignore this for now. -->
+<!-- In the indicator profiles we have: -->
+
+<!-- ```{r} -->
+<!-- mc <- c("iContinent", "iCountry") -->
+<!-- ``` -->
+
+<!-- To scramble these we need a separate approach compared to just re-sampling rows. -->
+<!-- Let's create a vector of distinct values from these multiple-choice fields and them sample from that to re-populate the columns in our dummy data. -->
+
+<!-- ```{targets splitMS, tar_globals=T} -->
+<!-- splitMS <- function(x) { -->
+
+
+<!--   splitDF <- data.frame(NULL) -->
+<!--   temp <- x %>% -->
+<!--     filter(mc) -->
+<!--   temp2 <-  -->
+
+<!-- } -->
+
+<!-- #%>% -->
+<!-- #    mutate(across(mc, ~str_split(., pattern = " | "))) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+
+<!-- test <- for(i in mc) { -->
+<!--   #print(i) -->
+<!--   #print(indicators_scrambled[1:15,i]) -->
+<!--   vect <- str_split(indicators_scrambled[,i], " | ") -->
+<!-- } -->
+<!-- ``` -->
+
 
 
 <!-- Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`). -->
@@ -131,13 +186,13 @@ tar_make()
 
 ## Raw data tables
 ```{r publications-dt, echo=FALSE}
-DT::datatable(tar_read(import_publications),
+DT::datatable(tar_read(publications_imported),
               options = list(
                 pageLength = 5))
 ```
 
 ```{r indicators-dt, echo=F}
-DT::datatable(tar_read(import_indicators),
+DT::datatable(tar_read(indicators_imported),
               options = list(
                 pageLength = 5))
 ```
