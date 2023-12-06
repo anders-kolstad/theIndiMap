@@ -116,7 +116,7 @@ tar_target(indicators_imported, compile_profiles(ipls),
 
 
 
-## Resample and create dummy data
+## Create dummy data
 Let's take `import_indicators` and resample it to populate a dummy data set which we can use to write generic code with.
 
 ```{targets scramble, tar_globals=T}
@@ -141,7 +141,27 @@ mc <- c("iContinent", "iCountry")
 ```
 
 To scramble these we need a separate approach compared to just re-sampling rows.
-Let us melt the data and scramble the relevnat fields, and cast it again.
+
+Here is a function to take a vector (data frame column) og length x, make it longer based on a deliminator to become x+z, sample to length of x, and sample some again to combine and make multiple choice fields. Later we can use this function inside mutate(across()).
+
+```{r}
+distinct_ms <- function(x) {
+  vector <- x |> 
+    as.data.frame() |>
+    separate_longer_delim(cols = x, delim=" | ") |>
+    distinct()
+  long <- sample(vector[,1], 150, replace = T)
+  # add some double values
+  secondvalue <- sample(long, 20) # in 20 places
+  secondvalue <- temp[secondvalue!= ""] # rm blanks
+  rows <- sample(1:150, 20, replace = F) # pick random row(vector) positions
+  long[rows] <-  paste(long[rows], secondvalue, sep= " | ") # paste second value 
+  long <- str_replace(long, "^.[|].", "") # rm leading " | "
+  return(long)
+  }
+```
+
+
 ```{r}
 test <- indicators_imported |> 
   select(any_of(c("fileName", "iContinent", "iCountry"))) |>
