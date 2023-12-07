@@ -33,7 +33,7 @@ library(DT)
 
 
 ```{targets setup-targets, tar_globals=TRUE }
-tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr")) # I had to mention dplyr, purrr ect even though they are included in tidyverse.
+tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr", "ggplot2")) # I had to mention dplyr, purrr ect even though they are included in tidyverse.
 options(tidyverse.quiet = TRUE)
 ```
 
@@ -41,23 +41,11 @@ options(tidyverse.quiet = TRUE)
 ```{r, echo=F}
 #Remove R scripts from previous non-interactive runs
 tar_unscript()
-tar_destroy()
+#tar_destroy()
 ```
 
 
-# Globals
 
-We first define some global options/functions common to all targets. The function below plots a histogram of ozone concentrations, and our histogram target will need it.
-
-```{targets example-globals, tar_globals = TRUE}
-##| tar_interactive: FALSE
-
-create_hist <- function(data) {
-  ggplot(data) +
-    geom_histogram(aes(x = Ozone), bins = 12) +
-    theme_gray(24)
-}
-```
 
 Here's a function to read all the CSV's and compile them in a long format.
 We also take the file name and add that to the data set.
@@ -171,6 +159,36 @@ scramble <- function(data) {
 tar_target(indicators_dummyData, scramble(indicators_imported))
 ```
 
+#Plots
+Here are function to plot data
+```{targets barplot, tar_globals = TRUE}
+##| tar_interactive: FALSE
+
+create_bar <- function(data, x) {
+  data |>
+    separate_longer_delim(x, " | ") |>
+    ggplot() +
+    geom_bar(aes_string(x = x),
+             fill="#FFDB6D",
+             colour="grey30") +
+    theme_minimal(18)+
+    coord_flip()+
+    theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank())
+}
+```
+
+And here are the figure targets
+```{targets barPlot_country}
+tar_target(barPlot_country, create_bar(indicators_dummyData, "iCountry"),
+           packages = "tidyverse")
+```
+
+```{targets barPlot_continent}
+tar_target(barPlot_continent, create_bar(indicators_dummyData, "iContinent"),
+           packages = "tidyverse")
+```
+
 
 # Pipeline
 
@@ -201,6 +219,18 @@ DT::datatable(tar_read(indicators_dummyData),
               options = list(
                 pageLength = 5))
 ```
+
+# Figures
+
+```{r}
+tar_read(barPlot_country)
+```
+
+
+```{r}
+tar_read(barPlot_continent)
+```
+
 
 ## DAG
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
