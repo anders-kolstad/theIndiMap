@@ -42,7 +42,6 @@ options(tidyverse.quiet = TRUE)
 #Remove R scripts from previous non-interactive runs
 tar_unscript()
 tar_destroy()
-
 ```
 
 
@@ -51,7 +50,7 @@ tar_destroy()
 We first define some global options/functions common to all targets. The function below plots a histogram of ozone concentrations, and our histogram target will need it.
 
 ```{targets example-globals, tar_globals = TRUE}
-#| tar_interactive: FALSE
+##| tar_interactive: FALSE
 
 create_hist <- function(data) {
   ggplot(data) +
@@ -117,35 +116,27 @@ tar_target(indicators_imported, compile_profiles(ipls),
 
 
 ## Create dummy data
-Let's take `import_indicators` and resample it to populate a dummy data set which we can use to write generic code with.
+Let's make a function to re-sample `import_indicators`  and populate a dummy data set which we can use to write generic code with.
 
-```{targets scramble, tar_globals=T}
-##| tar_interactive: FALSE
-scramble_rows <- function(data) {
-  data[sample(1:nrow(data), 150, replace = T),]
-}
-
-```
-
-```{r}
-indicators_scrambled <- scramble_rows(indicators_imported)
-```
-
-
+First.
 There are some columns that have multiple-choice fields separated with `|`.
 For the publication profiles it's only pDirective, but this one is not so interesting, so I will ignore this for now.
 In the indicator profiles we have:
 
-```{r}
-mc <- c("iContinent", "iCountry")
-```
+<!-- ```{r mcFields, tar_simple=T} -->
+<!-- mc <- c("iContinent", "iCountry", "iET", "dOrigin", "iBiome") -->
+<!-- ``` -->
 
 To scramble these we need a separate approach compared to just re-sampling rows.
 
-Here is a function to take a vector (data frame column) og length x, make it longer based on a deliminator to become x+z, sample to length of x, and sample some again to combine and make multiple choice fields. Later we can use this function inside mutate(across()).
+Here is a function to take a vector (data frame column) of length x, 
+make it longer based on a deliminator to become x+z, 
+sample to length of x, 
+and sample some again to combine and make multiple choice fields. 
 
-```{r}
-distinct_ms <- function(x) {
+
+```{targets scramble_ms, tar_globals=T}
+scramble_ms <- function(x) {
   vector <- x |> 
     as.data.frame() |>
     separate_longer_delim(cols = x, delim=" | ") |>
@@ -153,7 +144,7 @@ distinct_ms <- function(x) {
   long <- sample(vector[,1], 150, replace = T)
   # add some double values
   secondvalue <- sample(long, 20) # in 20 places
-  secondvalue <- temp[secondvalue!= ""] # rm blanks
+  secondvalue <- secondvalue[secondvalue!= ""] # rm blanks
   rows <- sample(1:150, 20, replace = F) # pick random row(vector) positions
   long[rows] <-  paste(long[rows], secondvalue, sep= " | ") # paste second value 
   long <- str_replace(long, "^.[|].", "") # rm leading " | "
@@ -161,44 +152,25 @@ distinct_ms <- function(x) {
   }
 ```
 
+Now we can use this function inside `mutate(across())`.
 
-```{r}
-test <- indicators_imported |> 
-  select(any_of(c("fileName", "iContinent", "iCountry"))) |>
-  pivot_longer(cols = -fileName) |>
-  separate_longer_delim(cols = value, delim=" | ") |>
-  pivot_wider(id_cols = any_of("fileName"), id_expand = T)
-  
-```
-
-
-
-```{targets splitMS, tar_globals=T}
-splitMS <- function(x) {
-  x |>
-    pivot_longer()
+```{targets scramble, tar_globals=T}
+##| tar_interactive: FALSE
+scramble <- function(data) {
+  #These are the multiple choice (mc) columns
+  mc <- c("iContinent", "iCountry", "iET", "dOrigin", "iBiome")
+  # resample to get 150 rows
+  data[sample(1:nrow(data), 150, replace = T),] |>
+    # replace the mc columns
+    mutate(across(any_of(mc),scramble_ms))
 }
 
-#%>%
-#    mutate(across(mc, ~str_split(., pattern = " | ")))
 ```
 
-```{r}
-
-test <- for(i in mc) {
-  #print(i)
-  #print(indicators_scrambled[1:15,i])
-  vect <- str_split(indicators_scrambled[,i], " | ")
-}
+```{targets dummyData}
+tar_target(indicators_dummyData, scramble(indicators_imported))
 ```
 
-
-
-Set the `tar_simple` chunk option to `TRUE` to define a single target with the command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind + Temp, data)` in the source, but because `tar_simple` is `TRUE`, it is shorthand for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All other arguments to `tar_target()` are set to their default values (configurable with `tar_option_set()`).
-
-```{targets fit, tar_simple = TRUE}
-biglm(Ozone ~ Wind + Temp, data)
-```
 
 # Pipeline
 
@@ -224,7 +196,11 @@ DT::datatable(tar_read(indicators_imported),
                 pageLength = 5))
 ```
 
-
+```{r dummy-dt, echo=FALSE}
+DT::datatable(tar_read(indicators_dummyData),
+              options = list(
+                pageLength = 5))
+```
 
 ## DAG
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
