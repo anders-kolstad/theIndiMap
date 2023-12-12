@@ -58,6 +58,4 @@ If I do the same procedure, but only remove \_bioindicator\*\_ and not \_environ
 
 > Conclusion. Keep the query as is.
 
-Here is a [link to the query](https://www.webofscience.com/wos/woscc/summary/ffe2b483-59b5-47ca-808a-66ee0d8deb05-bc88dd48/relevance/1).
-
-I filtered on years \>2022 and got 7623 hits which I exported as 8 RIS files.
+Here is a [link to the query](https://www.webofscience.com/wos/woscc/summary/5d72ae68-7072-416c-9e55-ef71f10dde72-bc8cea7f/relevance/1). I filtered on index date between now and 2022-03-24 and got 7159 hits which I exported as 8 RIS files which I copied into one master file using Notepad++.
