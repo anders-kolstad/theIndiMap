@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Updated WoS search late 2023</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Updated WoS search late 2023_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Updated WoS search late 2023_files/libs/quarto-html/quarto.js"></script>
+<script src="Updated WoS search late 2023_files/libs/quarto-html/popper.min.js"></script>
+<script src="Updated WoS search late 2023_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Updated WoS search late 2023_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Updated WoS search late 2023_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Updated WoS search late 2023_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Updated WoS search late 2023_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Updated WoS search late 2023_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Updated WoS search late 2023_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Updated WoS search late 2023</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="recap" class="level2">
+<h2 class="anchored" data-anchor-id="recap">Recap</h2>
+<p>The scoping study, which concluded with the <a href="https://github.com/anders-kolstad/theIndiMap/blob/main/man/scoping-study-summary.pdf">original Wos search</a>, was done 2022-03-24. Title and abstract screening started in 2023-12-07. Now it is 2023-12-12 and time to update the original WoS search to get the latest records.</p>
+<p>I have recently (yesterday) also added the <a href="https://seea.un.org/content/knowledge-base">SEEA EA knowledge base</a> to the Rayyan project for years 2022 and 2023.</p>
+</section>
+<section id="updated-search-string" class="level2">
+<h2 class="anchored" data-anchor-id="updated-search-string">Updated search string</h2>
+<p>We want to keep things as similar as possible. At the same time, we made some experiences in the first title and abstract screening about which serach terms worked and which that didn’t. And we have a challenge with our search being to unspecific, so we wan to trim it down if we can, without loosing relevant records.</p>
+<p>These terms did not seem to work:</p>
+<ul>
+<li>environment*
+<ul>
+<li>mainly capturing cases where a variable was used as a model predictor</li>
+</ul></li>
+<li>bioindicator*
+<ul>
+<li>mainly capturing <em>pollution</em> or <em>body condition</em> related records</li>
+</ul></li>
+</ul>
+<p>Also natur* and integrity were also not very good.</p>
+<p>Here is how I test the effect of removing <em>environment*</em> and <em>bioindicator*</em>.</p>
+<p>These are the three-times-two search strings (P-O-O) and the WoS categories filter. The words that we might want to take out of the 2023 search are in bold.</p>
+<p><strong>Strings #1 and 4 (‘P’)</strong>: (ecosystem* OR ecologic* OR <strong>environment*</strong> OR natur* OR biologic*) (Topic)</p>
+<p><strong>String #2 and 5 (‘O1’)</strong>: (condition OR state NEAR/3 (ecosystem* OR ecologic* OR <strong>environment*</strong> OR natur* OR biologic<em>) OR capital NEAR/2 (natur</em>) OR integrity) (Topic)</p>
+<p><strong>String #3 and 6 (‘O2’)</strong>: TS=((indicator* OR <strong>bioindicator*</strong> OR ((index* OR indec<em>) NEAR/2 (ecosyst</em> OR ecologic* OR <strong>environment*</strong> OR natur* OR biologic* OR condition* OR integrity)) OR assessment* NEAR/1 (ecosyst* OR ecologic* OR <strong>environment*</strong> OR natur* OR condition* OR integrity) OR account* NEAR/1 (ecosystem* OR ecologic* OR <strong>environment*</strong> OR natur* OR biologic*)))</p>
+<p><strong>String #7 (WoS categories)</strong>: (DT==(“ARTICLE” OR “REVIEW” OR “EARLY ACCESS” OR “PROCEEDINGS PAPER” OR “BOOK CHAPTER”) NOT TASCA==(“PUBLIC ENVIRONMENTAL OCCUPATIONAL HEALTH” OR “GREEN SUSTAINABLE SCIENCE TECHNOLOGY” OR “ENGINEERING CIVIL” OR “COMPUTER SCIENCE INFORMATION SYSTEMS” OR “ENDOCRINOLOGY METABOLISM” OR “MINERALOGY” OR “PSYCHOLOGY CLINICAL” OR “EDUCATION EDUCATIONAL RESEARCH” OR “HEALTH CARE SCIENCES SERVICES” OR “NUTRITION DIETETICS” OR “ASTRONOMY ASTROPHYSICS” OR “MEDICINE RESEARCH EXPERIMENTAL” OR “NUCLEAR SCIENCE TECHNOLOGY” OR “CLINICAL NEUROLOGY” OR “TELECOMMUNICATIONS” OR “IMMUNOLOGY” OR “NANOSCIENCE NANOTECHNOLOGY” OR “BUSINESS FINANCE” OR “SPORT SCIENCES” OR “METALLURGY METALLURGICAL ENGINEERING” OR “ONCOLOGY” OR “ELECTROCHEMISTRY” OR “SPECTROSCOPY” OR “ENGINEERING PETROLEUM” OR “OPTICS” OR “HEALTH POLICY SERVICES” OR “DEVELOPMENT STUDIES” OR “RADIOLOGY NUCLEAR MEDICINE MEDICAL IMAGING” OR “SOCIAL SCIENCES BIOMEDICAL” OR “DENTISTRY ORAL SURGERY MEDICINE” OR “TROPICAL MEDICINE” OR “ENGINEERING OCEAN” OR “ENGINEERING BIOMEDICAL” OR “PEDIATRICS” OR “NURSING” OR “PSYCHOLOGY EXPERIMENTAL” OR “REHABILITATION” OR “ENGINEERING MANUFACTURING” OR “PSYCHOLOGY APPLIED” OR “SURGERY” OR “ERGONOMICS” OR “PHYSICS MULTIDISCIPLINARY” OR “PSYCHOLOGY BIOLOGICAL” OR “REPRODUCTIVE BIOLOGY” OR “ENGINEERING AEROSPACE” OR “LAW” OR “MEDICAL INFORMATICS” OR “GERONTOLOGY” OR “MATHEMATICS APPLIED” OR “CHEMISTRY INORGANIC NUCLEAR” OR “PHYSICS ATOMIC MOLECULAR CHEMICAL” OR “CHEMISTRY MEDICINAL” OR “MATERIALS SCIENCE COMPOSITES” OR “MEDICINE LEGAL” OR “AREA STUDIES” OR “OBSTETRICS GYNECOLOGY” OR “PUBLIC ADMINISTRATION” OR “ARCHITECTURE” OR “PSYCHOLOGY DEVELOPMENTAL” OR “ORTHOPEDICS” OR “AUDIOLOGY SPEECH LANGUAGE PATHOLOGY” OR “COMPUTER SCIENCE THEORY METHODS” OR “MATERIALS SCIENCE BIOMATERIALS” OR “CHEMISTRY ORGANIC” OR “COMPUTER SCIENCE SOFTWARE ENGINEERING” OR “MATHEMATICS” OR “PATHOLOGY” OR “PHYSICS MATHEMATICAL” OR “RESPIRATORY SYSTEM” OR “GASTROENTEROLOGY HEPATOLOGY” OR “HEMATOLOGY” OR “PHYSICS CONDENSED MATTER” OR “DEMOGRAPHY” OR “DERMATOLOGY” OR “MEDICAL LABORATORY TECHNOLOGY” OR “CARDIAC CARDIOVASCULAR SYSTEMS” OR “OTORHINOLARYNGOLOGY” OR “HISTORY PHILOSOPHY OF SCIENCE” OR “DEVELOPMENTAL BIOLOGY” OR “PHYSICS FLUIDS PLASMAS” OR “SOCIAL WORK” OR “INFORMATION SCIENCE LIBRARY SCIENCE” OR “OPHTHALMOLOGY” OR “ALLERGY” OR “CRITICAL CARE MEDICINE” OR “PSYCHOLOGY EDUCATIONAL” OR “ACOUSTICS” OR “ENGINEERING MARINE” OR “INTERNATIONAL RELATIONS” OR “MATERIALS SCIENCE CHARACTERIZATION TESTING” OR “POLYMER SCIENCE” OR “SUBSTANCE ABUSE” OR “AUTOMATION CONTROL SYSTEMS” OR “HOSPITALITY LEISURE SPORT TOURISM” OR “MATHEMATICAL COMPUTATIONAL BIOLOGY” OR “POLITICAL SCIENCE” OR “GERIATRICS GERONTOLOGY” OR “INTEGRATIVE COMPLEMENTARY MEDICINE” OR “MATERIALS SCIENCE PAPER WOOD” OR “ART” OR “COMPUTER SCIENCE HARDWARE ARCHITECTURE” OR “MATERIALS SCIENCE TEXTILES” OR “UROLOGY NEPHROLOGY” OR “SOCIAL ISSUES” OR “PERIPHERAL VASCULAR DISEASE” OR “PSYCHOLOGY SOCIAL”))</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figures/WoS_dec2023.PNG" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption class="figure-caption">Screen shot from Web of Science</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<table class="table">
+<caption>Search combinations</caption>
+<thead>
+<tr class="header">
+<th>Search</th>
+<th>number</th>
+<th>query</th>
+<th>#hits</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Original</td>
+<td>8</td>
+<td><code>#1 AND #2 AND #3 AND #7</code></td>
+<td>46k</td>
+</tr>
+<tr class="even">
+<td>Updated</td>
+<td>9</td>
+<td><code>#4 AND #5 AND #6 AND #7</code></td>
+<td>28k</td>
+</tr>
+<tr class="odd">
+<td>Contrast</td>
+<td>10</td>
+<td><code>#8 NOT #9</code></td>
+<td>18k</td>
+</tr>
+</tbody>
+</table>
+<p>There are at least two relevant records in the first 50 hits. So this is not the way to go.</p>
+<p>If I do the same procedure, but only remove _bioindicator*_ and not _environment*_, I only reduce the number of hits by 1k (string 13).</p>
+<blockquote class="blockquote">
+<p>Conclusion. Keep the query as is.</p>
+</blockquote>
+<p>Here is a <a href="https://www.webofscience.com/wos/woscc/summary/ffe2b483-59b5-47ca-808a-66ee0d8deb05-bc88dd48/relevance/1">link to the query</a>.</p>
+<p>I filtered on years &gt;2022 and got 7623 hits which I exported as 8 RIS files.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
