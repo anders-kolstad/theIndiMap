@@ -16,19 +16,21 @@ This report will
 
 <!-- Target Markdown is a powerful R Markdown interface for reproducible analysis pipelines, and the chapter at https://books.ropensci.org/targets/markdown.html walks through it in detail. This R Markdown report the example from the chapter. Try it out in both interactive and non-interactive modes, either by running the code chunks in different ways or setting the `tar_interactive` chunk option. -->
 
-# Packages
+# Set-up
+<details><summary>Click to expand</summary>
 
 Here are the required packages
 
 ```{r, eval = FALSE}
-install.packages(c("tidyverse", "DT"))
+install.packages(c("tidyverse", "reactable"))
 ```
 
 
 ```{r, echo=T, warning=F, message=F}
 library(targets)
 library(tidyverse)
-library(DT)
+#library(DT)
+library(reactable)
 ```
 
 
@@ -43,25 +45,13 @@ options(tidyverse.quiet = TRUE)
 tar_unscript()
 #tar_destroy()
 ```
+</details>
+
+</br>
 
 
 
-
-Here's a function to read all the CSV's and compile them in a long format.
-We also take the file name and add that to the data set.
-
-```{targets compile, tar_globals = TRUE}
-##| tar_interactive: FALSE
-compile_profiles <- function(files) {
-  files |>
-    set_names(basename) |>
-    map(read.csv) %>%
-  list_rbind(names_to = "fileName") |>
-  tidyr::pivot_wider(names_from = parameter, values_from = value)}
-```
-
-# Targets
-## Import data
+# Get file names (target)
 Our first target reads in all the file names in `data/publicationProfiles` and stores them in a single object (`ppls`), which we can then monitor for updates.
 
 ```{targets pp-ls}
@@ -75,13 +65,6 @@ tar_target(ppls,
 
 Then we import these files and compile them into long format using `compile_profiles()`.
 
-
-```{targets pp-import}
-##| tar_interactive: FALSE
-tar_target(publications_imported, compile_profiles(ppls),
-           packages = "tidyverse")
-```
-
 Then the same for `data/indicatorProfiles`.
 
 ```{targets ip-ls}
@@ -93,7 +76,30 @@ tar_target(ipls,
            packages = "tidyverse")
 ```
 
-Then we import these files
+# Compile profiles (function)
+Here's a function to read all the CSV's and compile them in a long format.
+We also take the file name and add that to the data set.
+
+```{targets compile, tar_globals = TRUE}
+##| tar_interactive: FALSE
+compile_profiles <- function(files) {
+  files |>
+    set_names(basename) |>
+    map(read.csv) %>%
+  list_rbind(names_to = "fileName") |>
+  tidyr::pivot_wider(names_from = parameter, values_from = value)}
+```
+
+# Import profiles (targets)
+Let's read in and compile the publication profiles.
+
+```{targets pp-import}
+##| tar_interactive: FALSE
+tar_target(publications_imported, compile_profiles(ppls),
+           packages = "tidyverse")
+```
+
+And the indicator profiles in the same way.
 
 ```{targets ip-import}
 ##| tar_interactive: FALSE
@@ -103,7 +109,9 @@ tar_target(indicators_imported, compile_profiles(ipls),
 
 
 
-## Create dummy data
+# Create dummy data
+<details><summary>Click to expand</summary>
+
 Let's make a function to re-sample `import_indicators`  and populate a dummy data set which we can use to write generic code with.
 
 First.
@@ -159,8 +167,13 @@ scramble <- function(data) {
 tar_target(indicators_dummyData, scramble(indicators_imported))
 ```
 
-#Plots
-Here are function to plot data
+</details>
+</br>
+
+# Plotting functions
+Here are functions to plot data.
+
+## Barplots
 ```{targets barplot, tar_globals = TRUE}
 ##| tar_interactive: FALSE
 
@@ -178,12 +191,17 @@ create_bar <- function(data, x) {
 }
 ```
 
+# Figures (targets)
 And here are the figure targets
+
+## Country
 ```{targets barPlot_country}
 tar_target(barPlot_country, create_bar(indicators_dummyData, "iCountry"),
            packages = "tidyverse")
 ```
 
+
+## Continent
 ```{targets barPlot_continent}
 tar_target(barPlot_continent, create_bar(indicators_dummyData, "iContinent"),
            packages = "tidyverse")
@@ -198,41 +216,75 @@ If you ran all the `{targets}` chunks in non-interactive mode, then your R scrip
 tar_make()
 ```
 
+</br>
+
 # Output
 <!-- You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`. -->
 
 ## Raw data tables
-```{r publications-dt, echo=FALSE}
-DT::datatable(tar_read(publications_imported),
-              options = list(
-                pageLength = 5))
+
+### Imported publication profiles
+<details><summary>Click to expand</summary>
+
+```{r, echo=F}
+reactable::reactable(tar_read(publications_imported),
+          searchable = T,
+          defaultPageSize=5,
+          showPageSizeOptions=T,
+          striped=T)
 ```
 
-```{r indicators-dt, echo=F}
-DT::datatable(tar_read(indicators_imported),
-              options = list(
-                pageLength = 5))
+</details>
+
+### Imported Indicator profiles
+
+<details><summary>Click to expand</summary>
+
+```{r, echo=F}
+reactable::reactable(tar_read(indicators_imported),
+          searchable = T,
+          defaultPageSize=5,
+          showPageSizeOptions=T,
+          striped=T)
 ```
 
-```{r dummy-dt, echo=FALSE}
-DT::datatable(tar_read(indicators_dummyData),
-              options = list(
-                pageLength = 5))
+</details>
+
+### Synthetic indicators data (dummy data)
+
+<details><summary>Click to expand</summary>
+
+```{r, echo=F}
+reactable::reactable(tar_read(indicators_dummyData),
+          searchable = T,
+          defaultPageSize=5,
+          showPageSizeOptions=T,
+          striped=T)
 ```
 
-# Figures
+</details>
 
-```{r}
+</br>
+</br>
+
+
+## Figures
+
+### Country
+<details><summary>Click to expand</summary>
+```{r, echo=F}
 tar_read(barPlot_country)
 ```
+</details>
 
-
+### Continent
+<details><summary>Click to expand</summary>
 ```{r}
 tar_read(barPlot_continent)
 ```
+</details>
 
-
-## DAG
+# DAG
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
 
 ```{r}
