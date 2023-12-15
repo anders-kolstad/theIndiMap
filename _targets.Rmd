@@ -22,20 +22,22 @@ This report will
 Here are the required packages
 
 ```{r, eval = FALSE}
-install.packages(c("tidyverse", "reactable"))
+install.packages(c("tidyverse", "reactable", "tmap", "countries"))
 ```
 
 
 ```{r, echo=T, warning=F, message=F}
 library(targets)
 library(tidyverse)
+library(tmap)
 #library(DT)
 library(reactable)
+library(countries)
 ```
 
 
 ```{targets setup-targets, tar_globals=TRUE }
-tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr", "ggplot2")) # I had to mention dplyr, purrr ect even though they are included in tidyverse.
+tar_option_set(packages = c("tidyverse", "dplyr", "purrr", "readr", "tidyr", "ggplot2", "tmap", "countries")) # I had to mention dplyr, purrr ect even though they are included in tidyverse.
 options(tidyverse.quiet = TRUE)
 ```
 
@@ -173,9 +175,40 @@ tar_target(indicators_dummyData, scramble(indicators_imported))
 # Plotting functions
 Here are functions to plot data.
 
+## Map
+```{targets myMap, tar_globals = TRUE}
+
+myMap <- function(data){
+  
+# Melt data frame and convert to three letter country code to match the World data in {tmap}.
+# Then count the number of indicators per country
+dat2 <- data |>
+  separate_longer_delim(iCountry, " | ") |>
+  filter(iCountry != "") |>
+  group_by(iCountry)|>
+  summarise(n = n()) |>
+  mutate(ISO3 = countries::country_name(iCountry, to = "ISO3", verbose=T))
+
+# Get the World data fro tmap
+data("World")
+
+# Join the two data sets
+World <- World %>%
+  left_join(dat2, by=join_by(iso_a3 == ISO3))
+
+# Plot world map, with colour and superimposed numbers for the countries with indicators
+tm_shape(World) +
+  tm_polygons()+
+  tm_shape(World[!is.na(World$n),])+
+  tm_polygons(col = "orange")+
+  tm_shape(World[!is.na(World$n),])+
+  tm_text("n")
+}
+```
+
 ## Barplots
 ```{targets barplot, tar_globals = TRUE}
-##| tar_interactive: FALSE
+#indicators_dummyData
 
 create_bar <- function(data, x) {
   data |>
@@ -205,6 +238,12 @@ tar_target(barPlot_country, create_bar(indicators_dummyData, "iCountry"),
 ```{targets barPlot_continent}
 tar_target(barPlot_continent, create_bar(indicators_dummyData, "iContinent"),
            packages = "tidyverse")
+```
+
+
+## Map
+```{targets worldMap_dummy}
+tar_target(worldMap_dummy, myMap(indicators_dummyData), packages = c("tidyverse", "tmap", "countries"))
 ```
 
 
@@ -270,6 +309,12 @@ reactable::reactable(tar_read(indicators_dummyData),
 
 ## Figures
 
+### Map
+```{r, echo=F}
+tar_read(worldMap_dummy)
+```
+
+
 ### Country
 <details><summary>Click to expand</summary>
 ```{r, echo=F}
@@ -283,6 +328,8 @@ tar_read(barPlot_country)
 tar_read(barPlot_continent)
 ```
 </details>
+
+
 
 # DAG
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
