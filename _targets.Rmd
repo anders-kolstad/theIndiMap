@@ -121,10 +121,6 @@ There are some columns that have multiple-choice fields separated with `|`.
 For the publication profiles it's only pDirective, but this one is not so interesting, so I will ignore this for now.
 In the indicator profiles we have:
 
-<!-- ```{r mcFields, tar_simple=T} -->
-<!-- mc <- c("iContinent", "iCountry", "iET", "dOrigin", "iBiome") -->
-<!-- ``` -->
-
 To scramble these we need a separate approach compared to just re-sampling rows.
 
 Here is a function to take a vector (data frame column) of length x, 
@@ -133,8 +129,8 @@ sample to length of x,
 and sample some again to combine and make multiple choice fields. 
 
 
-```{targets scramble_ms, tar_globals=T}
-scramble_ms <- function(x) {
+```{targets scramble_mc, tar_globals=T}
+scramble_mc <- function(x) {
   vector <- x |> 
     as.data.frame() |>
     separate_longer_delim(cols = x, delim=" | ") |>
@@ -160,7 +156,7 @@ scramble <- function(data) {
   # resample to get 150 rows
   data[sample(1:nrow(data), 150, replace = T),] |>
     # replace the mc columns
-    mutate(across(any_of(mc),scramble_ms))
+    mutate(across(any_of(mc),scramble_mc))
 }
 
 ```
@@ -197,7 +193,7 @@ World <- World %>%
   left_join(dat2, by=join_by(iso_a3 == ISO3))
 
 # Plot world map, with colour and superimposed numbers for the countries with indicators
-tm_shape(World) +
+tm_shape(World, projection = 8857) + # equal area projection
   tm_polygons()+
   tm_shape(World[!is.na(World$n),])+
   tm_polygons(col = "orange")+
@@ -205,18 +201,19 @@ tm_shape(World) +
   tm_text("n")
 }
 ```
-
 ## Barplots
 ```{targets barplot, tar_globals = TRUE}
-#indicators_dummyData
-
+##| tar_interactive: FALSE
 create_bar <- function(data, x) {
   data |>
     separate_longer_delim(x, " | ") |>
+    group_by(across(all_of(x))) |>
+    summarise(indicators = n())  |>
     ggplot() +
-    geom_bar(aes_string(x = x),
-             fill="#FFDB6D",
-             colour="grey30") +
+    geom_bar(aes_string(x = x, y = "indicators"),
+             fill="grey",
+             colour="grey30",
+             stat = "identity") +
     theme_minimal(18)+
     coord_flip()+
     theme(axis.title.y = element_blank(),
